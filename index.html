@@ -875,6 +875,15 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .toast.show{opacity:1;}
   .empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 10px;}
   .searchbar{margin-bottom:10px;}
+  /* 11/09/2026 — chips de filtro por armazém na tela de Estoque (Todos/Inova/Agrícola/
+     Sem armazém), a pedido do Flávio. */
+  .armazem-filtro{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .armazem-chip{
+    background:var(--orange-light);border:1px solid #f6ddc2;color:var(--orange-dark);
+    padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .armazem-chip.active{background:var(--orange-dark);color:#fff;border-color:var(--orange-dark);}
   details.help{font-size:12px;color:var(--muted);margin-top:2px;}
   .inline-edit{display:flex;gap:6px;align-items:center;}
   .inline-edit input{width:80px;padding:4px 6px;font-size:13px;}
@@ -993,6 +1002,12 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     <div class="card">
       <h2>Estoque de produtos</h2>
       <input class="searchbar" id="estoqueSearch" placeholder="Buscar produto, classe ou ingrediente ativo...">
+      <!-- 11/09/2026 — a pedido do Flávio: abas/chips pra filtrar o estoque por armazém
+           (Inova, Agrícola, ou os produtos sem armazém definido), depois que passou a
+           existir mais de um armazém (ver importEstoqueERP/upsertArmazemSaldo). Gerado
+           dinamicamente a partir dos armazéns que realmente existem nos produtos, então
+           se aparecer um armazém novo no futuro a aba dele já aparece sozinha. -->
+      <div id="estoqueArmazemFiltro" class="armazem-filtro"></div>
       <!-- 04/09/2026 (v1.70) — a pedido do Flávio: filtro rápido pra achar os produtos
            que ainda estão sem ingrediente ativo cadastrado (geralmente os que entraram
            sozinhos pela importação da planilha do ERP — ver importEstoqueERP). -->
@@ -3104,10 +3119,58 @@ function toggleFiltroSemIa(){
   estoqueFiltroSemIa = !estoqueFiltroSemIa;
   renderEstoque();
 }
+/* 11/09/2026 — filtro por armazém (Todos / Inova / Agrícola / Sem armazém), a pedido do
+   Flávio ("quando eu quiser ver só da Agrícola e só da Inova e os que não têm armazém").
+   null = Todos. '__SEM_ARMAZEM__' = produtos sem nenhum armazém definido. Qualquer outro
+   valor = código do armazém (ex: '25', 'AGRICOLA'). */
+let estoqueFiltroArmazem = null;
+function armazensDoProduto(p){
+  const lista = Array.isArray(p.estoquePorArmazem) ? p.estoquePorArmazem.filter(e=>e.armazem) : [];
+  if(p.armazem && !lista.some(e=>e.armazem===p.armazem)) lista.push({armazem:p.armazem, armazemDesc:p.armazemDesc||''});
+  return lista;
+}
+function getArmazensDisponiveis(){
+  const mapa = new Map();
+  DATA.products.forEach(p=>{
+    armazensDoProduto(p).forEach(e=>{
+      if(!mapa.has(e.armazem)) mapa.set(e.armazem, e.armazemDesc||'');
+      else if(!mapa.get(e.armazem) && e.armazemDesc) mapa.set(e.armazem, e.armazemDesc);
+    });
+  });
+  return Array.from(mapa.entries()).map(([cod,desc])=>({cod,desc})).sort((a,b)=> (a.desc||a.cod).localeCompare(b.desc||b.cod));
+}
+function setFiltroArmazem(valor){
+  estoqueFiltroArmazem = (estoqueFiltroArmazem===valor) ? null : valor;
+  renderEstoque();
+}
+function renderArmazemFiltroChips(){
+  const host = document.getElementById('estoqueArmazemFiltro');
+  if(!host) return;
+  const armazens = getArmazensDisponiveis();
+  const semArmazemTotal = DATA.products.filter(p=>!armazensDoProduto(p).length).length;
+  if(!armazens.length){ host.innerHTML=''; return; }
+  const chips = [];
+  chips.push(`<button type="button" class="armazem-chip${estoqueFiltroArmazem===null?' active':''}" onclick="setFiltroArmazem(null)">Todos</button>`);
+  armazens.forEach(a=>{
+    const junto = (a.cod+' '+(a.desc||'')).toUpperCase();
+    // nomes curtos e amigáveis pros dois armazéns que o Flávio usa hoje (Inova/Agrícola);
+    // qualquer outro armazém que aparecer no futuro cai no nome cru vindo da planilha.
+    let label;
+    if(/\bINOVA\b/.test(junto)) label = 'Inova';
+    else if(/AGRICOLA|AGRÍCOLA/.test(junto)) label = 'Agrícola';
+    else label = a.desc ? a.desc.replace(/^Armazém\s*/i,'') : a.cod;
+    chips.push(`<button type="button" class="armazem-chip${estoqueFiltroArmazem===a.cod?' active':''}" onclick="setFiltroArmazem('${a.cod.replace(/'/g,"\\'")}')">${escapeHtml(label)}</button>`);
+  });
+  if(semArmazemTotal){
+    chips.push(`<button type="button" class="armazem-chip${estoqueFiltroArmazem==='__SEM_ARMAZEM__'?' active':''}" onclick="setFiltroArmazem('__SEM_ARMAZEM__')">Sem armazém (${semArmazemTotal})</button>`);
+  }
+  host.innerHTML = chips.join('');
+}
 function renderEstoque(){
   const q = (document.getElementById('estoqueSearch').value||'').toLowerCase().trim();
   const body = document.getElementById('estoqueBody');
   body.innerHTML='';
+  renderArmazemFiltroChips();
   const semIaTotal = DATA.products.filter(p=>!p.ia).length;
   const btnFiltro = document.getElementById('btnFiltroSemIa');
   if(btnFiltro){
@@ -3120,6 +3183,11 @@ function renderEstoque(){
   const list = DATA.products
     .filter(p=>!q || (p.nome||'').toLowerCase().includes(q) || (p.classe||'').toLowerCase().includes(q) || (p.ia||'').toLowerCase().includes(q))
     .filter(p=>!estoqueFiltroSemIa || !p.ia)
+    .filter(p=>{
+      if(estoqueFiltroArmazem===null) return true;
+      if(estoqueFiltroArmazem==='__SEM_ARMAZEM__') return !armazensDoProduto(p).length;
+      return armazensDoProduto(p).some(e=>e.armazem===estoqueFiltroArmazem);
+    })
     .sort((a,b)=> {
       const temSaldoA = Number(a.saldo)>0 ? 1 : 0;
       const temSaldoB = Number(b.saldo)>0 ? 1 : 0;
