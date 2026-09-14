@@ -3227,7 +3227,7 @@ function editSaldo(nome){
     if(novo===null) return;
     const val = parseFloat(novo.replace(',','.'));
     if(isNaN(val)){ toast('Valor inválido'); return; }
-    p.saldo = val;
+    ajustarSaldoTotal(p, val - (Number(p.saldo)||0));
     saveData();
     fbPushEstoque();
     renderEstoque();
@@ -3316,6 +3316,39 @@ function upsertArmazemSaldo(prod, armCod, armDesc, qtd){
     prod.armazemDesc = armDesc || prod.armazemDesc;
   } else if(qtd!==null){
     prod.saldo = qtd;
+  }
+}
+/* 14/09/2026 (v1.87) — corrige bug de "estoque bugado": editSaldo() (ajuste manual) e o
+   consumo/devolução de aplicação mexiam só em prod.saldo (o total), sem nunca tocar em
+   estoquePorArmazem (a lista por armazém usada nos filtros Inova/Agrícola). Depois de um
+   tempo os dois números descolavam — o total já refletia o consumo, mas o armazém
+   individual continuava mostrando o valor antigo (de antes da aplicação). Toda alteração
+   no saldo total agora passa por aqui, que distribui a mesma variação (delta) entre os
+   armazéns proporcionalmente ao que cada um tinha, mantendo os dois sempre iguais. */
+function ajustarSaldoTotal(prod, delta){
+  delta = Number(delta)||0;
+  const saldoAntigo = Number(prod.saldo)||0;
+  prod.saldo = Math.round((saldoAntigo + delta)*1000)/1000;
+  const epa = Array.isArray(prod.estoquePorArmazem) ? prod.estoquePorArmazem : null;
+  if(epa && epa.length){
+    const somaArm = epa.reduce((s,e)=> s + (Number(e.saldo)||0), 0);
+    if(somaArm !== 0){
+      let acumulado = 0;
+      epa.forEach((e,i)=>{
+        const saldoAtual = Number(e.saldo)||0;
+        let parcela;
+        if(i === epa.length-1){
+          parcela = delta - acumulado; // último entra com o resto, evita erro de arredondamento
+        } else {
+          parcela = Math.round((delta * (saldoAtual/somaArm))*1000)/1000;
+          acumulado += parcela;
+        }
+        e.saldo = Math.round((saldoAtual + parcela)*1000)/1000;
+      });
+    } else {
+      // todos os armazéns zerados: joga a variação inteira no primeiro
+      epa[0].saldo = Math.round(((Number(epa[0].saldo)||0) + delta)*1000)/1000;
+    }
   }
 }
 function parseBrNumber(v){
@@ -5402,7 +5435,7 @@ function registerApplication(){
   DATA.applications.unshift(app);
   produtos.forEach(pr=>{
     const p = DATA.products.find(x=>x.nome===pr.nome);
-    if(p) p.saldo = Math.round(((Number(p.saldo)||0) - pr.qtd)*1000)/1000;
+    if(p) ajustarSaldoTotal(p, -pr.qtd);
   });
   saveData();
   fbPushApplication(app);
@@ -5823,7 +5856,7 @@ function deleteApplication(id){
     if(!confirm(`Excluir a aplicação #${app.serie}? O estoque usado será devolvido.`)) return;
     (app.produtos||[]).forEach(pr=>{
       const p = DATA.products.find(x=>x.nome===pr.nome);
-      if(p) p.saldo = Math.round(((Number(p.saldo)||0) + pr.qtd)*1000)/1000;
+      if(p) ajustarSaldoTotal(p, pr.qtd);
     });
     DATA.applications = DATA.applications.filter(a=>a.id!==id);
     saveData();
