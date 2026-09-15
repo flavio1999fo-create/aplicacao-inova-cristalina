@@ -762,6 +762,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .pivo-svg-outer{grid-column:1/-1;width:min(920px,94vw);}
   .pivo-svg-aviso{background:var(--orange-light);border:1px solid #f0c199;color:var(--orange-dark);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;font-weight:700;margin-bottom:8px;}
   .pivo-svg-wrap{position:relative;background:#efe8d8;border-radius:var(--radius);padding:10px;}
+  .pivo-svg-quad-labels{display:flex;justify-content:space-around;align-items:center;padding:0 4px 8px;gap:8px;}
+  .pivo-svg-quad-labels .pivo-quad-label-tag{background:var(--orange-light);border:1px solid #f6ddc2;padding:3px 10px;border-radius:20px;}
   .pivo-svg-map{width:100%;height:auto;display:block;max-height:88vh;touch-action:none;cursor:grab;}
   .pivo-svg-map:active{cursor:grabbing;}
   /* 04/09/2026 (v1.69) — a pedido do Flávio: cor padrão (sem cultura cadastrada ainda)
@@ -5049,9 +5051,22 @@ function renderPivoSvg(wrapId, q, modoCad){
   }).join('');
 
   const svgId = 'pivoSvgMap_'+wrapId;
+  /* 15/09/2026 (v1.89) — a pedido do Flávio: faltava o nome do quadrante em cima do croqui
+     do Pivô 4, igual o Pivô 3 mostra "Quadrante A"/"Quadrante B" acima de cada bloco da
+     grade. Aqui as quadras já são separadas por prefixo A (metade esquerda) e B (metade
+     direita) — em vez de tentar encaixar o texto dentro do SVG (o topo do formato real é
+     bem apertado, quase sem espaço de sobra), a etiqueta fica fixa em cima do croqui, uma
+     de cada lado, do mesmo jeito visual da tag do Pivô 3. */
+  const temA = svgData.quadras.some(c=>/^A/.test(c.code));
+  const temB = svgData.quadras.some(c=>/^B/.test(c.code));
+  const quadLabelsHtml = (temA || temB) ? `<div class="pivo-svg-quad-labels">
+        ${temA? `<div class="pivo-quad-label-tag">Quadrante A</div>` : '<span></span>'}
+        ${temB? `<div class="pivo-quad-label-tag">Quadrante B</div>` : '<span></span>'}
+      </div>` : '';
   wrap.innerHTML = `<div class="pivo-svg-outer">
     <div class="pivo-svg-aviso">⚠️ Rua 05 (ampliada de carreador pra 8m) e as quadras vizinhas a ela estão em pré-visualização — aguardando o Flávio confirmar em campo antes de considerar definitivo.</div>
     <div class="pivo-svg-wrap">
+      ${quadLabelsHtml}
       <svg id="${svgId}" viewBox="${viewBoxAttr}" class="pivo-svg-map" preserveAspectRatio="xMidYMid meet">
         <g class="g-ruas">${ruaPaths}</g>
         <g class="g-bordaduras">${bordaduraPaths}</g>
