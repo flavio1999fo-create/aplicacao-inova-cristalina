@@ -4630,6 +4630,14 @@ function switchPivoAtivo(id){
   talhaoCadEditingId = null;
   talhaoCadSelMode = false;
   selectedTalhaoCad = {};
+  /* 15/09/2026 (v1.88) — trocar de pivô é a única hora que a visão (zoom/arrasto) do
+     croqui deve mesmo voltar ao normal (é outro mapa, outra escala); ao selecionar uma
+     quadra dentro do MESMO pivô ela agora fica preservada (ver gridZoomAttachInteractions
+     e pivoSvgAttachInteractions). */
+  delete gridZoomViews['pivoGridWrap'];
+  delete gridZoomViews['pivoGridWrapCad'];
+  delete pivoSvgViews['pivoSvgMap_pivoGridWrap'];
+  delete pivoSvgViews['pivoSvgMap_pivoGridWrapCad'];
   refreshTalhaoUI();
   refreshTalhaoCadUI();
 }
@@ -5101,7 +5109,14 @@ function pivoSvgFitBtn(svgId){
 function pivoSvgAttachInteractions(svgEl, vb){
   if(!svgEl) return;
   svgEl.__vb = vb;
-  pivoSvgViews[svgEl.id] = {x: vb.minX, y: -(vb.minY+vb.h), w: vb.w, h: vb.h};
+  /* 15/09/2026 (v1.88) — bug reportado pelo Flávio: toda vez que ele arrastava/dava zoom
+     no croqui e depois tocava numa quadra pra selecionar, a visão voltava pro zoom normal
+     (perdia o arrasto/zoom que tinha feito). Isso acontecia porque cada seleção manda
+     renderPivo() de novo, que recria o <svg> do zero — e aqui a visão (view) era sempre
+     reiniciada do zero junto. Agora só inicializa a visão na primeira vez; se o usuário já
+     tinha arrastado/dado zoom, mantém do jeito que estava e só reaplica no <svg> novo. */
+  if(!pivoSvgViews[svgEl.id]) pivoSvgViews[svgEl.id] = {x: vb.minX, y: -(vb.minY+vb.h), w: vb.w, h: vb.h};
+  pivoSvgApplyView(svgEl);
   let dragging = false, lastX = 0, lastY = 0, pid = null;
   svgEl.addEventListener('pointerdown', e=>{
     dragging = true; lastX = e.clientX; lastY = e.clientY; pid = e.pointerId;
@@ -5177,7 +5192,10 @@ function gridZoomAttachInteractions(wrapId){
   const inner = document.getElementById(wrapId+'Inner');
   if(!vp || !inner) return;
   inner.style.transformOrigin = '0 0';
-  gridZoomViews[wrapId] = {scale:1, x:0, y:0};
+  /* 15/09/2026 (v1.88) — mesmo bug/correção do pivoSvgAttachInteractions acima, só que pro
+     croqui em grade (Pivô 3 e Talhões/cadastro): só zera a visão na primeira vez; se já
+     tinha zoom/arrasto feito, mantém e só reaplica no HTML novo (recriado a cada seleção). */
+  if(!gridZoomViews[wrapId]) gridZoomViews[wrapId] = {scale:1, x:0, y:0};
   gridZoomApplyView(wrapId);
   let dragging = false, lastX = 0, lastY = 0, pid = null;
   vp.addEventListener('pointerdown', e=>{
