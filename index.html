@@ -1214,6 +1214,15 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div id="histExportResult" class="muted" style="margin-top:8px;white-space:pre-line;"></div>
     </div>
     <div class="card">
+      <h2>Pasta para salvar as fichas/PDFs</h2>
+      <p class="muted">A pedido do Flávio (15/09/2026) — só funciona no computador, no Chrome ou Edge (no celular não tem esse recurso do navegador, continua baixando na pasta padrão). Escolhendo uma pasta aqui, tanto a ficha de cada aplicação (gerada automaticamente ao registrar) quanto o PDF com todas as fichas passam a salvar direto nela, sem cair na pasta Downloads — e sem mudar onde os OUTROS sites baixam arquivo.</p>
+      <div id="pastaFichasStatus" class="muted" style="margin-bottom:8px;"></div>
+      <div class="row">
+        <button type="button" class="btn-primary" onclick="escolherPastaFichas()">📁 Escolher pasta</button>
+        <button type="button" class="btn-ghost" onclick="limparPastaFichas()">Voltar ao padrão</button>
+      </div>
+    </div>
+    <div class="card">
       <h2>Baixar todas as fichas em PDF</h2>
       <p class="muted">Gera um único arquivo PDF com a ficha de cada aplicação (uma por página, igual à ficha que abre depois de registrar) e baixa direto no aparelho — sem precisar abrir uma por uma. Deixe as datas em branco pra baixar todas.</p>
       <div class="row">
@@ -5674,10 +5683,140 @@ function downloadReceiptImage(){
   });
 }
 
+/* ====================== PASTA ESCOLHIDA PRO PDF/FICHA (v1.90, 15/09/2026) ======================
+   A pedido do Flávio: ele queria que a ficha e o PDF sempre caíssem numa pasta específica do
+   computador. Sem servidor (o app é um HTML só, hospedado estático), a única forma de "escolher
+   uma pasta" é o próprio navegador — e trocar a pasta padrão de Downloads do Chrome afetaria
+   TODOS os sites, não só esse app (foi exatamente o que ele não quis). A solução: File System
+   Access API (window.showDirectoryPicker), que só existe no Chrome/Edge do computador — o
+   usuário escolhe uma pasta UMA VEZ aqui dentro do app, o navegador guarda essa autorização, e
+   dali em diante o app escreve o arquivo direto nela, sem abrir a caixinha de download nem
+   passar pela pasta Downloads. Não existe no celular (nem em Firefox/Safari) — nesses casos
+   continua baixando do jeito de sempre. A referência da pasta (um "handle") fica salva num
+   IndexedDB local (não dá pra guardar isso no localStorage comum). */
+const PASTA_FICHAS_DB = 'inovaAppFS', PASTA_FICHAS_STORE = 'handles', PASTA_FICHAS_KEY = 'pastaFichas';
+let pastaFichasHandle = null;
+let pastaFichasCarregada = false;
+function idbAbrirFS(){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open(PASTA_FICHAS_DB, 1);
+    req.onupgradeneeded = ()=>{ req.result.createObjectStore(PASTA_FICHAS_STORE); };
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+async function idbSalvarPastaFichas(handle){
+  const db = await idbAbrirFS();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(PASTA_FICHAS_STORE,'readwrite');
+    tx.objectStore(PASTA_FICHAS_STORE).put(handle, PASTA_FICHAS_KEY);
+    tx.oncomplete = ()=>resolve();
+    tx.onerror = ()=>reject(tx.error);
+  });
+}
+async function idbCarregarPastaFichas(){
+  try{
+    const db = await idbAbrirFS();
+    return new Promise(resolve=>{
+      const tx = db.transaction(PASTA_FICHAS_STORE,'readonly');
+      const req = tx.objectStore(PASTA_FICHAS_STORE).get(PASTA_FICHAS_KEY);
+      req.onsuccess = ()=>resolve(req.result||null);
+      req.onerror = ()=>resolve(null);
+    });
+  }catch(e){ return null; }
+}
+async function idbLimparPastaFichas(){
+  try{
+    const db = await idbAbrirFS();
+    const tx = db.transaction(PASTA_FICHAS_STORE,'readwrite');
+    tx.objectStore(PASTA_FICHAS_STORE).delete(PASTA_FICHAS_KEY);
+  }catch(e){}
+}
+function renderPastaFichasStatus(){
+  const el = document.getElementById('pastaFichasStatus');
+  if(!el) return;
+  if(!('showDirectoryPicker' in window)){
+    el.textContent = '📱 Esse recurso só existe no computador (Chrome ou Edge) — no celular continua baixando na pasta padrão.';
+    return;
+  }
+  el.textContent = pastaFichasHandle
+    ? `📁 Salvando direto em: "${pastaFichasHandle.name}" — sem passar pela pasta Downloads.`
+    : 'Nenhuma pasta escolhida ainda — as fichas/PDFs baixam na pasta padrão do navegador.';
+}
+async function garantirPastaFichasCarregada(){
+  if(pastaFichasCarregada) return;
+  pastaFichasCarregada = true;
+  if(!('showDirectoryPicker' in window)){ renderPastaFichasStatus(); return; }
+  const h = await idbCarregarPastaFichas();
+  if(h) pastaFichasHandle = h;
+  renderPastaFichasStatus();
+}
+async function escolherPastaFichas(){
+  if(!('showDirectoryPicker' in window)){
+    toast('Esse recurso só funciona no computador, no Chrome ou Edge.');
+    return;
+  }
+  let handle;
+  try{
+    handle = await window.showDirectoryPicker({id:'fichasInova', mode:'readwrite'});
+  }catch(e){
+    if(e && e.name!=='AbortError'){ console.warn('Erro ao escolher pasta das fichas:', e); toast('Não consegui abrir o seletor de pasta'); }
+    return;
+  }
+  /* A pasta já foi escolhida com sucesso a partir daqui — se só a persistência no
+     IndexedDB falhar (ex.: aba anônima, armazenamento bloqueado), a pasta continua
+     valendo pro resto da sessão; só não vai lembrar dela na próxima vez que abrir o app. */
+  pastaFichasHandle = handle;
+  renderPastaFichasStatus();
+  try{
+    await idbSalvarPastaFichas(handle);
+    toast('📁 Pasta escolhida — as próximas fichas/PDFs já salvam direto aí');
+  }catch(e){
+    console.warn('Pasta escolhida, mas não consegui lembrar dela pra próxima vez:', e);
+    toast('📁 Pasta escolhida — vale só para esta sessão (não consegui salvar a preferência)');
+  }
+}
+function limparPastaFichas(){
+  pastaFichasHandle = null;
+  idbLimparPastaFichas();
+  renderPastaFichasStatus();
+  toast('Voltou a baixar na pasta padrão do navegador');
+}
+/* Confere se ainda tem permissão de escrever na pasta (o navegador pode pedir de novo depois
+   de um tempo sem usar — não é a caixinha de escolher pasta de novo, só uma autorização rápida).
+   Se a permissão não for concedida (ou o recurso não existir), devolve null — quem chamou cai
+   de volta pro download normal. */
+async function pastaFichasComPermissao(){
+  if(!pastaFichasHandle) return null;
+  try{
+    let perm = await pastaFichasHandle.queryPermission({mode:'readwrite'});
+    if(perm!=='granted') perm = await pastaFichasHandle.requestPermission({mode:'readwrite'});
+    return perm==='granted' ? pastaFichasHandle : null;
+  }catch(e){
+    console.warn('Permissão da pasta de fichas expirou/foi revogada:', e);
+    return null;
+  }
+}
+async function salvarArquivoNaPastaEscolhida(nomeArquivo, blob){
+  const handle = await pastaFichasComPermissao();
+  if(!handle) return false;
+  try{
+    const fileHandle = await handle.getFileHandle(nomeArquivo, {create:true});
+    const writable = await fileHandle.createWritable();
+    await writable.write(blob);
+    await writable.close();
+    return true;
+  }catch(e){
+    console.warn('Erro ao salvar arquivo na pasta escolhida, caindo pro download normal:', e);
+    return false;
+  }
+}
+
 /* Gera e baixa automaticamente um PDF da ficha, sem precisar clicar em nada — roda
    assim que a aplicação é registrada. html2canvas e jsPDF ficam embutidos no arquivo
    (funcionam mesmo sem internet/sinal, igual o resto do app). Se por algum motivo o PDF
-   não puder ser gerado, cai pra baixar uma imagem PNG da ficha como alternativa. */
+   não puder ser gerado, cai pra baixar uma imagem PNG da ficha como alternativa. Se o Flávio
+   já tiver escolhido uma pasta (ver bloco acima), salva direto nela em vez de baixar. */
 async function autoGerarFichaPdf(app){
   const card = document.getElementById('receiptCard');
   if(!card) return;
@@ -5693,19 +5832,32 @@ async function autoGerarFichaPdf(app){
     const wMm = canvas.width*mmPerPx, hMm = canvas.height*mmPerPx;
     const doc = new window.jspdf.jsPDF({unit:'mm', format:[wMm, hMm]});
     doc.addImage(imgData, 'PNG', 0, 0, wMm, hMm);
-    doc.save(`ficha_aplicacao_${app.serie}.pdf`);
-    toast('📄 PDF da ficha baixado automaticamente');
+    const nomeArquivoFicha = `ficha_aplicacao_${app.serie}.pdf`;
+    const salvouNaPasta = await salvarArquivoNaPastaEscolhida(nomeArquivoFicha, doc.output('blob'));
+    if(salvouNaPasta){
+      toast(`📄 Ficha salva em "${pastaFichasHandle.name}"`);
+    } else {
+      doc.save(nomeArquivoFicha);
+      toast('📄 PDF da ficha baixado automaticamente');
+    }
   }catch(e){
     console.warn('Falha ao gerar PDF automático da ficha, tentando baixar imagem PNG:', e);
     try{
       if(actions) actions.style.display = 'none';
       const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
       if(actions) actions.style.display = '';
+      const nomeArquivoPng = `ficha_aplicacao_${app.serie}.png`;
+      const pngBlob = await new Promise(res=>canvas.toBlob(res, 'image/png'));
+      const salvouPngNaPasta = pngBlob ? await salvarArquivoNaPastaEscolhida(nomeArquivoPng, pngBlob) : false;
+      if(salvouPngNaPasta){
+        toast(`📄 Não deu pra gerar PDF — salvei a ficha como imagem em "${pastaFichasHandle.name}"`);
+      } else {
       const link = document.createElement('a');
-      link.download = `ficha_aplicacao_${app.serie}.png`;
+      link.download = nomeArquivoPng;
       link.href = canvas.toDataURL('image/png');
       link.click();
       toast('📄 Não deu pra gerar PDF — baixei a ficha como imagem (PNG)');
+      }
     }catch(e2){
       if(actions) actions.style.display = '';
       console.warn('Falha também ao gerar imagem PNG automática da ficha:', e2);
@@ -5779,9 +5931,16 @@ async function exportarTodasFichasPdf(){
       }
       doc.addImage(imgData, 'PNG', 0, 0, wMm, hMm);
     }
-    doc.save(`fichas_aplicacoes_${new Date().toISOString().slice(0,10)}.pdf`);
-    if(progressEl) progressEl.textContent = `✅ PDF com ${apps.length} ficha(s) baixado`;
-    toast(`📄 PDF com ${apps.length} ficha(s) baixado`);
+    const nomeArquivoTodas = `fichas_aplicacoes_${new Date().toISOString().slice(0,10)}.pdf`;
+    const salvouTodasNaPasta = await salvarArquivoNaPastaEscolhida(nomeArquivoTodas, doc.output('blob'));
+    if(salvouTodasNaPasta){
+      if(progressEl) progressEl.textContent = `✅ PDF com ${apps.length} ficha(s) salvo em "${pastaFichasHandle.name}"`;
+      toast(`📄 PDF com ${apps.length} ficha(s) salvo em "${pastaFichasHandle.name}"`);
+    } else {
+      doc.save(nomeArquivoTodas);
+      if(progressEl) progressEl.textContent = `✅ PDF com ${apps.length} ficha(s) baixado`;
+      toast(`📄 PDF com ${apps.length} ficha(s) baixado`);
+    }
   }catch(e){
     console.warn('Erro ao exportar todas as fichas em PDF:', e);
     if(progressEl) progressEl.textContent = '🔴 Erro ao gerar o PDF — tente de novo';
@@ -6214,6 +6373,7 @@ function init(){
   renderAguardandoConfirmacao();
   initEmailJs();
   initFirebaseSync();
+  garantirPastaFichasCarregada();
   /* Login por PIN passou a ser obrigatório pra usar o app (24/08/2026) — sem isso, não tem
      como saber se quem está usando é ADM, Técnico ou Operador pra liberar as abas certas. */
   if(currentUser){ applyRoleUI(); } else { openLoginModal(); }
