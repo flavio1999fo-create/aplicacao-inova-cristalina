@@ -1109,6 +1109,10 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <section id="tab-nova" class="section">
     <div class="aguardando-confirmacao-box" style="display:none;"></div>
     <div class="card">
+      <h2 style="color:var(--orange-dark);">⏳ Período de reentrada na área</h2>
+      <p class="muted" style="color:var(--text);margin-bottom:0;">Depois desta aplicação, aguardar <b>24 horas</b> antes de entrar na área tratada sem equipamento de proteção (EPI).</p>
+    </div>
+    <div class="card">
       <h2>Dados da aplicação</h2>
       <div class="row">
         <div class="field"><label>Data da aplicação</label><input type="date" id="fData"></div>
@@ -1628,7 +1632,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.92';
+const APP_BUILD_ID = 'v1.93';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -5735,6 +5739,7 @@ function buildReceiptBodyHTML(app){
     ${numeroEnsaioTxt? `<div class="r-row"><span class="r-label">Número do ensaio</span><span class="r-val">${escapeHtml(numeroEnsaioTxt)}</span></div>` : ''}
     ${detalheTalhoes? `<div class="r-row"><span class="r-label">Cultura/ensaio por talhão</span><span class="r-val">${escapeHtml(detalheTalhoes)}</span></div>` : ''}
     <div class="r-row"><span class="r-label">Área aplicada</span><span class="r-val">${fmtNum(app.area)} ha</span></div>
+    <div class="r-row"><span class="r-label">Período de reentrada</span><span class="r-val">24 horas</span></div>
     ${caldaRows}
     ${mapHtml? `<h4>Mapa da aplicação</h4><div style="text-align:center;overflow:auto;">${mapHtml}</div><div style="text-align:center;font-size:10px;color:#8a7d70;margin-top:4px;">Contorno escuro = quadra aplicada nesta ficha · cor = cultura cadastrada</div>` : ''}
     <h4>Produtos aplicados</h4>
