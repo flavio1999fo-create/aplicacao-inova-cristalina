@@ -472,20 +472,20 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   header.app{
     background:linear-gradient(145deg,#241009 0%,#4a2110 48%,#8a3d10 100%);
     color:#fff;
-    padding:9px 14px;
+    padding:16px 16px;
     position:sticky;top:0;z-index:10;
     border-radius:0 0 16px 16px;
     box-shadow:var(--shadow-lg);
   }
   .header-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
   header.app .brand{
-    display:flex;align-items:center;gap:7px;min-width:0;flex-shrink:1;
+    display:flex;align-items:center;gap:10px;min-width:0;flex-shrink:1;
   }
   header.app .brand img.logo{
-    height:22px;display:block;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3));
+    height:42px;display:block;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3));
   }
   header.app h1{
-    font-size:12px;margin:0;font-weight:700;letter-spacing:-.1px;opacity:.9;
+    font-size:13px;margin:0;font-weight:700;letter-spacing:-.1px;opacity:.9;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
   }
   header.app h1 .app-version{
@@ -1632,7 +1632,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.93';
+const APP_BUILD_ID = 'v1.94';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -6551,6 +6551,16 @@ function init(){
   /* Login por PIN passou a ser obrigatório pra usar o app (24/08/2026) — sem isso, não tem
      como saber se quem está usando é ADM, Técnico ou Operador pra liberar as abas certas. */
   if(currentUser){ applyRoleUI(); } else { openLoginModal(); }
+  /* Checagem de versão nova: antes essas funções existiam mas nunca eram chamadas em
+     lugar nenhum, então o aviso de atualização nunca aparecia sozinho (só funcionava se
+     alguém chamasse na mão pelo console). Agora dispara pouco depois de abrir o app,
+     de novo a cada 2 minutos enquanto fica aberto, e também sempre que a aba volta a
+     ficar visível (ex: usuário troca de app no celular e volta). */
+  setTimeout(checarNovaVersaoComThrottle, 4000);
+  setInterval(checarNovaVersaoComThrottle, 120000);
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible') checarNovaVersaoComThrottle();
+  });
 }
 init();
 </script>
