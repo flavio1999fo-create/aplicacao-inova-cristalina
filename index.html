@@ -613,6 +613,18 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .row{display:flex;gap:10px;flex-wrap:wrap;}
   .field{flex:1;min-width:130px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px;}
   .field label{font-size:12px;color:var(--muted);font-weight:600;}
+  /* 16/09/2026 — checkboxes de "o que exportar" no backup (Flávio pediu pra escolher
+     categoria em vez de sempre exportar tudo junto). Cada linha vira um "chip" clicável
+     numa grade que se ajusta ao tamanho da tela, igual os chips de armazém do Estoque. */
+  .export-backup-opcoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-bottom:4px;}
+  .export-chk-row{
+    display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text);
+    background:#fdfcfb;border:1px solid var(--border);border-radius:12px;padding:9px 11px;cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .export-chk-row:has(input:checked){border-color:var(--orange);background:var(--orange-light);}
+  .export-chk-row input[type="checkbox"]{width:auto;margin-top:2px;flex-shrink:0;}
+  .export-chk-row .lbl-desc{display:block;font-size:11px;color:var(--muted);margin-top:1px;}
   input,select,textarea{
     font-size:15px;padding:10px 12px;border:1px solid var(--border);
     border-radius:12px;background:#fdfcfb;color:var(--text);width:100%;font-family:inherit;
@@ -1305,6 +1317,41 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div id="diagSyncResult" class="muted" style="margin-top:8px;white-space:pre-line;font-family:monospace;font-size:12px;"></div>
     </div>
     <div class="card">
+      <h2>Exportar backup</h2>
+      <p class="muted">Escolha o que você quer exportar — não precisa mais ser tudo junto. O arquivo .json gerado também pode ser usado depois pra importar de volta: só o que estiver marcado é atualizado, o resto dos dados do app continua como está.</p>
+      <div class="row" style="margin-bottom:8px;gap:8px;">
+        <button type="button" class="btn-ghost btn-sm" onclick="marcarTodosExportBackup(true)">Selecionar tudo</button>
+        <button type="button" class="btn-ghost btn-sm" onclick="marcarTodosExportBackup(false)">Nenhum</button>
+      </div>
+      <div class="export-backup-opcoes" id="exportBackupOpcoes">
+        <label class="export-chk-row"><input type="checkbox" class="exportBackupChk" value="products" checked><span>Estoque<span class="lbl-desc">produtos, saldo e armazém</span></span></label>
+        <label class="export-chk-row"><input type="checkbox" class="exportBackupChk" value="applications" checked><span>Aplicações<span class="lbl-desc">histórico de aplicação registrado</span></span></label>
+        <label class="export-chk-row"><input type="checkbox" class="exportBackupChk" value="ensaios" checked><span>Talhões e plantios<span class="lbl-desc">cultura, modalidade, datas de plantio</span></span></label>
+        <label class="export-chk-row"><input type="checkbox" class="exportBackupChk" value="lists" checked><span>Listas do formulário<span class="lbl-desc">culturas, recomendações, operadores, gota, equipamentos</span></span></label>
+        <label class="export-chk-row"><input type="checkbox" class="exportBackupChk" value="limpezas" checked><span>Limpeza<span class="lbl-desc">checklist e histórico de limpeza</span></span></label>
+      </div>
+      <button class="btn-primary btn-block" style="margin-top:10px;" onclick="exportBackup()">Exportar backup selecionado (.json)</button>
+    </div>
+    <div class="card">
+      <h2>Exportar planilha de plantios</h2>
+      <p class="muted">Gera uma planilha .xlsx (arquivo de Excel de verdade, abre direto sem passo nenhum) com todos os plantios cadastrados — estação, pivô/área, talhão, cultura, modalidade, data de plantio e número do ensaio. Inclui as duas estações (Cristalina e Lucas do Rio Verde).</p>
+      <button class="btn-primary btn-block" onclick="exportPlantiosPlanilha()">Exportar planilha de plantios (.xlsx)</button>
+    </div>
+    <div class="card">
+      <h2>Importar backup</h2>
+      <p class="muted">Importa um arquivo .json exportado por este sistema (ou pelo sistema anterior). Se o arquivo for um backup parcial (só algumas categorias marcadas na exportação), só essas categorias são substituídas — o resto dos dados deste aparelho continua como está. Se for um backup completo, substitui os dados atuais.</p>
+      <input type="file" id="importFile" accept="application/json,.json">
+      <button class="btn-ghost btn-block" style="margin-top:8px;" onclick="importBackup()">Importar backup selecionado</button>
+    </div>
+    <div class="card">
+      <h2>Restaurar dados originais</h2>
+      <p class="muted">Restaura o catálogo e histórico para os dados iniciais carregados neste app (o backup real que você enviou), descartando alterações feitas neste aparelho.</p>
+      <button class="btn-danger btn-block" onclick="restoreSeed()">Restaurar dados originais</button>
+    </div>
+  </section>
+
+  <section id="tab-usuarios" class="section">
+    <div class="card">
       <h2>Usuários (login)</h2>
       <p class="muted">Login por PIN — agora obrigatório pra usar o app, e é ele que decide o que cada um pode ver e fazer. <b>ADM</b>: acesso total, inclusive ajustar saldo, cadastrar produto, excluir aplicação, importar backup, restaurar dados originais e gerenciar usuários. <b>Técnico</b>: vê e usa todas as abas normalmente, mas essas ações mais sensíveis continuam exclusivas do ADM. <b>Operador</b>: só vê a aba Limpeza.</p>
       <div id="userAdminList"></div>
@@ -1328,27 +1375,6 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       </div>
       <button class="btn-primary btn-block" onclick="addUserAdmin()">Adicionar usuário</button>
     </div>
-    <div class="card">
-      <h2>Exportar backup</h2>
-      <p class="muted">Gera um arquivo .json com todo o estoque, aplicações e listas — igual ao backup do seu sistema atual. Guarde periodicamente.</p>
-      <button class="btn-primary btn-block" onclick="exportBackup()">Exportar backup (.json)</button>
-    </div>
-    <div class="card">
-      <h2>Exportar planilha de plantios</h2>
-      <p class="muted">Gera uma planilha .xlsx (arquivo de Excel de verdade, abre direto sem passo nenhum) com todos os plantios cadastrados — estação, pivô/área, talhão, cultura, modalidade, data de plantio e número do ensaio. Inclui as duas estações (Cristalina e Lucas do Rio Verde).</p>
-      <button class="btn-primary btn-block" onclick="exportPlantiosPlanilha()">Exportar planilha de plantios (.xlsx)</button>
-    </div>
-    <div class="card">
-      <h2>Importar backup</h2>
-      <p class="muted">Importa um arquivo .json exportado por este sistema (ou pelo sistema anterior). Isso substitui os dados atuais deste aparelho.</p>
-      <input type="file" id="importFile" accept="application/json,.json">
-      <button class="btn-ghost btn-block" style="margin-top:8px;" onclick="importBackup()">Importar backup selecionado</button>
-    </div>
-    <div class="card">
-      <h2>Restaurar dados originais</h2>
-      <p class="muted">Restaura o catálogo e histórico para os dados iniciais carregados neste app (o backup real que você enviou), descartando alterações feitas neste aparelho.</p>
-      <button class="btn-danger btn-block" onclick="restoreSeed()">Restaurar dados originais</button>
-    </div>
   </section>
 
 </main>
@@ -1364,6 +1390,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <button class="tab-btn" data-tab="talhoes"><span class="ic">🌾</span>Talhões</button>
   <button class="tab-btn" data-tab="historico"><span class="ic">📋</span>Histórico</button>
   <button class="tab-btn" data-tab="limpeza"><span class="ic">🧼</span>Limpeza</button>
+  <button class="tab-btn" data-tab="usuarios"><span class="ic">👤</span>Usuários</button>
   <button class="tab-btn" data-tab="backup"><span class="ic">💾</span>Backup</button>
   <div class="nav-sync" id="navSyncStatus" data-status="off" title="Sincronização na nuvem não configurada">
     <span class="dot"></span><span class="lbl">Nuvem</span>
@@ -1761,7 +1788,7 @@ function isAdmin(){
   return !!(currentUser && currentUser.perfil==='ADM');
 }
 /* Acesso a todas as abas: ADM e Técnico. Operador só vê Aplicação, Talhões e Limpeza
-   (definido a pedido do Flávio em 24/08/2026 — ver aviso na aba Backup → Usuários). */
+   (definido a pedido do Flávio em 24/08/2026 — ver aviso na aba Usuários). */
 function hasFullAccess(){
   return !!(currentUser && (currentUser.perfil==='ADM' || currentUser.perfil==='TECNICO'));
 }
@@ -1814,7 +1841,7 @@ function ensureUsersFromOperadores(){
   });
   if(criados.length){
     saveData();
-    setTimeout(()=>toast(`Login criado pra ${criados.join(', ')} — PIN inicial 1234, perfil Operador (altere em Backup → Usuários)`), 800);
+    setTimeout(()=>toast(`Login criado pra ${criados.join(', ')} — PIN inicial 1234, perfil Operador (altere na aba Usuários)`), 800);
   }
 }
 /* Depois de sincronizar, importar backup ou restaurar dados originais, a lista de usuários
@@ -1869,7 +1896,7 @@ function ensureUsersSeed(){
       admin: true
     }];
     saveData();
-    setTimeout(()=>toast('Login criado: FLÁVIO OLIVEIRA — PIN inicial 1234 (altere em Backup → Usuários)'), 400);
+    setTimeout(()=>toast('Login criado: FLÁVIO OLIVEIRA — PIN inicial 1234 (altere na aba Usuários)'), 400);
   }
   ensureUserPerfis();
   ensureUsersFromOperadores();
@@ -6061,28 +6088,49 @@ function deleteApplication(id){
 }
 
 /* ====================== BACKUP ====================== */
+/* Marca/desmarca de uma vez todos os checkboxes de categoria do card "Exportar backup"
+   (16/09/2026, a pedido do Flávio — antes o backup era tudo-ou-nada; agora escolhe o que
+   quer exportar, e o botão de atalho ajuda a marcar/desmarcar tudo rápido). */
+function marcarTodosExportBackup(marcar){
+  document.querySelectorAll('.exportBackupChk').forEach(chk=>{ chk.checked = marcar; });
+}
+/* Nomes amigáveis das categorias de backup, usados tanto na exportação (toast) quanto na
+   importação (aviso de confirmação) — mantidos num só lugar pra não desalinhar os dois. */
+const BACKUP_CATEGORIA_NOME = {
+  products: 'Estoque',
+  applications: 'Aplicações',
+  ensaios: 'Talhões e plantios',
+  lists: 'Listas do formulário',
+  limpezas: 'Limpeza'
+};
 function exportBackup(){
+  const checks = Array.from(document.querySelectorAll('.exportBackupChk'));
+  const selecionados = checks.filter(c=>c.checked).map(c=>c.value);
+  if(!selecionados.length){ toast('Selecione pelo menos uma categoria pra exportar'); return; }
+  const parcial = selecionados.length < checks.length;
   const out = {
     _app: 'RegistroAplicacoes',
     _version: 5,
-    exportedAt: new Date().toISOString(),
-    products: DATA.products,
-    applications: DATA.applications,
-    lists: DATA.lists,
-    serie: DATA.serie,
-    ensaios: DATA.ensaios,
-    limpezas: DATA.limpezas
+    _partial: parcial,
+    _categorias: selecionados,
+    exportedAt: new Date().toISOString()
   };
+  if(selecionados.includes('products')) out.products = DATA.products;
+  if(selecionados.includes('applications')){ out.applications = DATA.applications; out.serie = DATA.serie; }
+  if(selecionados.includes('ensaios')) out.ensaios = DATA.ensaios;
+  if(selecionados.includes('lists')) out.lists = DATA.lists;
+  if(selecionados.includes('limpezas')) out.limpezas = DATA.limpezas;
   const blob = new Blob([JSON.stringify(out, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `backup_registro_aplicacoes_${todayISO()}.json`;
+  a.download = parcial ? `backup_parcial_registro_aplicacoes_${todayISO()}.json` : `backup_registro_aplicacoes_${todayISO()}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  toast('Backup exportado');
+  const nomes = selecionados.map(k=>BACKUP_CATEGORIA_NOME[k]||k).join(', ');
+  toast(parcial ? `Backup parcial exportado: ${nomes}` : 'Backup completo exportado');
 }
 
 /* ====================== GERADOR DE .XLSX SEM DEPENDÊNCIAS ======================
@@ -6260,23 +6308,32 @@ function importBackup(){
     reader.onload = (e)=>{
       try{
         const parsed = JSON.parse(e.target.result);
-        if(!parsed.products || !Array.isArray(parsed.products)){
+        /* Categorias que esse backup realmente traz — um backup antigo (de antes dessa opção
+           de escolher categoria existir) sempre trazia todas; um backup parcial (exportado
+           marcando só algumas caixinhas) só traz as que foram marcadas. Em qualquer um dos
+           dois casos, só as categorias PRESENTES no arquivo são trocadas — o resto dos dados
+           deste aparelho não é tocado (antes, qualquer categoria ausente virava lista vazia). */
+        const categoriasConhecidas = ['products','applications','ensaios','lists','limpezas'];
+        const categoriasNoArquivo = categoriasConhecidas.filter(k=> k in parsed);
+        if(!categoriasNoArquivo.length){
           toast('Arquivo não parece ser um backup válido'); return;
         }
-        const aviso = fbReady
-          ? 'Importar este backup vai SUBSTITUIR os dados atuais — e como a sincronização na nuvem está ativa, isso vai substituir os dados em TODOS os aparelhos conectados. Continuar?'
-          : 'Importar este backup vai SUBSTITUIR os dados atuais deste aparelho. Continuar?';
+        const nomesCategorias = categoriasNoArquivo.map(k=>BACKUP_CATEGORIA_NOME[k]||k).join(', ');
+        const aviso = (parsed._partial
+            ? `Importar este backup PARCIAL vai substituir só: ${nomesCategorias}. O resto dos dados deste aparelho continua como está.`
+            : 'Importar este backup vai SUBSTITUIR os dados atuais deste aparelho.')
+          + (fbReady ? ' Como a sincronização na nuvem está ativa, isso também afeta TODOS os aparelhos conectados.' : '')
+          + ' Continuar?';
         if(!confirm(aviso)) return;
-        const keepUsers = DATA.users;
-        DATA = {
-          products: parsed.products || [],
-          applications: parsed.applications || [],
-          lists: parsed.lists || {culturas:[],recomendacoes:[],operadores:[],gotas:[],equipamentos:[]},
-          serie: parsed.serie || 0,
-          ensaios: parsed.ensaios || [],
-          users: parsed.users || keepUsers || [],
-          limpezas: parsed.limpezas || []
-        };
+        if(categoriasNoArquivo.includes('products')) DATA.products = parsed.products || [];
+        if(categoriasNoArquivo.includes('applications')){
+          DATA.applications = parsed.applications || [];
+          DATA.serie = parsed.serie || DATA.serie || 0;
+        }
+        if(categoriasNoArquivo.includes('lists')) DATA.lists = parsed.lists || {culturas:[],recomendacoes:[],operadores:[],gotas:[],equipamentos:[]};
+        if(categoriasNoArquivo.includes('ensaios')) DATA.ensaios = parsed.ensaios || [];
+        if(categoriasNoArquivo.includes('limpezas')) DATA.limpezas = parsed.limpezas || [];
+        if('users' in parsed) DATA.users = parsed.users || DATA.users;
         ensureUserPerfis();
         ensurePlantiosAllEnsaios();
         refreshCurrentUserFromData();
@@ -6291,7 +6348,7 @@ function importBackup(){
         refreshLimpezaUI();
         refreshProductDatalist();
         renderUserAdmin();
-        toast('Backup importado com sucesso');
+        toast(parsed._partial ? `Backup parcial importado: ${nomesCategorias}` : 'Backup importado com sucesso');
       }catch(err){
         toast('Erro ao ler o arquivo: '+err.message);
       }
