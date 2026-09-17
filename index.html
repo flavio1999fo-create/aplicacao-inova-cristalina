@@ -1643,7 +1643,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.95';
+const APP_BUILD_ID = 'v1.96';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -6110,12 +6110,26 @@ document.getElementById('histSearch').addEventListener('input', renderHistory);
    tipo de problema (Excel abrindo tudo numa coluna só, dependendo da config regional do
    Windows). Agora usa o mesmo gerador de .xlsx sem dependências (xlsxBuildBytes, definido
    mais abaixo) — mesmas colunas de antes, só que num arquivo de Excel de verdade. */
+/* 17/09/2026, a pedido do Flávio — antes cada aplicação virava UMA linha, com todos os
+   produtos amontoados numa célula só ("Produto X 10L; Produto Y 5L"). Agora cada produto
+   sai na sua própria linha, logo depois da cultura (Série, Data, Cultura, Produto...), e as
+   linhas do mesmo produto/aplicação repetem o mesmo número de série — assim dá pra filtrar/
+   somar por produto direto na planilha, sem precisar separar texto dentro da célula. */
 function montarLinhasHistorico(apps){
-  const linhas = [['Série','Data','Cultura','Operador','Responsável pela recomendação','Equipamento','Área (ha)','Talhões','Produtos','Observações']];
+  const linhas = [['Série','Data','Cultura','Produto','Quantidade','Unidade','Dose (por ha)','Operador','Responsável pela recomendação','Equipamento','Área (ha)','Talhões','Observações']];
   apps.forEach(a=>{
     const talhoes = (a.ensaiosSel||[]).map(e=>`${e.ensaio||''}${e.area? ' ('+e.area+'ha)':''}`).join('; ');
-    const produtos = (a.produtos||[]).map(p=>`${p.nome||''} ${fmtNum(p.qtd)}${p.unidade? ' '+p.unidade:''}${p.doseHa? ' ('+fmtNum(p.doseHa)+'/ha)':''}`).join('; ');
-    linhas.push([a.serie, a.dataAplicacao||'', a.cultura||'', a.operador||'', a.recomendacao||'', a.equipamento||'', fmtNum(a.area), talhoes, produtos, a.obs||'']);
+    const produtos = (a.produtos&&a.produtos.length) ? a.produtos : [null];
+    produtos.forEach(p=>{
+      linhas.push([
+        a.serie, a.dataAplicacao||'', a.cultura||'',
+        p ? (p.nome||'') : '',
+        p ? fmtNum(p.qtd) : '',
+        p ? (p.unidade||'') : '',
+        (p && p.doseHa!=null) ? fmtNum(p.doseHa) : '',
+        a.operador||'', a.recomendacao||'', a.equipamento||'', fmtNum(a.area), talhoes, a.obs||''
+      ]);
+    });
   });
   return linhas;
 }
@@ -6357,28 +6371,76 @@ function xlsxColLetter(n){
 }
 /* rows = array de arrays de texto (todas as células como texto, pra não ter NENHUMA
    ambiguidade de formato numérico/data por configuração regional — exatamente o que o
-   Flávio já via na tela do app, só que dentro de uma planilha de verdade). */
-function xlsxBuildBytes(sheetName, rows){
-  let sheetXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
-  rows.forEach((row, ri)=>{
-    sheetXml += `<row r="${ri+1}">`;
+   Flávio já via na tela do app, só que dentro de uma planilha de verdade).
+   17/09/2026, a pedido do Flávio ("precisava ser uma planilha mais trabalhada bonita") —
+   antes saía tudo sem estilo nenhum (sem negrito, sem cor, sem largura de coluna, célula
+   coladinha na outra). Agora a primeira linha (cabeçalho) sai em negrito/branco com fundo
+   laranja da Inova, o resto sai com listrado leve e bordas finas pra facilitar de ler linha
+   por linha, a largura de cada coluna se ajusta ao conteúdo, e o cabeçalho fica "congelado"
+   (não rola pra fora da tela). Vale pra TODAS as planilhas exportadas pelo app (histórico,
+   limpezas, plantios), já que todas passam por aqui. */
+function xlsxColWidths(rows){
+  const widths = [];
+  rows.forEach(row=>{
     row.forEach((val, ci)=>{
-      if(val===''||val==null) return;
+      const len = (val==null? '' : String(val)).length;
+      widths[ci] = Math.max(widths[ci]||0, len);
+    });
+  });
+  return widths.map(w => Math.min(Math.max(w+3, 10), 48));
+}
+function xlsxBuildBytes(sheetName, rows){
+  const colWidths = xlsxColWidths(rows);
+  let colsXml = '<cols>';
+  colWidths.forEach((w, i)=>{ colsXml += `<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`; });
+  colsXml += '</cols>';
+  let sheetXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    + '<sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'
+    + '<sheetFormatPr defaultRowHeight="16"/>'
+    + colsXml
+    + '<sheetData>';
+  rows.forEach((row, ri)=>{
+    const isHeader = ri===0;
+    const styleId = isHeader ? 1 : (ri%2===0 ? 3 : 2);
+    const ht = isHeader ? ' ht="20" customHeight="1"' : '';
+    sheetXml += `<row r="${ri+1}"${ht}>`;
+    row.forEach((val, ci)=>{
       const ref = xlsxColLetter(ci+1)+(ri+1);
-      sheetXml += `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xlsxEscape(val)}</t></is></c>`;
+      if(val===''||val==null){
+        sheetXml += `<c r="${ref}" s="${styleId}"/>`;
+        return;
+      }
+      sheetXml += `<c r="${ref}" s="${styleId}" t="inlineStr"><is><t xml:space="preserve">${xlsxEscape(val)}</t></is></c>`;
     });
     sheetXml += '</row>';
   });
   sheetXml += '</sheetData></worksheet>';
-  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>';
+  const stylesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    + '<fonts count="2"><font><sz val="11"/><color rgb="FF1A1A1A"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>'
+    + '<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'
+    + '<fill><patternFill patternType="solid"><fgColor rgb="FFE97132"/><bgColor indexed="64"/></patternFill></fill>'
+    + '<fill><patternFill patternType="solid"><fgColor rgb="FFFBEFE7"/><bgColor indexed="64"/></patternFill></fill></fills>'
+    + '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'
+    + '<border><left style="thin"><color rgb="FFE0D5CC"/></left><right style="thin"><color rgb="FFE0D5CC"/></right><top style="thin"><color rgb="FFE0D5CC"/></top><bottom style="thin"><color rgb="FFE0D5CC"/></bottom><diagonal/></border></borders>'
+    + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+    + '<cellXfs count="4">'
+    + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+    + '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'
+    + '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>'
+    + '<xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>'
+    + '</cellXfs>'
+    + '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+    + '</styleSheet>';
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
   const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
   const workbookXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+`<sheets><sheet name="${xlsxEscape(sheetName)}" sheetId="1" r:id="rId1"/></sheets>`+'</workbook>';
-  const workbookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>';
+  const workbookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
   const files = [
     {name:'[Content_Types].xml', data: xlsxUtf8Bytes(contentTypes)},
     {name:'_rels/.rels', data: xlsxUtf8Bytes(rootRels)},
     {name:'xl/workbook.xml', data: xlsxUtf8Bytes(workbookXml)},
     {name:'xl/_rels/workbook.xml.rels', data: xlsxUtf8Bytes(workbookRels)},
+    {name:'xl/styles.xml', data: xlsxUtf8Bytes(stylesXml)},
     {name:'xl/worksheets/sheet1.xml', data: xlsxUtf8Bytes(sheetXml)}
   ];
   return xlsxBuildZip(files);
