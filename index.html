@@ -1643,7 +1643,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.96';
+const APP_BUILD_ID = 'v1.97';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -6110,26 +6110,22 @@ document.getElementById('histSearch').addEventListener('input', renderHistory);
    tipo de problema (Excel abrindo tudo numa coluna só, dependendo da config regional do
    Windows). Agora usa o mesmo gerador de .xlsx sem dependências (xlsxBuildBytes, definido
    mais abaixo) — mesmas colunas de antes, só que num arquivo de Excel de verdade. */
-/* 17/09/2026, a pedido do Flávio — antes cada aplicação virava UMA linha, com todos os
-   produtos amontoados numa célula só ("Produto X 10L; Produto Y 5L"). Agora cada produto
-   sai na sua própria linha, logo depois da cultura (Série, Data, Cultura, Produto...), e as
-   linhas do mesmo produto/aplicação repetem o mesmo número de série — assim dá pra filtrar/
-   somar por produto direto na planilha, sem precisar separar texto dentro da célula. */
+/* 17/09/2026, a pedido do Flávio — tentativa anterior (um produto por linha, repetindo a
+   série) deixou a planilha pesada/larga demais quando a aplicação tinha vários produtos
+   (uma série virava várias linhas). Voltou a ser UMA linha por aplicação, mas os produtos
+   dentro da célula "Produtos" agora ficam um embaixo do outro (quebra de linha DENTRO da
+   célula, não "; " tudo junto), com a dose na frente de cada produto — assim continua fácil
+   de ler item por item sem multiplicar linha da planilha. */
 function montarLinhasHistorico(apps){
-  const linhas = [['Série','Data','Cultura','Produto','Quantidade','Unidade','Dose (por ha)','Operador','Responsável pela recomendação','Equipamento','Área (ha)','Talhões','Observações']];
+  const linhas = [['Série','Data','Cultura','Produtos','Operador','Responsável pela recomendação','Equipamento','Área (ha)','Talhões','Observações']];
   apps.forEach(a=>{
     const talhoes = (a.ensaiosSel||[]).map(e=>`${e.ensaio||''}${e.area? ' ('+e.area+'ha)':''}`).join('; ');
-    const produtos = (a.produtos&&a.produtos.length) ? a.produtos : [null];
-    produtos.forEach(p=>{
-      linhas.push([
-        a.serie, a.dataAplicacao||'', a.cultura||'',
-        p ? (p.nome||'') : '',
-        p ? fmtNum(p.qtd) : '',
-        p ? (p.unidade||'') : '',
-        (p && p.doseHa!=null) ? fmtNum(p.doseHa) : '',
-        a.operador||'', a.recomendacao||'', a.equipamento||'', fmtNum(a.area), talhoes, a.obs||''
-      ]);
-    });
+    const produtos = (a.produtos||[]).map(p=>{
+      const dose = p.doseHa!=null ? `${fmtNum(p.doseHa)}${p.unidade? ' '+p.unidade+'/ha':''}` : '';
+      const qtdTxt = `${fmtNum(p.qtd)}${p.unidade? ' '+p.unidade:''}`;
+      return dose ? `${dose} — ${p.nome||''} (${qtdTxt})` : `${p.nome||''} — ${qtdTxt}`;
+    }).join('\n');
+    linhas.push([a.serie, a.dataAplicacao||'', a.cultura||'', produtos, a.operador||'', a.recomendacao||'', a.equipamento||'', fmtNum(a.area), talhoes, a.obs||'']);
   });
   return linhas;
 }
@@ -6379,15 +6375,43 @@ function xlsxColLetter(n){
    por linha, a largura de cada coluna se ajusta ao conteúdo, e o cabeçalho fica "congelado"
    (não rola pra fora da tela). Vale pra TODAS as planilhas exportadas pelo app (histórico,
    limpezas, plantios), já que todas passam por aqui. */
+/* 17/09/2026, a pedido do Flávio ("aba talões ta inflando... fica lagar a planilha") — antes
+   essa função media o TAMANHO TOTAL do texto da célula, incluindo os '\n' que separam produto
+   por produto dentro da mesma célula. Uma célula "Produtos" com 3 produtos empilhados virava
+   uma string gigante (soma de tudo) e a coluna esticava um absurdo. Agora mede só o tamanho da
+   MAIOR LINHA dentro da célula (cada trecho entre quebras de linha, separado), que é o que
+   realmente aparece na largura da coluna quando o texto quebra dentro da célula — assim a
+   coluna fica do tamanho do produto mais longo, não da soma de todos. Também baixei o teto
+   máximo (era 48) pra planilha não ficar larga demais mesmo com nome de produto grande. */
 function xlsxColWidths(rows){
   const widths = [];
   rows.forEach(row=>{
     row.forEach((val, ci)=>{
-      const len = (val==null? '' : String(val)).length;
-      widths[ci] = Math.max(widths[ci]||0, len);
+      const texto = (val==null? '' : String(val));
+      const maiorLinha = texto.split('\n').reduce((max, linha) => Math.max(max, linha.length), 0);
+      widths[ci] = Math.max(widths[ci]||0, maiorLinha);
     });
   });
-  return widths.map(w => Math.min(Math.max(w+3, 10), 48));
+  return widths.map(w => Math.min(Math.max(w+3, 10), 40));
+}
+/* Quantas linhas uma célula vai ocupar de verdade depois de quebrada — não é só contar os '\n'
+   que a gente insere entre produtos, porque cada PRODUTO sozinho também pode ser mais largo que
+   a coluna e quebrar sozinho em 2+ linhas (com wrapText ligado). Por isso recebe a largura da
+   coluna e, pra cada trecho entre '\n', soma quantas linhas ELE ocupa sozinho dentro dessa
+   largura. Sem isso a altura da linha saía curta e o texto de baixo ficava cortado/sobrepondo
+   a linha (ou o cabeçalho) de cima. */
+function xlsxRowLineCount(row, colWidths){
+  let max = 1;
+  row.forEach((val, ci)=>{
+    const texto = (val==null? '' : String(val));
+    const largura = Math.max((colWidths&&colWidths[ci])||10, 1);
+    let linhasCelula = 0;
+    texto.split('\n').forEach(trecho=>{
+      linhasCelula += Math.max(1, Math.ceil(trecho.length / largura));
+    });
+    if(linhasCelula > max) max = linhasCelula;
+  });
+  return max;
 }
 function xlsxBuildBytes(sheetName, rows){
   const colWidths = xlsxColWidths(rows);
@@ -6402,7 +6426,9 @@ function xlsxBuildBytes(sheetName, rows){
   rows.forEach((row, ri)=>{
     const isHeader = ri===0;
     const styleId = isHeader ? 1 : (ri%2===0 ? 3 : 2);
-    const ht = isHeader ? ' ht="20" customHeight="1"' : '';
+    const nLinhas = isHeader ? 1 : xlsxRowLineCount(row, colWidths);
+    const alturaLinha = isHeader ? 20 : Math.max(16, nLinhas*15 + 4);
+    const ht = ` ht="${alturaLinha}" customHeight="1"`;
     sheetXml += `<row r="${ri+1}"${ht}>`;
     row.forEach((val, ci)=>{
       const ref = xlsxColLetter(ci+1)+(ri+1);
@@ -6426,8 +6452,8 @@ function xlsxBuildBytes(sheetName, rows){
     + '<cellXfs count="4">'
     + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
     + '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'
-    + '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>'
-    + '<xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>'
+    + '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'
+    + '<xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'
     + '</cellXfs>'
     + '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
     + '</styleSheet>';
