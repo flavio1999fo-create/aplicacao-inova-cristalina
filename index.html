@@ -1265,7 +1265,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     </div>
     <div class="card">
       <h2>Exportar histórico por e-mail</h2>
-      <p class="muted">Gera um arquivo (.csv, abre no Excel) com o histórico de aplicações e abre o compartilhamento do celular pra você escolher o e-mail (ou WhatsApp) e enviar. O app não manda o e-mail sozinho — ele só prepara o arquivo e abre seu aplicativo de e-mail com tudo pronto pra você revisar e enviar.</p>
+      <p class="muted">Gera uma planilha .xlsx (arquivo de Excel de verdade, abre direto sem passo nenhum) com o histórico de aplicações e abre o compartilhamento do celular pra você escolher o e-mail (ou WhatsApp) e enviar. O app não manda o e-mail sozinho — ele só prepara o arquivo e abre seu aplicativo de e-mail com tudo pronto pra você revisar e enviar.</p>
       <div class="row">
         <div class="field"><label>De (opcional)</label><input type="date" id="histExportDe"></div>
         <div class="field"><label>Até (opcional)</label><input type="date" id="histExportAte"></div>
@@ -1340,6 +1340,17 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <h2>Histórico de limpezas</h2>
       <div id="limpHistList"></div>
       <div class="empty" id="limpHistEmpty" style="display:none;">Nenhuma limpeza registrada ainda.</div>
+    </div>
+
+    <div class="card">
+      <h2>Exportar histórico de limpezas por e-mail</h2>
+      <p class="muted">Gera uma planilha .xlsx (arquivo de Excel de verdade, abre direto sem passo nenhum) com o histórico de limpezas e abre o compartilhamento do celular pra você escolher o e-mail (ou WhatsApp) e enviar. O app não manda o e-mail sozinho — ele só prepara o arquivo e abre seu aplicativo de e-mail com tudo pronto pra você revisar e enviar.</p>
+      <div class="row">
+        <div class="field"><label>De (opcional)</label><input type="date" id="limpExportDe"></div>
+        <div class="field"><label>Até (opcional)</label><input type="date" id="limpExportAte"></div>
+      </div>
+      <button class="btn-primary btn-block" onclick="exportLimpezasEmail()">📧 Exportar limpezas por e-mail</button>
+      <div id="limpExportResult" class="muted" style="margin-top:8px;white-space:pre-line;"></div>
     </div>
   </section>
 
@@ -1632,7 +1643,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.94';
+const APP_BUILD_ID = 'v1.95';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -6093,19 +6104,20 @@ function renderHistory(){
 }
 document.getElementById('histSearch').addEventListener('input', renderHistory);
 
-function csvEscape(v){
-  const s = (v===null||v===undefined)? '' : String(v);
-  if(/[",;\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
-  return s;
-}
-function montarCsvHistorico(apps){
+/* Até a v1.94 esse export gerava um .csv (";" separando as colunas) — o Flávio apontou
+   (16/09/2026) que não fazia sentido esse aqui continuar em .csv depois que a "Exportar
+   planilha de plantios" já tinha sido trocada pra um .xlsx de verdade por causa do mesmo
+   tipo de problema (Excel abrindo tudo numa coluna só, dependendo da config regional do
+   Windows). Agora usa o mesmo gerador de .xlsx sem dependências (xlsxBuildBytes, definido
+   mais abaixo) — mesmas colunas de antes, só que num arquivo de Excel de verdade. */
+function montarLinhasHistorico(apps){
   const linhas = [['Série','Data','Cultura','Operador','Responsável pela recomendação','Equipamento','Área (ha)','Talhões','Produtos','Observações']];
   apps.forEach(a=>{
     const talhoes = (a.ensaiosSel||[]).map(e=>`${e.ensaio||''}${e.area? ' ('+e.area+'ha)':''}`).join('; ');
     const produtos = (a.produtos||[]).map(p=>`${p.nome||''} ${fmtNum(p.qtd)}${p.unidade? ' '+p.unidade:''}${p.doseHa? ' ('+fmtNum(p.doseHa)+'/ha)':''}`).join('; ');
     linhas.push([a.serie, a.dataAplicacao||'', a.cultura||'', a.operador||'', a.recomendacao||'', a.equipamento||'', fmtNum(a.area), talhoes, produtos, a.obs||'']);
   });
-  return linhas.map(l=> l.map(csvEscape).join(';')).join('\r\n');
+  return linhas;
 }
 async function exportHistoricoEmail(){
   const resultEl = document.getElementById('histExportResult');
@@ -6115,15 +6127,17 @@ async function exportHistoricoEmail(){
   if(de) apps = apps.filter(a=> (a.dataAplicacao||'') >= de);
   if(ate) apps = apps.filter(a=> (a.dataAplicacao||'') <= ate);
   if(!apps.length){ resultEl.textContent = '⚠️ Nenhuma aplicação encontrada nesse período.'; return; }
-  const csv = '﻿' + montarCsvHistorico(apps);
+  const linhas = montarLinhasHistorico(apps);
+  const bytes = xlsxBuildBytes('Histórico', linhas);
   const hoje = (document.getElementById('fData')? document.getElementById('fData').value : '') || (de||ate||'export');
-  const nomeArquivo = `historico_aplicacoes_${hoje}.csv`.replace(/[^a-zA-Z0-9_.-]/g,'_');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const nomeArquivo = `historico_aplicacoes_${hoje}.xlsx`.replace(/[^a-zA-Z0-9_.-]/g,'_');
+  const tipoXlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  const blob = new Blob([bytes], {type: tipoXlsx});
   const nomeEstacaoAtual = estacaoAtiva().nome.replace(/^Estação /,'');
   const assunto = encodeURIComponent(`Histórico de aplicações — Aplicação Inova (${nomeEstacaoAtual})`);
   const corpo = encodeURIComponent(`Segue em anexo o histórico de aplicações (${apps.length} registro(s))${de||ate? ' do período selecionado':''}.\n\nGerado pelo app Aplicação Inova.`);
   try{
-    const file = new File([blob], nomeArquivo, {type:'text/csv'});
+    const file = new File([blob], nomeArquivo, {type: tipoXlsx});
     if(navigator.canShare && navigator.canShare({files:[file]})){
       await navigator.share({files:[file], title:'Histórico de aplicações', text:`Histórico de aplicações (${apps.length} registro(s))`});
       resultEl.textContent = `✅ Compartilhamento aberto com ${apps.length} registro(s) — escolha o e-mail na lista.`;
@@ -6138,6 +6152,56 @@ async function exportHistoricoEmail(){
     setTimeout(()=>URL.revokeObjectURL(url), 5000);
     window.location.href = `mailto:?subject=${assunto}&body=${corpo}`;
     resultEl.textContent = `✅ Arquivo "${nomeArquivo}" baixado (${apps.length} registro(s)) e seu e-mail foi aberto — é só anexar o arquivo baixado e enviar.`;
+  }
+}
+
+/* Exporta o histórico de limpezas por e-mail, mesmo esquema da "Exportar histórico por
+   e-mail" da aba Histórico (16/09/2026, a pedido do Flávio) — planilha .xlsx de verdade
+   desde o início, já usando o mesmo gerador sem dependências (xlsxBuildBytes). */
+function montarLinhasLimpezas(registros){
+  const linhas = [['Data','Equipamento','Operador','Ficha','Produtos aplicação anterior','Próxima aplicação','Itens conferidos','Conferida','Responsável pela limpeza','Conferido por','Observações']];
+  registros.forEach(r=>{
+    linhas.push([
+      r.data||'', r.equipamento||'', r.operador||'', r.ficha||'', r.produto||'', r.proxima||'',
+      `${r.marcados||0}/${r.totalItens||0}`, r.conferida? 'Sim':'Não',
+      r.responsavel||'', r.conferidoPor||'', r.obs||''
+    ]);
+  });
+  return linhas;
+}
+async function exportLimpezasEmail(){
+  const resultEl = document.getElementById('limpExportResult');
+  const de = document.getElementById('limpExportDe').value;
+  const ate = document.getElementById('limpExportAte').value;
+  let registros = (DATA.limpezas||[]).slice().sort((a,b)=>(a.data||'').localeCompare(b.data||''));
+  if(de) registros = registros.filter(r=> (r.data||'') >= de);
+  if(ate) registros = registros.filter(r=> (r.data||'') <= ate);
+  if(!registros.length){ resultEl.textContent = '⚠️ Nenhuma limpeza encontrada nesse período.'; return; }
+  const linhas = montarLinhasLimpezas(registros);
+  const bytes = xlsxBuildBytes('Limpezas', linhas);
+  const hoje = de||ate||todayISO();
+  const nomeArquivo = `historico_limpezas_${hoje}.xlsx`.replace(/[^a-zA-Z0-9_.-]/g,'_');
+  const tipoXlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  const blob = new Blob([bytes], {type: tipoXlsx});
+  const nomeEstacaoAtual = estacaoAtiva().nome.replace(/^Estação /,'');
+  const assunto = encodeURIComponent(`Histórico de limpezas — Aplicação Inova (${nomeEstacaoAtual})`);
+  const corpo = encodeURIComponent(`Segue em anexo o histórico de limpezas (${registros.length} registro(s))${de||ate? ' do período selecionado':''}.\n\nGerado pelo app Aplicação Inova.`);
+  try{
+    const file = new File([blob], nomeArquivo, {type: tipoXlsx});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:'Histórico de limpezas', text:`Histórico de limpezas (${registros.length} registro(s))`});
+      resultEl.textContent = `✅ Compartilhamento aberto com ${registros.length} registro(s) — escolha o e-mail na lista.`;
+      return;
+    }
+    throw new Error('compartilhamento de arquivo não disponível neste navegador');
+  }catch(e){
+    console.warn('Share indisponível, usando baixar + mailto:', e);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = nomeArquivo; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 5000);
+    window.location.href = `mailto:?subject=${assunto}&body=${corpo}`;
+    resultEl.textContent = `✅ Arquivo "${nomeArquivo}" baixado (${registros.length} registro(s)) e seu e-mail foi aberto — é só anexar o arquivo baixado e enviar.`;
   }
 }
 
