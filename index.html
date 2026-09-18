@@ -1042,9 +1042,30 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     <div class="bar-chart" id="dashChartMeses"></div>
   </div>
 
+  <!-- 18/09/2026, a pedido do Flávio: resumo visual de consumo (área aplicada) por mês, por
+       cultura, e histórico de aplicação por talhão — antes só dava pra ver isso abrindo a
+       planilha e olhando linha por linha. Reaproveita os mesmos estilos de barra que já
+       existiam aqui (bar-chart/hbar-chart), só com dados diferentes. Área (ha) foi escolhida
+       como a métrica porque é a única que é igual pra qualquer produto (quantidade de produto
+       não dá pra somar direto: um produto é em L, outro em Kg). -->
+  <div class="card">
+    <h2>Área aplicada por mês (ha)</h2>
+    <div class="bar-chart" id="dashChartAreaMes"></div>
+  </div>
+
   <div class="card">
     <h2>Produtos mais utilizados</h2>
     <div class="hbar-chart" id="dashChartProdutos"></div>
+  </div>
+
+  <div class="card">
+    <h2>Consumo por cultura (área aplicada)</h2>
+    <div class="hbar-chart" id="dashChartCultura"></div>
+  </div>
+
+  <div class="card">
+    <h2>Aplicações por talhão</h2>
+    <div class="hbar-chart" id="dashChartTalhao"></div>
   </div>
 
   <div class="card">
@@ -1643,7 +1664,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.97';
+const APP_BUILD_ID = 'v1.98';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -3182,6 +3203,25 @@ function renderDashboard(){
       <span class="bar-label">${b.label}</span>
     </div>`).join('');
 
+  /* 18/09/2026 — Área aplicada por mês (mesmos 6 meses do gráfico de cima, mas somando
+     hectares em vez de contar aplicações; assim dá pra ver não só QUANTAS aplicações
+     rolaram, mas o TAMANHO delas — um mês com poucas aplicações grandes pode ter mais
+     área tratada do que um mês com muitas aplicações pequenas). */
+  const bucketsArea = buckets.map(b=>({...b, area:0}));
+  apps.forEach(a=>{
+    const d = new Date(a.dataAplicacao||a.data);
+    if(isNaN(d)) return;
+    const b = bucketsArea.find(x=>x.month===d.getMonth() && x.year===d.getFullYear());
+    if(b) b.area += (Number(a.area)||0);
+  });
+  const maxArea = Math.max(1, ...bucketsArea.map(b=>b.area));
+  document.getElementById('dashChartAreaMes').innerHTML = bucketsArea.map(b=>`
+    <div class="bar-col">
+      <span class="bar-val">${b.area? fmtNum(b.area):''}</span>
+      <div class="bar" style="height:${Math.max(2, Math.round((b.area/maxArea)*100))}%"></div>
+      <span class="bar-label">${b.label}</span>
+    </div>`).join('');
+
   /* Produtos mais utilizados (soma de quantidade usada em todas as aplicações) */
   const usoPorProduto = {};
   apps.forEach(a=>{
@@ -3205,6 +3245,53 @@ function renderDashboard(){
         <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxUso)*100))}%"></div></div>
       </div>`;
     }).join('');
+  }
+
+  /* 18/09/2026 — Consumo por cultura: soma da área aplicada (ha) agrupada pela cultura de
+     cada aplicação (soja, milho etc). De novo usando área (e não quantidade de produto) pra
+     poder comparar culturas diferentes na mesma régua, já que os produtos usados mudam de
+     cultura pra cultura e têm unidades diferentes (L, Kg...). */
+  const areaPorCultura = {};
+  apps.forEach(a=>{
+    const cultura = (a.cultura||'').trim();
+    if(!cultura) return;
+    areaPorCultura[cultura] = (areaPorCultura[cultura]||0) + (Number(a.area)||0);
+  });
+  const topCulturas = Object.entries(areaPorCultura).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxAreaCultura = Math.max(1, ...topCulturas.map(x=>x[1]));
+  const elCultura = document.getElementById('dashChartCultura');
+  if(!topCulturas.length){
+    elCultura.innerHTML = '<p class="dash-empty">Nenhuma aplicação registrada ainda.</p>';
+  }else{
+    elCultura.innerHTML = topCulturas.map(([cultura,area])=>`<div class="hbar-row">
+        <div class="hbar-top"><span>${escapeHtml(cultura)}</span><span>${fmtNum(area)} ha</span></div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((area/maxAreaCultura)*100))}%"></div></div>
+      </div>`).join('');
+  }
+
+  /* 18/09/2026 — Aplicações por talhão: conta em quantas aplicações cada talhão apareceu
+     (uma mesma aplicação pode cobrir mais de um talhão em ensaiosSel, então cada talhão
+     conta uma vez por aplicação em que ele entrou, não uma vez por linha do array). Isso
+     dá uma visão rápida de quais talhões são os mais "visitados" com aplicação, sem precisar
+     abrir o histórico e contar na mão. */
+  const contagemPorTalhao = {};
+  apps.forEach(a=>{
+    (a.ensaiosSel||[]).forEach(e=>{
+      const nome = (e.ensaio||'').trim();
+      if(!nome) return;
+      contagemPorTalhao[nome] = (contagemPorTalhao[nome]||0) + 1;
+    });
+  });
+  const topTalhoes = Object.entries(contagemPorTalhao).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxContagemTalhao = Math.max(1, ...topTalhoes.map(x=>x[1]));
+  const elTalhao = document.getElementById('dashChartTalhao');
+  if(!topTalhoes.length){
+    elTalhao.innerHTML = '<p class="dash-empty">Nenhuma aplicação registrada ainda.</p>';
+  }else{
+    elTalhao.innerHTML = topTalhoes.map(([talhao,qtd])=>`<div class="hbar-row">
+        <div class="hbar-top"><span>${escapeHtml(talhao)}</span><span>${qtd} aplicaç${qtd===1?'ão':'ões'}</span></div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxContagemTalhao)*100))}%"></div></div>
+      </div>`).join('');
   }
 
   /* Estoque baixo */
@@ -6661,6 +6748,21 @@ function aplicarAtualizacaoDisponivel(){
   location.href = location.pathname + '?nocache=' + Date.now();
 }
 
+/* ====================== PWA (instalar no celular / funcionar sem internet) ======================
+   18/09/2026, a pedido do Flávio: o app já tinha o ícone e as tags pra "salvar na tela inicial"
+   desde a v1.76, mas isso sozinho não deixa o app abrir sem sinal — faltava o Service Worker,
+   que é a peça que guarda uma cópia do app no próprio celular/computador pra usar quando não
+   tem internet (ex.: no meio do talhão, sem sinal). Registra só quando o app está sendo aberto
+   de um site de verdade (https, como o GitHub Pages) — em file:// (cópia salva direto no
+   computador) o navegador não permite Service Worker, então nem tenta, sem gerar erro nenhum. */
+function registrarServiceWorker(){
+  if(!('serviceWorker' in navigator)) return;
+  if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
+  navigator.serviceWorker.register('./sw.js').catch(function(err){
+    console.warn('Não foi possível preparar o app pra funcionar offline:', err);
+  });
+}
+
 /* ====================== INIT ====================== */
 function init(){
   /* Reaproveita o mesmo logo (base64) do cabeçalho na tela de login, em vez de duplicar
@@ -6713,6 +6815,7 @@ function init(){
   document.addEventListener('visibilitychange', function(){
     if(document.visibilityState === 'visible') checarNovaVersaoComThrottle();
   });
+  registrarServiceWorker();
 }
 init();
 </script>
