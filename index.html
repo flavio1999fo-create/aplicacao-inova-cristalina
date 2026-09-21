@@ -1664,7 +1664,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.98';
+const APP_BUILD_ID = 'v1.99';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -6179,7 +6179,10 @@ function renderHistory(){
     return `<div class="card app-card">
       <div class="top">
         <div class="d">#${a.serie} · ${escapeHtml(a.dataAplicacao||'')}</div>
-        <button class="btn-danger btn-sm" onclick="deleteApplication('${a.id}')">Excluir</button>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn-ghost btn-sm" onclick="showReceipt(DATA.applications.find(x=>x.id==='${a.id}'))">🧾 Comprovante</button>
+          <button class="btn-danger btn-sm" onclick="deleteApplication('${a.id}')">Excluir</button>
+        </div>
       </div>
       <div class="meta">${escapeHtml(a.cultura||'')} · ${escapeHtml(a.operador||'')} · ${escapeHtml(a.equipamento||'')} · ${fmtNum(a.area)} ha${a.recomendacao? ' · Recomendação: '+escapeHtml(a.recomendacao):''}</div>
       ${talhoes? `<div class="meta">Talhões: ${talhoes}</div>`:''}
