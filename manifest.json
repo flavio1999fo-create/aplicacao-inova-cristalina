@@ -1,0 +1,36 @@
+{
+  "name": "Aplicação Inova Cristalina",
+  "short_name": "Inova Cristalina",
+  "description": "Registro de aplicações de defensivos agrícolas e controle de estoque — Inova Genética, Fazenda Cristalina.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f6f4f1",
+  "theme_color": "#241009",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
