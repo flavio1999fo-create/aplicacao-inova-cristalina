@@ -1664,7 +1664,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.99.1';
+const APP_BUILD_ID = 'v1.99.2';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -6738,7 +6738,7 @@ async function checarNovaVersaoDisponivel(){
 }
 function checarNovaVersaoComThrottle(){
   const agora = Date.now();
-  if(agora - __ultimaChecagemAtualizacaoEm < 60000) return;
+  if(agora - __ultimaChecagemAtualizacaoEm < 15000) return;
   __ultimaChecagemAtualizacaoEm = agora;
   checarNovaVersaoDisponivel();
 }
@@ -6811,10 +6811,13 @@ function init(){
   /* Checagem de versão nova: antes essas funções existiam mas nunca eram chamadas em
      lugar nenhum, então o aviso de atualização nunca aparecia sozinho (só funcionava se
      alguém chamasse na mão pelo console). Agora dispara pouco depois de abrir o app,
-     de novo a cada 2 minutos enquanto fica aberto, e também sempre que a aba volta a
-     ficar visível (ex: usuário troca de app no celular e volta). */
-  setTimeout(checarNovaVersaoComThrottle, 4000);
-  setInterval(checarNovaVersaoComThrottle, 120000);
+     de novo a cada 20 segundos enquanto fica aberto, e também sempre que a aba volta a
+     ficar visível (ex: usuário troca de app no celular e volta). Intervalo encurtado de
+     2min pra 20s em 24/09/2026, a pedido do Flávio — tem gente que não fica com a aba
+     aberta nem uns minutos, então precisa avisar bem mais rápido. Ainda é só um arquivo
+     bem pequeno (version.json), não pesa no sinal fraco do campo mesmo checando mais vezes. */
+  setTimeout(checarNovaVersaoComThrottle, 1500);
+  setInterval(checarNovaVersaoComThrottle, 20000);
   document.addEventListener('visibilitychange', function(){
     if(document.visibilityState === 'visible') checarNovaVersaoComThrottle();
   });
