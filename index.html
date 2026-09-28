@@ -1238,8 +1238,15 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
           <h2 style="margin-bottom:2px;">Cultura por talhão</h2>
           <p class="muted" style="margin-top:0;">Cadastre qual cultura está em cada talhão/quadra e, quando for Milho ou Soja, a modalidade do ensaio. Isso também passa a filtrar automaticamente o mapa da aba Aplicação pela cultura escolhida ali. Toque numa quadra no mapa (Pivô ou Grade) pra cadastrar ela direto.</p>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn-ghost btn-sm" id="btnToggleSelMultiCad" onclick="toggleTalhaoCadSelMode()" style="white-space:nowrap;">☑ Selecionar vários</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('SOJA')" style="white-space:nowrap;">🧹 Limpar tudo de Soja</button>
+          <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('MILHO')" style="white-space:nowrap;">🧹 Limpar tudo de Milho</button>
+          <span style="display:flex;gap:4px;align-items:center;">
+            <input type="number" id="faixaTalhaoDe" placeholder="De" inputmode="numeric" style="width:64px;">
+            <span class="muted" style="font-size:12px;">até</span>
+            <input type="number" id="faixaTalhaoAte" placeholder="Até" inputmode="numeric" style="width:64px;">
+            <button class="btn-ghost btn-sm" onclick="selecionarFaixaTalhaoCad()" style="white-space:nowrap;">🎯 Selecionar faixa</button>
+          </span>
           <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapaCad" onclick="toggleFullscreenMapaCad()" style="white-space:nowrap;">⛶ Tela cheia</button>
         </div>
       </div>
@@ -1664,7 +1671,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.99.2';
+const APP_BUILD_ID = 'v1.99.3';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -3991,11 +3998,9 @@ function renderTalhaoCadastro(){
       if(atual && atual.dataPlantio) detalhes.push('plantado em '+formatDateBR(atual.dataPlantio));
       if(atual && atual.numeroEnsaio) detalhes.push('ensaio nº '+atual.numeroEnsaio);
       const isEditing = talhaoCadEditingId===e.id;
-      const isSelected = talhaoCadSelMode && !!selectedTalhaoCad[e.id];
+      const isSelected = !!selectedTalhaoCad[e.id];
       const rowCls = isSelected ? 'multisel' : (isEditing?'editing':'');
-      const actionBtn = talhaoCadSelMode
-        ? `<button type="button" class="btn-ghost btn-sm" onclick="event.stopPropagation();onTalhaoCadastroTileClick('${e.id}')">${isSelected? '☑ Selecionado':'☐ Selecionar'}</button>`
-        : `<button type="button" class="btn-ghost btn-sm" onclick="event.stopPropagation();onTalhaoCadastroTileClick('${e.id}')">✎ Editar</button>`;
+      const actionBtn = `<button type="button" class="btn-ghost btn-sm" onclick="event.stopPropagation();onTalhaoCadastroTileClick('${e.id}')">${isSelected? '☑ Selecionado':'☐ Selecionar'}</button>`;
       return `<div class="talhao-cadastro-row ${rowCls}" onclick="onTalhaoCadastroTileClick('${e.id}')" style="cursor:pointer;">
         <div class="tc-info"><b>${escapeHtml(e.talhao||'')}</b>${e.area? `<div class="muted">${escapeHtml(String(e.area))}ha</div>`:''}</div>
         <div class="tc-status">
@@ -4086,16 +4091,57 @@ function refreshTalhaoCadUI(){
 }
 
 /* ---- Seleção múltipla + preenchimento em massa (aba Talhões, cadastro) ---- */
+/* 28/09/2026, a pedido do Flávio: não existe mais um "modo" separado pra selecionar
+   vários — cada toque numa quadra já marca/desmarca ela direto (ver
+   onTalhaoCadastroTileClick). Essa função virou só "limpar a seleção atual", mantendo
+   o mesmo nome porque já era chamada depois de aplicar/excluir em massa. */
 function toggleTalhaoCadSelMode(){
-  talhaoCadSelMode = !talhaoCadSelMode;
   selectedTalhaoCad = {};
   talhaoCadEditingId = null;
-  const btn = document.getElementById('btnToggleSelMultiCad');
-  if(btn){
-    btn.textContent = talhaoCadSelMode ? '✕ Cancelar seleção' : '☑ Selecionar vários';
-    btn.classList.toggle('btn-primary', talhaoCadSelMode);
-  }
   refreshTalhaoCadUI();
+}
+/* Limpa a cultura de todos os talhões ativos do pivô atual que estejam hoje cadastrados
+   com a cultura informada (ex: 'SOJA' ou 'MILHO') — o talhão continua cadastrado (mesma
+   área/quadra), só fica sem cultura, pronto pra registrar o plantio novo. Não apaga
+   aplicações já registradas nesse talhão. Pedido do Flávio em 28/09/2026, pra preparar
+   os talhões pro plantio novo sem ter que limpar quadra por quadra. */
+function limparCulturaEmMassa(cultura){
+  requireAdmin(()=>{
+    const alvos = activosTalhoesCad().filter(e=> (e.cultura||'').toUpperCase()===cultura);
+    if(!alvos.length){ toast(`Nenhum talhão ativo deste pivô está cadastrado com cultura ${tituloCultura(cultura)}`); return; }
+    if(!confirm(`Limpar a cultura de ${alvos.length} talhão${alvos.length===1?'':'ões'} hoje cadastrado${alvos.length===1?'':'s'} como ${tituloCultura(cultura)}? O talhão continua cadastrado, só fica sem cultura (pronto pra registrar o plantio novo). Não apaga aplicações já registradas.`)) return;
+    alvos.forEach(e=>{ e.plantios = []; syncEnsaioTopFields(e); });
+    saveData();
+    fbPushEstoque();
+    selectedTalhaoCad = {};
+    talhaoCadEditingId = null;
+    refreshTalhaoUI();
+    refreshTalhaoCadUI();
+    toast(`${alvos.length} talhão${alvos.length===1?'':'ões'} de ${tituloCultura(cultura)} limpo${alvos.length===1?'':'s'}`);
+  });
+}
+/* Seleciona (soma à seleção atual) todos os talhões ativos do pivô atual cujo número da
+   quadra caia dentro da faixa informada (ex: "de 100 até 200" seleciona A100..A200,
+   B100..B200 etc, qualquer letra de quadrante) — pedido do Flávio em 28/09/2026, pra não
+   precisar clicar quadra por quadra quando quer aplicar/limpar cultura numa faixa inteira. */
+function selecionarFaixaTalhaoCad(){
+  const deTxt = (document.getElementById('faixaTalhaoDe')||{}).value;
+  const ateTxt = (document.getElementById('faixaTalhaoAte')||{}).value;
+  const de = parseInt(deTxt, 10);
+  const ate = parseInt(ateTxt, 10);
+  if(isNaN(de) || isNaN(ate)){ toast('Preencha o "De" e o "Até" da faixa'); return; }
+  const lo = Math.min(de, ate), hi = Math.max(de, ate);
+  const alvos = activosTalhoesCad().filter(e=>{
+    const m = /(\d+)$/.exec(e.talhao||'');
+    if(!m) return false;
+    const n = parseInt(m[1], 10);
+    return n>=lo && n<=hi;
+  });
+  if(!alvos.length){ toast(`Nenhum talhão deste pivô na faixa ${lo}–${hi}`); return; }
+  alvos.forEach(e=>{ selectedTalhaoCad[e.id] = {talhao: e.talhao||'', area: e.area||0}; });
+  talhaoCadEditingId = null;
+  refreshTalhaoCadUI();
+  toast(`${alvos.length} talhão${alvos.length===1?'':'ões'} da faixa ${lo}–${hi} selecionado${alvos.length===1?'':'s'}`);
 }
 
 function toggleTalhaoCadSelecao(id){
@@ -4162,7 +4208,12 @@ function focoEmCampoDeTexto(box){
 function renderTalhaoCadBulkPanel(){
   const box = document.getElementById('talhaoCadBulkPanel');
   if(!box) return;
-  if(!talhaoCadSelMode){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  const ids = Object.keys(selectedTalhaoCad);
+  /* 28/09/2026 — não existe mais um "modo" separado de seleção (ver toggleTalhaoCadSelMode);
+     agora esse painel some/aparece sozinho conforme tem ou não talhão selecionado. Também
+     fica escondido enquanto o editor de um talhão específico está aberto (talhaoCadEditingId),
+     pra não mostrar os dois painéis ao mesmo tempo — ver openTalhaoCadEditor/closeTalhaoCadEditor. */
+  if(!ids.length || talhaoCadEditingId){ box.style.display = 'none'; box.innerHTML = ''; return; }
   /* Corrigido bug reportado pelo Flávio: cadastrando vários talhões de uma vez (seleção
      múltipla), se a sincronização de fundo rodasse enquanto ele ainda estava digitando em
      "Data de plantio" ou "Número do ensaio" — antes de sair do campo —, este painel era
@@ -4170,11 +4221,8 @@ function renderTalhaoCadBulkPanel(){
      chegam a existir em nenhum lugar salvo até o "✓ Aplicar" ser clicado, então a
      reconstrução sempre voltava em branco). Ver focoEmCampoDeTexto() acima. */
   if(focoEmCampoDeTexto(box)) return;
-  const ids = Object.keys(selectedTalhaoCad);
   box.style.display = 'block';
-  const listaTxt = ids.length
-    ? ids.map(id=>selectedTalhaoCad[id].talhao).join(', ')
-    : 'Nenhum ainda — toque nos talhões abaixo pra selecionar (pode ser no Pivô, na Grade ou na Lista).';
+  const listaTxt = ids.map(id=>selectedTalhaoCad[id].talhao).join(', ');
   /* 04/09/2026 (v1.69) — a pedido do Flávio: excluir quadra também em lote, igual já
      funciona a seleção múltipla pra cultura/modalidade. "Excluir quadra" só existe pro
      Pivô 4 (ver excluirTalhaoPivo4), então esse botão só conta/afeta as selecionadas
@@ -4185,10 +4233,20 @@ function renderTalhaoCadBulkPanel(){
   const btnExcluirHtml = nExc
     ? `<button type="button" class="btn-danger btn-sm" onclick="excluirSelecionadosTalhaoCad()">🗑 Excluir ${nExc} quadra${nExc===1?'':'s'} do Pivô 4</button>`
     : '';
+  /* 28/09/2026 — a pedido do Flávio: como agora um único clique já seleciona o talhão (não
+     abre mais o editor direto — ver onTalhaoCadastroTileClick), quando só tem 1 selecionado
+     este botão dá o acesso de volta pro editor completo (histórico de plantio, comprimento
+     manual/excluir quadra do Pivô 4, etc). Com 2+ selecionados não faz sentido, então some. */
+  const btnEditarHtml = ids.length===1
+    ? `<button type="button" class="btn-ghost btn-sm" onclick="openTalhaoCadEditor('${ids[0]}')">✎ Editar detalhes</button>`
+    : '';
   box.innerHTML = `<div class="talhao-cad-editor talhao-cad-bulk">
     <div class="talhao-cad-editor-head">
       <b>${ids.length} ${ids.length===1?'talhão':'talhões'} selecionado${ids.length===1?'':'s'}</b>
-      <button type="button" class="btn-ghost btn-sm" onclick="toggleTalhaoCadSelMode()">✕ Cancelar seleção</button>
+      <span style="display:flex;gap:8px;">
+        ${btnEditarHtml}
+        <button type="button" class="btn-ghost btn-sm" onclick="toggleTalhaoCadSelMode()">✕ Cancelar seleção</button>
+      </span>
     </div>
     <div class="muted" style="font-size:12px;margin-bottom:10px;">${escapeHtml(listaTxt)}</div>
     <div class="row">
@@ -4236,7 +4294,6 @@ function switchTalhaoCadView(view){
 }
 
 function openTalhaoCadEditor(id){
-  if(talhaoCadSelMode) return;
   talhaoCadEditingId = id;
   refreshTalhaoCadUI();
 }
@@ -4249,7 +4306,6 @@ function closeTalhaoCadEditor(){
 function renderTalhaoCadEditor(){
   const box = document.getElementById('talhaoCadEditor');
   if(!box) return;
-  if(talhaoCadSelMode){ box.style.display = 'none'; box.innerHTML = ''; return; }
   const e = talhaoCadEditingId ? ensaioById(talhaoCadEditingId) : null;
   if(!e){ box.style.display = 'none'; box.innerHTML=''; return; }
   /* Mesmo conserto do painel de seleção múltipla, aplicado aqui: antes, toda sincronização de
@@ -4394,8 +4450,7 @@ function salvarTalhaoCadEditor(ensaioId, btnEl){
 }
 
 function onTalhaoCadastroTileClick(id){
-  if(talhaoCadSelMode){ toggleTalhaoCadSelecao(id); return; }
-  openTalhaoCadEditor(id);
+  toggleTalhaoCadSelecao(id);
 }
 
 function renderQuadBlockCad(letra, quadInfo, q){
@@ -4404,7 +4459,7 @@ function renderQuadBlockCad(letra, quadInfo, q){
     const style = [`grid-column:${cell.c}`, `grid-row:${cell.r}`];
     const id = 'quadra_'+(pivoAtivo().idPrefix||'')+cell.q;
     const isEditing = talhaoCadEditingId===id;
-    const isSelected = talhaoCadSelMode && !!selectedTalhaoCad[id];
+    const isSelected = !!selectedTalhaoCad[id];
     const isMatch = q && cell.q.toUpperCase().includes(q);
     const isDim = q && !isMatch;
     const ens = ensaioById(id);
@@ -4509,7 +4564,7 @@ function renderMapaCad(){
       const itens = faixas[fx].sort((a,b)=>(a.talhao||'').localeCompare(b.talhao||'', undefined, {numeric:true}));
       const tiles = itens.map(e=>{
         const isEditing = talhaoCadEditingId===e.id;
-        const isSelected = talhaoCadSelMode && !!selectedTalhaoCad[e.id];
+        const isSelected = !!selectedTalhaoCad[e.id];
         const numLabel = (e.talhao||'').replace(/^[A-Za-z_]+-?/, '');
         const culturaLabel = talhaoCulturaLabel(e);
         const temCultura = culturaLabel? 'tem-cultura':'';
@@ -4893,7 +4948,7 @@ function areaCellState(code, id, q, modoCad){
   let marker = '';
   if(modoCad){
     const isEditing = talhaoCadEditingId===id;
-    const isSelected = talhaoCadSelMode && !!selectedTalhaoCad[id];
+    const isSelected = !!selectedTalhaoCad[id];
     if(isEditing) cls += ' sel';
     if(isSelected) cls += ' multisel';
     marker = isSelected ? '☑ ' : (isEditing ? '✎ ' : '');
@@ -5227,7 +5282,7 @@ function renderPivoSvg(wrapId, q, modoCad){
     let codePrefixSvg = '';
     if(modoCad){
       const isEditing = talhaoCadEditingId===id;
-      const isSelected = talhaoCadSelMode && !!selectedTalhaoCad[id];
+      const isSelected = !!selectedTalhaoCad[id];
       if(isEditing){ cls += ' sel'; codePrefixSvg = '✎ '; }
       if(isSelected){ cls += ' multisel'; codePrefixSvg = '☑ '; }
     }else{
