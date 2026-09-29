@@ -679,6 +679,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .talhao-cad-editor-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
   .talhao-cad-editor-head b{font-size:15px;color:var(--text);}
   .talhao-cad-bulk{border-color:var(--orange-dark);}
+  .talhao-acoes-massa-panel{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fbf8f5;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:12px;}
   .pivo-cell.quadra.multisel{outline:3px solid var(--orange-dark);outline-offset:-3px;}
   .quadra-tile.multisel{outline:3px solid var(--orange-dark);outline-offset:-3px;}
   .talhao-cadastro-row.multisel{background:var(--orange-light);border-radius:8px;outline:1px solid var(--orange-dark);}
@@ -1236,20 +1237,30 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">
         <div>
           <h2 style="margin-bottom:2px;">Cultura por talhão</h2>
-          <p class="muted" style="margin-top:0;">Cadastre qual cultura está em cada talhão/quadra e, quando for Milho ou Soja, a modalidade do ensaio. Isso também passa a filtrar automaticamente o mapa da aba Aplicação pela cultura escolhida ali.<br>💡 <b>Toque numa quadra</b> (Pivô, Grade ou Lista) <b>pra selecionar</b> — toque em outras pra somar à seleção. Com <b>1 quadra selecionada</b> aparece a opção de editar a ficha completa ou limpar só aquela. Com <b>várias selecionadas</b> aparece a opção de aplicar cultura ou limpar todas de uma vez.</p>
+          <p class="muted" style="margin-top:0;">Cadastre qual cultura está em cada talhão/quadra e, quando for Milho ou Soja, a modalidade do ensaio. Isso também passa a filtrar automaticamente o mapa da aba Aplicação pela cultura escolhida ali.<br>💡 <b>Toque num talhão</b> (Pivô, Grade ou Lista) <b>pra selecionar ele</b> — aparece na hora a opção de editar a ficha ou limpar só aquele talhão.</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-          <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('SOJA')" style="white-space:nowrap;" title="Limpa a cultura de TODOS os talhões deste pivô que hoje estão com Soja (não apaga o talhão nem as aplicações já feitas)">🧹 Limpar toda Soja deste pivô</button>
-          <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('MILHO')" style="white-space:nowrap;" title="Limpa a cultura de TODOS os talhões deste pivô que hoje estão com Milho (não apaga o talhão nem as aplicações já feitas)">🧹 Limpar todo Milho deste pivô</button>
-          <span style="display:flex;gap:4px;align-items:center;" title="Seleciona de uma vez todos os talhões cujo número esteja nessa faixa (ex: 100 até 200 pega A100...A200, B100...B200 etc)">
-            <span class="muted" style="font-size:12px;">Selecionar faixa:</span>
-            <input type="number" id="faixaTalhaoDe" placeholder="De" inputmode="numeric" style="width:64px;">
-            <span class="muted" style="font-size:12px;">até</span>
-            <input type="number" id="faixaTalhaoAte" placeholder="Até" inputmode="numeric" style="width:64px;">
-            <button class="btn-ghost btn-sm" onclick="selecionarFaixaTalhaoCad()" style="white-space:nowrap;">🎯 Selecionar</button>
-          </span>
+          <button class="btn-ghost btn-sm" id="btnToggleAcoesMassaTalhaoCad" onclick="toggleAcoesMassaTalhaoCad()" style="white-space:nowrap;">🧹 Ações em massa ▾</button>
           <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapaCad" onclick="toggleFullscreenMapaCad()" style="white-space:nowrap;">⛶ Tela cheia</button>
         </div>
+      </div>
+      <!-- 29/09/2026, a pedido do Flávio: essas ferramentas (limpar toda Soja/Milho do pivô,
+           selecionar por faixa de número) são usadas bem menos que o fluxo normal (tocar num
+           talhão pra editar ou limpar só ele) — ficavam sempre visíveis, ocupando a tela toda
+           e deixando confuso pra quem só quer mexer num talhão. Agora ficam escondidas atrás
+           do botão "🧹 Ações em massa", só aparecem quem for realmente limpar/selecionar em
+           lote. Ver toggleAcoesMassaTalhaoCad(). -->
+      <div id="talhaoCadAcoesMassaPanel" class="talhao-acoes-massa-panel" style="display:none;">
+        <div class="muted" style="font-size:12px;margin-bottom:8px;width:100%;">Ferramentas pra mexer em vários talhões do pivô ativo de uma vez:</div>
+        <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('SOJA')" style="white-space:nowrap;" title="Limpa a cultura de TODOS os talhões deste pivô que hoje estão com Soja (não apaga o talhão nem as aplicações já feitas)">🧹 Limpar toda Soja deste pivô</button>
+        <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('MILHO')" style="white-space:nowrap;" title="Limpa a cultura de TODOS os talhões deste pivô que hoje estão com Milho (não apaga o talhão nem as aplicações já feitas)">🧹 Limpar todo Milho deste pivô</button>
+        <span style="display:flex;gap:4px;align-items:center;" title="Seleciona de uma vez todos os talhões cujo número esteja nessa faixa (ex: 100 até 200 pega A100...A200, B100...B200 etc)">
+          <span class="muted" style="font-size:12px;">Selecionar faixa:</span>
+          <input type="number" id="faixaTalhaoDe" placeholder="De" inputmode="numeric" style="width:64px;">
+          <span class="muted" style="font-size:12px;">até</span>
+          <input type="number" id="faixaTalhaoAte" placeholder="Até" inputmode="numeric" style="width:64px;">
+          <button class="btn-ghost btn-sm" onclick="selecionarFaixaTalhaoCad()" style="white-space:nowrap;">🎯 Selecionar</button>
+        </span>
       </div>
 
       <div class="subtabs pivo-tabs">
@@ -1672,7 +1683,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.99.5';
+const APP_BUILD_ID = 'v1.99.6';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -4632,6 +4643,19 @@ function toggleFullscreenMapaCad(){
   const isFull = el.classList.toggle('fullscreen-mapa');
   document.body.classList.toggle('no-scroll', isFull);
   if(btn) btn.textContent = isFull? '✕ Fechar tela cheia' : '⛶ Tela cheia';
+}
+
+/* 29/09/2026, a pedido do Flávio: as ferramentas de "Limpar toda Soja/Milho" e "Selecionar
+   faixa" ficavam sempre visíveis no topo da tela de Talhões, e ele achou que isso poluía e
+   confundia demais quem só queria clicar num talhão pra editar/limpar aquele um. Agora ficam
+   escondidas atrás desse botão, só aparecem pra quem realmente for usar. */
+function toggleAcoesMassaTalhaoCad(){
+  const painel = document.getElementById('talhaoCadAcoesMassaPanel');
+  const btn = document.getElementById('btnToggleAcoesMassaTalhaoCad');
+  if(!painel) return;
+  const aberto = painel.style.display !== 'none';
+  painel.style.display = aberto ? 'none' : 'flex';
+  if(btn) btn.textContent = aberto ? '🧹 Ações em massa ▾' : '🧹 Ações em massa ▴';
 }
 
 function refreshTalhaoUI(){
