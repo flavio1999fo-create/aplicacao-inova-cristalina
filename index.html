@@ -1236,16 +1236,17 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">
         <div>
           <h2 style="margin-bottom:2px;">Cultura por talhão</h2>
-          <p class="muted" style="margin-top:0;">Cadastre qual cultura está em cada talhão/quadra e, quando for Milho ou Soja, a modalidade do ensaio. Isso também passa a filtrar automaticamente o mapa da aba Aplicação pela cultura escolhida ali. Toque numa quadra no mapa (Pivô ou Grade) pra cadastrar ela direto.</p>
+          <p class="muted" style="margin-top:0;">Cadastre qual cultura está em cada talhão/quadra e, quando for Milho ou Soja, a modalidade do ensaio. Isso também passa a filtrar automaticamente o mapa da aba Aplicação pela cultura escolhida ali.<br>💡 <b>Toque numa quadra</b> (Pivô, Grade ou Lista) <b>pra selecionar</b> — toque em outras pra somar à seleção. Com <b>1 quadra selecionada</b> aparece a opção de editar a ficha completa ou limpar só aquela. Com <b>várias selecionadas</b> aparece a opção de aplicar cultura ou limpar todas de uma vez.</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-          <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('SOJA')" style="white-space:nowrap;">🧹 Limpar tudo de Soja</button>
-          <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('MILHO')" style="white-space:nowrap;">🧹 Limpar tudo de Milho</button>
-          <span style="display:flex;gap:4px;align-items:center;">
+          <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('SOJA')" style="white-space:nowrap;" title="Limpa a cultura de TODOS os talhões deste pivô que hoje estão com Soja (não apaga o talhão nem as aplicações já feitas)">🧹 Limpar toda Soja deste pivô</button>
+          <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('MILHO')" style="white-space:nowrap;" title="Limpa a cultura de TODOS os talhões deste pivô que hoje estão com Milho (não apaga o talhão nem as aplicações já feitas)">🧹 Limpar todo Milho deste pivô</button>
+          <span style="display:flex;gap:4px;align-items:center;" title="Seleciona de uma vez todos os talhões cujo número esteja nessa faixa (ex: 100 até 200 pega A100...A200, B100...B200 etc)">
+            <span class="muted" style="font-size:12px;">Selecionar faixa:</span>
             <input type="number" id="faixaTalhaoDe" placeholder="De" inputmode="numeric" style="width:64px;">
             <span class="muted" style="font-size:12px;">até</span>
             <input type="number" id="faixaTalhaoAte" placeholder="Até" inputmode="numeric" style="width:64px;">
-            <button class="btn-ghost btn-sm" onclick="selecionarFaixaTalhaoCad()" style="white-space:nowrap;">🎯 Selecionar faixa</button>
+            <button class="btn-ghost btn-sm" onclick="selecionarFaixaTalhaoCad()" style="white-space:nowrap;">🎯 Selecionar</button>
           </span>
           <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapaCad" onclick="toggleFullscreenMapaCad()" style="white-space:nowrap;">⛶ Tela cheia</button>
         </div>
@@ -1671,7 +1672,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.99.3';
+const APP_BUILD_ID = 'v1.99.4';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -4237,18 +4238,33 @@ function renderTalhaoCadBulkPanel(){
      abre mais o editor direto — ver onTalhaoCadastroTileClick), quando só tem 1 selecionado
      este botão dá o acesso de volta pro editor completo (histórico de plantio, comprimento
      manual/excluir quadra do Pivô 4, etc). Com 2+ selecionados não faz sentido, então some. */
-  const btnEditarHtml = ids.length===1
-    ? `<button type="button" class="btn-ghost btn-sm" onclick="openTalhaoCadEditor('${ids[0]}')">✎ Editar detalhes</button>`
+  const soloId = ids.length===1 ? ids[0] : null;
+  const soloEnsaio = soloId ? ensaioById(soloId) : null;
+  const btnEditarHtml = soloId
+    ? `<button type="button" class="btn-ghost btn-sm" onclick="openTalhaoCadEditor('${soloId}')">✎ Editar detalhes</button>`
     : '';
+  /* 29/09/2026 — a pedido do Flávio (achou confuso ter que ir no "Limpar tudo de X" pra
+     limpar só 1 talhão): com exatamente 1 selecionado, e ele tendo alguma cultura hoje,
+     mostra também um botão de limpar só aquele — sem precisar passar pelo "Limpar tudo". */
+  const btnLimparUnicoHtml = (soloEnsaio && (soloEnsaio.cultura||''))
+    ? `<button type="button" class="btn-ghost btn-sm" onclick="limparCulturaTalhaoUnico('${soloId}')">🧹 Limpar cultura deste talhão</button>`
+    : '';
+  /* Texto explicativo muda conforme quantos estão selecionados — pra deixar claro o que dá
+     pra fazer em cada caso (pedido do Flávio: "deixa mais didático"). */
+  const explicacaoTxt = soloId
+    ? `Selecionado: ${escapeHtml(listaTxt)}${soloEnsaio && soloEnsaio.cultura ? ` — hoje: ${escapeHtml(tituloCultura(soloEnsaio.cultura))}` : ' — sem cultura'}`
+    : `Selecionados: ${escapeHtml(listaTxt)}`;
   box.innerHTML = `<div class="talhao-cad-editor talhao-cad-bulk">
     <div class="talhao-cad-editor-head">
       <b>${ids.length} ${ids.length===1?'talhão':'talhões'} selecionado${ids.length===1?'':'s'}</b>
-      <span style="display:flex;gap:8px;">
+      <span style="display:flex;gap:8px;flex-wrap:wrap;">
         ${btnEditarHtml}
+        ${btnLimparUnicoHtml}
         <button type="button" class="btn-ghost btn-sm" onclick="toggleTalhaoCadSelMode()">✕ Cancelar seleção</button>
       </span>
     </div>
-    <div class="muted" style="font-size:12px;margin-bottom:10px;">${escapeHtml(listaTxt)}</div>
+    <div class="muted" style="font-size:12px;margin-bottom:10px;">${explicacaoTxt}</div>
+    <div class="muted" style="font-size:12px;margin-bottom:10px;">Pra ${ids.length===1?'esse talhão':'esses talhões'}, preencha abaixo e clique em "✓ Aplicar" pra cadastrar um plantio novo (cultura, modalidade, data, nº do ensaio):</div>
     <div class="row">
       <div class="field"><label>Cultura</label><select id="bulkCadCultura" onchange="onBulkCadCulturaChange(this.value)">${culturaOptionsHtml('')}</select></div>
       <div class="field"><label>Modalidade</label><select id="bulkCadModalidade" disabled>${modalidadeOptionsHtml('', '')}</select></div>
@@ -4262,6 +4278,28 @@ function renderTalhaoCadBulkPanel(){
       ${btnExcluirHtml}
     </div>
   </div>`;
+}
+/* 29/09/2026 — a pedido do Flávio: limpar a cultura de 1 talhão só, direto do painel de
+   seleção (sem precisar usar o "Limpar tudo de Soja/Milho", que afeta todos os talhões do
+   pivô de uma cultura). Mesma regra dos outros: admin + confirmação, o talhão continua
+   cadastrado (mesma área/quadra), só fica sem cultura, e não apaga aplicações já feitas. */
+function limparCulturaTalhaoUnico(id){
+  const e = ensaioById(id);
+  if(!e){ toast('Talhão não encontrado'); return; }
+  if(!(e.cultura||'')){ toast('Esse talhão já está sem cultura'); return; }
+  requireAdmin(()=>{
+    const nomeCultura = tituloCultura(e.cultura);
+    if(!confirm(`Limpar a cultura do talhão ${e.talhao||''} (hoje ${nomeCultura})? O talhão continua cadastrado, só fica sem cultura (pronto pra registrar o plantio novo). Não apaga aplicações já registradas.`)) return;
+    e.plantios = [];
+    syncEnsaioTopFields(e);
+    saveData();
+    fbPushEstoque();
+    selectedTalhaoCad = {};
+    talhaoCadEditingId = null;
+    refreshTalhaoUI();
+    refreshTalhaoCadUI();
+    toast(`Talhão ${e.talhao||''} limpo (sem cultura)`);
+  });
 }
 /* 04/09/2026 (v1.69) — contrapartida em lote do excluirTalhaoPivo4 individual: mesma
    regra de admin, mesma confirmação, só que aplicando em todas as quadras do Pivô 4
