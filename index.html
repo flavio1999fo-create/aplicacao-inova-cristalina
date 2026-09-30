@@ -4,8 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <title>Aplicativo de Aplicação Inova Genética</title>
+<!-- 30/09/2026, a pedido do Flávio: visual mais moderno/"cara de sistema" em todo o app —
+     tipografia própria (serifada nos títulos, mais refinada no corpo) e menu lateral/cabeçalho
+     num tom mais sóbrio, mantendo a marca (laranja) e a estrutura de sempre. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;500;600;700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
 <link rel="manifest" href="./manifest.json">>
-<meta name="theme-color" content="#241009">
+<meta name="theme-color" content="#211A13">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -459,18 +465,27 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     --shadow-sm:0 1px 2px rgba(35,22,10,.05), 0 1px 1px rgba(35,22,10,.04);
     --shadow-md:0 10px 28px rgba(35,22,10,.08);
     --shadow-lg:0 18px 44px rgba(35,22,10,.16);
+    /* 30/09/2026 — visual mais moderno/"cara de sistema", a pedido do Flávio: uma cor
+       escura só (em vez do gradiente marrom/laranja) pro cabeçalho e menu lateral, e uma
+       dupla de fontes (serifada nos títulos, mais refinada no corpo) puxada do Google
+       Fonts (ver <link> no <head>). A marca (laranja, ícones, nomes do menu) continua
+       igual — só o acabamento fica mais sóbrio. */
+    --ink:#211a13;
+    --font-display:'Newsreader',Georgia,'Times New Roman',serif;
+    --font-body:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:var(--font-body);
     background:var(--bg);
     color:var(--text);
     padding-left:208px;
     -webkit-font-smoothing:antialiased;
   }
+  h1,h2,h3{font-family:var(--font-display);font-weight:500;}
   header.app{
-    background:linear-gradient(145deg,#241009 0%,#4a2110 48%,#8a3d10 100%);
+    background:var(--ink);
     color:#fff;
     padding:16px 16px;
     position:sticky;top:0;z-index:10;
@@ -485,6 +500,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     height:42px;display:block;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3));
   }
   header.app h1{
+    font-family:var(--font-body);
     font-size:13px;margin:0;font-weight:700;letter-spacing:-.1px;opacity:.9;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
   }
@@ -674,7 +690,43 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
   .subtabs{display:flex;gap:6px;margin-bottom:10px;}
   #mapaFullscreenArea.fullscreen-mapa,
-  #mapaCadFullscreenArea.fullscreen-mapa{position:fixed;inset:0;z-index:9999;background:var(--card);padding:14px;overflow:auto;-webkit-overflow-scrolling:touch;}
+  #mapaCadFullscreenArea.fullscreen-mapa{position:fixed;inset:0;z-index:9999;background:var(--card);padding:14px;overflow:hidden;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;}
+  /* 30/09/2026, a pedido do Flávio: em tela cheia o mapa ficava "espremido" lá embaixo,
+     tendo que rolar por cima do texto/ferramentas/painel de seleção pra chegar nele. Agora
+     esse bloco de cima (.map-toolbar: título, abas, busca, painel de quantos talhões estão
+     selecionados) fica compacto e com rolagem própria, e o mapa em si (.map-stage) cresce
+     pra ocupar o resto da tela — vira a parte central, grande, em vez de ficar no meio do
+     texto todo. Fora da tela cheia isso não muda nada (a página inteira já rola normal). */
+  #mapaFullscreenArea.fullscreen-mapa .map-toolbar,
+  #mapaCadFullscreenArea.fullscreen-mapa .map-toolbar{flex:0 0 auto;max-height:40vh;overflow:auto;-webkit-overflow-scrolling:touch;padding-right:2px;}
+  #mapaFullscreenArea.fullscreen-mapa .map-stage,
+  #mapaCadFullscreenArea.fullscreen-mapa .map-stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin-top:10px;}
+  #mapaFullscreenArea.fullscreen-mapa .map-stage > div,
+  #mapaCadFullscreenArea.fullscreen-mapa .map-stage > div{flex:1 1 auto;min-height:0;}
+  /* .hidden-view (não mais style="display:none" inline) marca qual das 3 visões
+     (Pivô/Grade/Lista) está escondida — ver switchTalhaoView/switchTalhaoCadView.
+     Usar uma classe em vez de inline permite que só a visão ATIVA vire flex/coluna
+     em tela cheia, sem entrar em conflito de especificidade com o display:none de
+     quem está escondida. */
+  .hidden-view{display:none;}
+  #mapaFullscreenArea.fullscreen-mapa #pivoWrap:not(.hidden-view),
+  #mapaFullscreenArea.fullscreen-mapa #mapaWrap:not(.hidden-view),
+  #mapaFullscreenArea.fullscreen-mapa #listaWrap:not(.hidden-view),
+  #mapaCadFullscreenArea.fullscreen-mapa #pivoCadWrap:not(.hidden-view),
+  #mapaCadFullscreenArea.fullscreen-mapa #mapaCadWrap:not(.hidden-view),
+  #mapaCadFullscreenArea.fullscreen-mapa #listaCadWrap:not(.hidden-view){display:flex;flex-direction:column;min-height:0;}
+  #mapaFullscreenArea.fullscreen-mapa .pivo-grid-outer,
+  #mapaCadFullscreenArea.fullscreen-mapa .pivo-grid-outer{flex:1 1 auto;min-height:0;max-height:none;display:flex;flex-direction:column;}
+  #mapaFullscreenArea.fullscreen-mapa .pivo-grid-zoom-host,
+  #mapaCadFullscreenArea.fullscreen-mapa .pivo-grid-zoom-host{flex:1 1 auto;min-height:0;}
+  #mapaFullscreenArea.fullscreen-mapa .pivo-grid-viewport,
+  #mapaCadFullscreenArea.fullscreen-mapa .pivo-grid-viewport{height:100%;max-height:none;min-height:240px;}
+  #mapaFullscreenArea.fullscreen-mapa .pivo-svg-map,
+  #mapaCadFullscreenArea.fullscreen-mapa .pivo-svg-map{max-height:none;flex:1 1 auto;min-height:240px;}
+  #mapaFullscreenArea.fullscreen-mapa #mapaBody,
+  #mapaFullscreenArea.fullscreen-mapa #ensaioList,
+  #mapaCadFullscreenArea.fullscreen-mapa #mapaCadBody,
+  #mapaCadFullscreenArea.fullscreen-mapa #talhaoCadastroBody{flex:1 1 auto;min-height:0;max-height:none;overflow:auto;}
   .talhao-cad-editor{border:2px solid var(--orange);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px;background:var(--orange-light);}
   .talhao-cad-editor-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
   .talhao-cad-editor-head b{font-size:15px;color:var(--text);}
@@ -845,7 +897,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
      ficar "mais espessa" como o Flávio pediu. */
   nav.tabs{
     position:fixed;top:0;left:0;bottom:0;width:208px;
-    background:linear-gradient(165deg,#241009 0%,#4a2110 55%,#8a3d10 100%);
+    background:var(--ink);
     display:flex;flex-direction:column;z-index:20;
     box-shadow:var(--shadow-lg);
     padding:18px 12px 12px;gap:3px;
@@ -859,14 +911,16 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   nav.tabs button{
     flex:0 0 auto;background:none;border:none;padding:12px 12px;
     display:flex;flex-direction:row;align-items:center;gap:12px;justify-content:flex-start;
-    font-size:14px;font-weight:700;color:rgba(255,224,201,.62);border-radius:12px;
+    font-size:14px;font-weight:600;color:rgba(255,224,201,.62);border-radius:12px;
     line-height:1.2;text-align:left;
     transition:background .18s ease, color .18s ease;
   }
   nav.tabs button .ic{font-size:19px;flex:0 0 auto;width:22px;text-align:center;filter:grayscale(.15) brightness(1.15);}
+  /* 30/09/2026 — realce do item ativo em tom laranja (marca) em vez do branco translúcido
+     de antes, igual ao modelo que o Flávio aprovou. */
   nav.tabs button.active{
-    color:#fff;background:rgba(255,255,255,.14);
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+    color:#fff;background:rgba(234,88,12,.22);
+    box-shadow:inset 0 0 0 1px rgba(234,88,12,.35);
   }
   nav.tabs button:active{background:rgba(255,255,255,.1);}
   .nav-sync{
@@ -1155,6 +1209,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
     <div class="card">
       <div id="mapaFullscreenArea">
+      <div class="map-toolbar">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">
         <div>
           <h2 style="margin-bottom:2px;">Talhões / ensaios aplicados</h2>
@@ -1178,23 +1233,26 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <input class="searchbar" id="mapaSearch" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoSearch()">
 
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('MILHO')">🌽 Selecionar tudo de Milho</button>
+        <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('SOJA')">🌱 Selecionar tudo de Soja</button>
+        <button class="btn-ghost btn-sm" onclick="clearAllTalhoes()">Limpar seleção</button>
+      </div>
+      </div>
+
+      <div class="map-stage">
       <div id="pivoWrap">
         <p class="muted" style="margin:0 0 8px;">Arraste pra mover · roda do mouse ou os botões +/− pra dar zoom. Toque no número da quadra para selecionar.</p>
         <div class="pivo-grid-outer"><div class="pivo-quadrantes" id="pivoGridWrap"></div></div>
       </div>
 
-      <div id="mapaWrap" style="display:none;">
+      <div id="mapaWrap" class="hidden-view">
         <div id="mapaBody"></div>
       </div>
 
-      <div id="listaWrap" style="display:none;">
+      <div id="listaWrap" class="hidden-view">
         <div id="ensaioList" style="max-height:280px;overflow:auto;border:1px solid var(--border);border-radius:9px;"></div>
       </div>
-
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-        <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('MILHO')">🌽 Selecionar tudo de Milho</button>
-        <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('SOJA')">🌱 Selecionar tudo de Soja</button>
-        <button class="btn-ghost btn-sm" onclick="clearAllTalhoes()">Limpar seleção</button>
       </div>
       </div>
 
@@ -1234,6 +1292,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <section id="tab-talhoes" class="section">
     <div class="card">
       <div id="mapaCadFullscreenArea">
+      <div class="map-toolbar">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">
         <div>
           <h2 style="margin-bottom:2px;">Cultura por talhão</h2>
@@ -1278,18 +1337,21 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <div id="talhaoCadBulkPanel" style="display:none;"></div>
       <div id="talhaoCadEditor" style="display:none;"></div>
+      </div>
 
+      <div class="map-stage">
       <div id="pivoCadWrap">
         <p class="muted" style="margin:0 0 8px;">Arraste pra mover · roda do mouse ou os botões +/− pra dar zoom. Toque no número da quadra pra cadastrar a cultura dela.</p>
         <div class="pivo-grid-outer"><div class="pivo-quadrantes" id="pivoGridWrapCad"></div></div>
       </div>
 
-      <div id="mapaCadWrap" style="display:none;">
+      <div id="mapaCadWrap" class="hidden-view">
         <div id="mapaCadBody"></div>
       </div>
 
-      <div id="listaCadWrap" style="display:none;">
+      <div id="listaCadWrap" class="hidden-view">
         <div id="talhaoCadastroBody" style="max-height:65vh;overflow:auto;"></div>
+      </div>
       </div>
       </div>
     </div>
@@ -1683,7 +1745,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v1.99.6';
+const APP_BUILD_ID = 'v2.0.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -4212,9 +4274,21 @@ function aplicarBulkTalhaoCad(){
    a própria ação que acabou de ser clicada. */
 function focoEmCampoDeTexto(box){
   const el = document.activeElement;
-  if(!el || !box.contains(el)) return false;
-  if(el.tagName !== 'INPUT') return false;
-  return el.type==='text' || el.type==='date' || el.type==='number';
+  if(el && box.contains(el) && el.tagName==='INPUT' && (el.type==='text' || el.type==='date' || el.type==='number')) return true;
+  /* 30/09/2026, a pedido do Flávio: "às vezes quando eu tô digitando o talhão o app meio
+     que atualiza e apaga o que já digitei". O celular às vezes perde o activeElement por
+     um instante (troca de teclado virtual, autocomplete, etc.) mesmo com o usuário ainda
+     digitando — nesse instante o cheque acima (document.activeElement) não pega mais o
+     campo, e uma reconstrução que caia bem nessa hora apagava o que tinha sido escrito.
+     Reforço: cada tecla nesses campos (ver oninput="marcarDigitandoTalhaoCad()") marca um
+     horário; por 3s depois da última tecla, considera "ainda digitando" mesmo sem
+     activeElement confirmado. */
+  if(Date.now() - __ultimaTeclaCampoLivreTalhaoCadEm < 3000) return true;
+  return false;
+}
+let __ultimaTeclaCampoLivreTalhaoCadEm = 0;
+function marcarDigitandoTalhaoCad(){
+  __ultimaTeclaCampoLivreTalhaoCadEm = Date.now();
 }
 
 function renderTalhaoCadBulkPanel(){
@@ -4281,8 +4355,8 @@ function renderTalhaoCadBulkPanel(){
       <div class="field"><label>Modalidade</label><select id="bulkCadModalidade" disabled>${modalidadeOptionsHtml('', '')}</select></div>
     </div>
     <div class="row">
-      <div class="field"><label>Data de plantio</label><input type="date" id="bulkCadData"></div>
-      <div class="field"><label>Número do ensaio</label><input type="text" id="bulkCadEnsaio" placeholder="Ex: 1234"></div>
+      <div class="field"><label>Data de plantio</label><input type="date" id="bulkCadData" oninput="marcarDigitandoTalhaoCad()"></div>
+      <div class="field"><label>Número do ensaio</label><input type="text" id="bulkCadEnsaio" placeholder="Ex: 1234" oninput="marcarDigitandoTalhaoCad()"></div>
     </div>
     <div class="row" style="margin-top:8px; align-items:center; gap:8px;">
       <button type="button" class="btn-primary btn-sm" ${ids.length? '' : 'disabled'} onclick="aplicarBulkTalhaoCad()">✓ Aplicar a ${ids.length} ${ids.length===1?'talhão':'talhões'} selecionado${ids.length===1?'':'s'}</button>
@@ -4336,9 +4410,9 @@ function excluirSelecionadosTalhaoCad(){
 function switchTalhaoCadView(view){
   talhaoCadView = view;
   document.querySelectorAll('#tab-talhoes .subtab-btn:not(.pivo-tab-btn)').forEach(b=>b.classList.toggle('active', b.dataset.viewcad===view));
-  document.getElementById('pivoCadWrap').style.display = view==='pivo'? 'block':'none';
-  document.getElementById('mapaCadWrap').style.display = view==='mapa'? 'block':'none';
-  document.getElementById('listaCadWrap').style.display = view==='lista'? 'block':'none';
+  document.getElementById('pivoCadWrap').classList.toggle('hidden-view', view!=='pivo');
+  document.getElementById('mapaCadWrap').classList.toggle('hidden-view', view!=='mapa');
+  document.getElementById('listaCadWrap').classList.toggle('hidden-view', view!=='lista');
   refreshTalhaoCadUI();
 }
 
@@ -4382,8 +4456,8 @@ function renderTalhaoCadEditor(){
         <div class="field"><label>Modalidade</label><select ${disabledModalidade?'disabled':''} onchange="updateTalhaoPlantioField('${e.id}','${p.id}','modalidade', this.value)">${modalidadeOptionsHtml(p.cultura, p.modalidade)}</select></div>
       </div>
       <div class="row">
-        <div class="field"><label>Data de plantio</label><input type="date" value="${escapeHtml(p.dataPlantio||'')}" onchange="updateTalhaoPlantioField('${e.id}','${p.id}','dataPlantio', this.value)"></div>
-        <div class="field"><label>Número do ensaio</label><input type="text" placeholder="Ex: 1234" value="${escapeHtml(p.numeroEnsaio||'')}" onchange="updateTalhaoPlantioField('${e.id}','${p.id}','numeroEnsaio', this.value)"></div>
+        <div class="field"><label>Data de plantio</label><input type="date" value="${escapeHtml(p.dataPlantio||'')}" onchange="updateTalhaoPlantioField('${e.id}','${p.id}','dataPlantio', this.value)" oninput="marcarDigitandoTalhaoCad()"></div>
+        <div class="field"><label>Número do ensaio</label><input type="text" placeholder="Ex: 1234" value="${escapeHtml(p.numeroEnsaio||'')}" onchange="updateTalhaoPlantioField('${e.id}','${p.id}','numeroEnsaio', this.value)" oninput="marcarDigitandoTalhaoCad()"></div>
       </div>
     </div>`;
   }).join('') : '<div class="empty">Nenhum plantio cadastrado ainda — use "Adicionar plantio" abaixo.</div>';
@@ -4403,7 +4477,7 @@ function renderTalhaoCadEditor(){
     const hint = original? ` — real do levantamento: ${fmtNum(original)}m` : '';
     comprimentoHtml = `<div class="row" style="margin-top:8px; align-items:flex-end;">
       <div class="field"><label>Comprimento da quadra (m) <span class="muted">— largura fixa 20m${escapeHtml(hint)}</span></label>
-        <input type="text" inputmode="decimal" placeholder="Deixe vazio pra usar o formato real" value="${e.comprimentoManual? escapeHtml(fmtNum(e.comprimentoManual)):''}" onchange="updateTalhaoComprimento('${e.id}', this.value)"></div>
+        <input type="text" inputmode="decimal" placeholder="Deixe vazio pra usar o formato real" value="${e.comprimentoManual? escapeHtml(fmtNum(e.comprimentoManual)):''}" onchange="updateTalhaoComprimento('${e.id}', this.value)" oninput="marcarDigitandoTalhaoCad()"></div>
       <div class="field" style="flex:0 0 auto;">
         ${e.ativo===false
           ? `<button type="button" class="btn-primary btn-sm" onclick="reativarTalhaoPivo4('${e.id}')">↩ Reativar quadra</button>`
@@ -4730,9 +4804,9 @@ function confirmarExecucaoAplicacao(appId, feito){
 function switchTalhaoView(view){
   talhaoView = view;
   document.querySelectorAll('.subtab-btn:not(.pivo-tab-btn)').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
-  document.getElementById('pivoWrap').style.display = view==='pivo'? 'block':'none';
-  document.getElementById('mapaWrap').style.display = view==='mapa'? 'block':'none';
-  document.getElementById('listaWrap').style.display = view==='lista'? 'block':'none';
+  document.getElementById('pivoWrap').classList.toggle('hidden-view', view!=='pivo');
+  document.getElementById('mapaWrap').classList.toggle('hidden-view', view!=='mapa');
+  document.getElementById('listaWrap').classList.toggle('hidden-view', view!=='lista');
   refreshTalhaoUI();
 }
 
@@ -5455,9 +5529,9 @@ function pivoSvgAttachInteractions(svgEl, vb){
      tinha arrastado/dado zoom, mantém do jeito que estava e só reaplica no <svg> novo. */
   if(!pivoSvgViews[svgEl.id]) pivoSvgViews[svgEl.id] = {x: vb.minX, y: -(vb.minY+vb.h), w: vb.w, h: vb.h};
   pivoSvgApplyView(svgEl);
-  let dragging = false, lastX = 0, lastY = 0, pid = null;
+  let dragging = false, lastX = 0, lastY = 0, pid = null, moved = 0;
   svgEl.addEventListener('pointerdown', e=>{
-    dragging = true; lastX = e.clientX; lastY = e.clientY; pid = e.pointerId;
+    dragging = true; lastX = e.clientX; lastY = e.clientY; moved = 0; pid = e.pointerId;
     try{ e.target.setPointerCapture(pid); }catch(err){}
   });
   svgEl.addEventListener('pointermove', e=>{
@@ -5468,11 +5542,18 @@ function pivoSvgAttachInteractions(svgEl, vb){
     const scale = v.w/rect.width;
     v.x -= (e.clientX-lastX)*scale;
     v.y -= (e.clientY-lastY)*scale;
+    moved += Math.abs(e.clientX-lastX) + Math.abs(e.clientY-lastY);
     lastX = e.clientX; lastY = e.clientY;
     pivoSvgApplyView(svgEl);
   });
   svgEl.addEventListener('pointerup', ()=>{ dragging = false; });
   svgEl.addEventListener('pointercancel', ()=>{ dragging = false; });
+  /* 30/09/2026, mesmo conserto do gridZoomAttachInteractions (Pivô 3) aplicado aqui pro
+     croqui em SVG (Pivô 4): arrasto de verdade cancela o clique fantasma que sobraria na
+     quadra embaixo do dedo. */
+  svgEl.addEventListener('click', e=>{
+    if(moved > 8){ e.stopPropagation(); e.preventDefault(); }
+  }, true);
   svgEl.addEventListener('wheel', e=>{
     e.preventDefault();
     const v = pivoSvgViews[svgEl.id];
@@ -5535,9 +5616,9 @@ function gridZoomAttachInteractions(wrapId){
      tinha zoom/arrasto feito, mantém e só reaplica no HTML novo (recriado a cada seleção). */
   if(!gridZoomViews[wrapId]) gridZoomViews[wrapId] = {scale:1, x:0, y:0};
   gridZoomApplyView(wrapId);
-  let dragging = false, lastX = 0, lastY = 0, pid = null;
+  let dragging = false, lastX = 0, lastY = 0, pid = null, moved = 0;
   vp.addEventListener('pointerdown', e=>{
-    dragging = true; lastX = e.clientX; lastY = e.clientY; pid = e.pointerId;
+    dragging = true; lastX = e.clientX; lastY = e.clientY; moved = 0; pid = e.pointerId;
     try{ e.target.setPointerCapture(pid); }catch(err){}
   });
   vp.addEventListener('pointermove', e=>{
@@ -5545,11 +5626,20 @@ function gridZoomAttachInteractions(wrapId){
     const v = gridZoomViews[wrapId];
     v.x += (e.clientX-lastX);
     v.y += (e.clientY-lastY);
+    moved += Math.abs(e.clientX-lastX) + Math.abs(e.clientY-lastY);
     lastX = e.clientX; lastY = e.clientY;
     gridZoomApplyView(wrapId);
   });
   vp.addEventListener('pointerup', ()=>{ dragging = false; });
   vp.addEventListener('pointercancel', ()=>{ dragging = false; });
+  /* 30/09/2026, a pedido do Flávio: arrastar o dedo pra mover/dar pan no mapa estava
+     "sobrando" como um clique na quadra que ficou embaixo do dedo ao soltar — selecionando
+     ela sem querer no meio do arrasto. Um arrasto de verdade (mais de ~8px de movimento
+     total) agora cancela esse clique fantasma antes que ele chegue na quadra (fase de
+     captura, então roda antes do onclick da própria célula). */
+  vp.addEventListener('click', e=>{
+    if(moved > 8){ e.stopPropagation(); e.preventDefault(); }
+  }, true);
   vp.addEventListener('wheel', e=>{
     e.preventDefault();
     const rect = vp.getBoundingClientRect();
