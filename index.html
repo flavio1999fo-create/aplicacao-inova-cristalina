@@ -546,7 +546,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .app-shell{display:block;}
   .dash-panel{padding:16px 16px 4px;max-width:720px;margin:0 auto;}
   .dash-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-  .dash-stat{background:var(--orange-light);border:1px solid #f6ddc2;border-radius:var(--radius-sm);padding:12px 14px;display:flex;flex-direction:column;gap:2px;}
+  .dash-stat{background:var(--orange-light);border:1px solid #f6ddc2;border-radius:var(--radius-sm);padding:12px 14px;display:flex;flex-direction:column;gap:2px;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+  .dash-stat:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.1);}
   .dash-stat-num{font-size:21px;font-weight:800;color:var(--orange-dark);letter-spacing:-.3px;}
   .dash-stat.warn{background:var(--danger-bg);border-color:#fbd5d5;}
   .dash-stat.warn .dash-stat-num{color:var(--danger);}
@@ -1083,12 +1084,12 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <div class="card">
     <h2>Resumo</h2>
     <div class="dash-stats">
-      <div class="dash-stat"><span class="dash-stat-num" id="dashStatProdutos">–</span><span class="dash-stat-label">Produtos</span></div>
-      <div class="dash-stat warn"><span class="dash-stat-num" id="dashStatBaixo">–</span><span class="dash-stat-label">Estoque baixo</span></div>
-      <div class="dash-stat"><span class="dash-stat-num" id="dashStatApps">–</span><span class="dash-stat-label">Aplicações</span></div>
-      <div class="dash-stat"><span class="dash-stat-num" id="dashStatMes">–</span><span class="dash-stat-label">Este mês</span></div>
-      <div class="dash-stat"><span class="dash-stat-num" id="dashStatArea">–</span><span class="dash-stat-label">Ha aplicados</span></div>
-      <div class="dash-stat warn"><span class="dash-stat-num" id="dashStatConfirmar">–</span><span class="dash-stat-label">Aguardando confirmação</span></div>
+      <div class="dash-stat" onclick="dashStatGo('estoque')" title="Abrir Estoque"><span class="dash-stat-num" id="dashStatProdutos">–</span><span class="dash-stat-label">Produtos</span></div>
+      <div class="dash-stat warn" onclick="dashStatGo('estoque')" title="Abrir Estoque"><span class="dash-stat-num" id="dashStatBaixo">–</span><span class="dash-stat-label">Estoque baixo</span></div>
+      <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatApps">–</span><span class="dash-stat-label">Aplicações</span></div>
+      <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatMes">–</span><span class="dash-stat-label">Este mês</span></div>
+      <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatArea">–</span><span class="dash-stat-label">Ha aplicados</span></div>
+      <div class="dash-stat warn" onclick="dashStatGo('nova')" title="Abrir Aplicação"><span class="dash-stat-num" id="dashStatConfirmar">–</span><span class="dash-stat-label">Aguardando confirmação</span></div>
     </div>
   </div>
 
@@ -1745,7 +1746,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.0.0';
+const APP_BUILD_ID = 'v2.1.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -2308,6 +2309,16 @@ function toggleDashboard(){
 function closeDashboard(){
   document.getElementById('tab-dashboard').classList.remove('open');
   document.getElementById('dashBackdrop').classList.remove('show');
+}
+/* 30/09/2026 — a pedido do Flávio: os cartões do Dashboard (Produtos, Aplicações...) agora
+   abrem a aba correspondente em vez de ficar só como número estático. Fecha o painel do
+   Dashboard (se estiver aberto, como no PC) e clica no botão da aba de verdade — mesmo
+   caminho usado em applyRoleUI, então já dispara os refreshes de cada aba (refreshTalhaoUI,
+   renderHistory etc.) que o próprio handler de clique da aba já faz. */
+function dashStatGo(tab){
+  closeDashboard();
+  const target = document.querySelector('.tab-btn[data-tab="'+tab+'"]');
+  if(target) target.click();
 }
 /* 16/09/2026 — a pedido do Flávio: no celular o menu lateral (sempre visível antes) virou
    uma gaveta que abre pelo botão ☰ do cabeçalho, pra não tomar mais da metade de uma tela
