@@ -552,6 +552,11 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .dash-stat.warn{background:var(--danger-bg);border-color:#fbd5d5;}
   .dash-stat.warn .dash-stat-num{color:var(--danger);}
   .dash-stat-label{font-size:11px;color:var(--muted);font-weight:600;}
+  .dash-section-label{
+    font-size:12px;font-weight:800;letter-spacing:.3px;color:var(--orange-dark);
+    margin:20px 0 8px;padding-left:2px;
+  }
+  .dash-section-label:first-of-type{margin-top:0;}
 
   /* ---- Aguardando confirmação do operador (09/09/2026) ---- */
   .aguardando-confirmacao-box{background:var(--danger-bg);border:1px solid #fbd5d5;border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
@@ -1071,11 +1076,14 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     <h2>Dashboard</h2>
     <button class="dash-panel-close" onclick="closeDashboard()">✕</button>
   </div>
+  <!-- 30/09/2026 — a pedido do Flávio: Dashboard separado por tópico (Aplicação / Talhões
+       e Áreas / Estoque), em vez de tudo misturado numa lista só de cartões. Cada tópico
+       tem seu próprio resumo (dash-stats) e seus gráficos — ver renderDashboard() no JS
+       pra quem popula cada um. -->
+  <div class="dash-section-label">📋 Aplicação</div>
   <div class="card">
     <h2>Resumo</h2>
     <div class="dash-stats">
-      <div class="dash-stat" onclick="dashStatGo('estoque')" title="Abrir Estoque"><span class="dash-stat-num" id="dashStatProdutos">–</span><span class="dash-stat-label">Produtos</span></div>
-      <div class="dash-stat warn" onclick="dashStatGo('estoque')" title="Abrir Estoque"><span class="dash-stat-num" id="dashStatBaixo">–</span><span class="dash-stat-label">Estoque baixo</span></div>
       <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatApps">–</span><span class="dash-stat-label">Aplicações</span></div>
       <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatMes">–</span><span class="dash-stat-label">Este mês</span></div>
       <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatArea">–</span><span class="dash-stat-label">Ha aplicados</span></div>
@@ -1112,6 +1120,50 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <div class="card">
     <h2>Aplicações por talhão</h2>
     <div class="hbar-chart" id="dashChartTalhao"></div>
+  </div>
+
+  <!-- 30/09/2026 — a pedido do Flávio: informações dos talhões e dos pivôs (o que está
+       CADASTRADO/PLANTADO hoje), separado do tópico Aplicação acima (que é sobre o que já
+       foi APLICADO). Usa DATA.ensaios direto, somando todos os pivôs/áreas da estação
+       ativa (não só o pivô selecionado na aba Talhões) — ver renderDashboard(). -->
+  <div class="dash-section-label">🌾 Talhões / Áreas</div>
+  <div class="card">
+    <h2>Resumo dos talhões</h2>
+    <div class="dash-stats">
+      <div class="dash-stat" onclick="dashStatGo('talhoes')" title="Abrir Talhões"><span class="dash-stat-num" id="dashStatAreaTotal">–</span><span class="dash-stat-label">Área total (ha)</span></div>
+      <div class="dash-stat" onclick="dashStatGo('talhoes')" title="Abrir Talhões"><span class="dash-stat-num" id="dashStatTalhoesCad">–</span><span class="dash-stat-label">Talhões cadastrados</span></div>
+      <div class="dash-stat" onclick="dashStatGo('talhoes')" title="Abrir Talhões"><span class="dash-stat-num" id="dashStatTalhoesOcupados">–</span><span class="dash-stat-label">Talhões ocupados</span></div>
+      <div class="dash-stat" onclick="dashStatGo('talhoes')" title="Abrir Talhões"><span class="dash-stat-num" id="dashStatTalhoesLivres">–</span><span class="dash-stat-label">Talhões livres</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Área por pivô (ha)</h2>
+    <div class="hbar-chart" id="dashChartAreaPivo"></div>
+  </div>
+
+  <div class="card">
+    <h2>Talhões por pivô (quantidade)</h2>
+    <div class="hbar-chart" id="dashChartTalhoesPorPivo"></div>
+  </div>
+
+  <div class="card">
+    <h2>Área ocupada por cultura (ha)</h2>
+    <div class="hbar-chart" id="dashChartAreaCulturaTalhao"></div>
+  </div>
+
+  <div class="card">
+    <h2>Talhões por cultura (quantidade)</h2>
+    <div class="hbar-chart" id="dashChartTalhoesPorCultura"></div>
+  </div>
+
+  <div class="dash-section-label">📦 Estoque</div>
+  <div class="card">
+    <h2>Resumo do estoque</h2>
+    <div class="dash-stats">
+      <div class="dash-stat" onclick="dashStatGo('estoque')" title="Abrir Estoque"><span class="dash-stat-num" id="dashStatProdutos">–</span><span class="dash-stat-label">Produtos</span></div>
+      <div class="dash-stat warn" onclick="dashStatGo('estoque')" title="Abrir Estoque"><span class="dash-stat-num" id="dashStatBaixo">–</span><span class="dash-stat-label">Estoque baixo</span></div>
+    </div>
   </div>
 
   <div class="card">
@@ -1516,6 +1568,10 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
           <label>PIN inicial</label>
           <input type="password" id="newUserPin" inputmode="numeric" placeholder="4 ou mais dígitos">
         </div>
+        <div class="field">
+          <label>WhatsApp (opcional, com DDD)</label>
+          <input type="text" id="newUserTelefone" inputmode="tel" placeholder="Ex.: 62999998888">
+        </div>
       </div>
       <div class="field">
         <label>Perfil de acesso</label>
@@ -1736,7 +1792,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.2.0';
+const APP_BUILD_ID = 'v2.4.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -2335,6 +2391,7 @@ function renderUserAdmin(){
       <div class="user-row-info">
         <b>${escapeHtml(u.nome)}</b>
         <span class="badge ${badgeCls}">${escapeHtml(perfilLabel(perfil))}</span>
+        ${u.telefone? `<span class="muted" style="font-size:11px;">📱 ${escapeHtml(u.telefone)}</span>` : '<span class="muted" style="font-size:11px;">📱 sem WhatsApp</span>'}
       </div>
       <div class="user-row-actions">
         <select class="btn-ghost btn-sm" style="width:auto;" onchange="changeUserPerfil(this)">
@@ -2342,11 +2399,30 @@ function renderUserAdmin(){
           <option value="TECNICO" ${perfil==='TECNICO'?'selected':''}>Técnico</option>
           <option value="ADM" ${perfil==='ADM'?'selected':''}>ADM</option>
         </select>
+        <button class="btn-ghost btn-sm" onclick="editarTelefoneUser(this)">📱 WhatsApp</button>
         <button class="btn-ghost btn-sm" onclick="resetUserPin(this)">PIN</button>
         <button class="btn-danger btn-sm" onclick="removeUser(this)">Excluir</button>
       </div>
     </div>`;
   }).join('') || '<p class="muted">Nenhum usuário cadastrado.</p>';
+}
+/* 30/09/2026 — a pedido do Flávio: quando uma aplicação nova é registrada, o operador
+   responsável recebe um aviso no WhatsApp (ver notificarOperadorWhatsApp). Pra isso
+   funcionar precisa do número de WhatsApp de cada operador, cadastrado aqui. */
+function editarTelefoneUser(btn){
+  requireAdmin(()=>{
+    const nome = getUserRowNome(btn);
+    const u = (DATA.users||[]).find(x=>x.nome===nome);
+    if(!u) return;
+    const atual = u.telefone || '';
+    const novo = prompt(`WhatsApp de ${nome} (com DDD, ex.: 62999998888):`, atual);
+    if(novo===null) return;
+    u.telefone = novo.trim();
+    saveData();
+    fbPushEstoque();
+    renderUserAdmin();
+    toast(u.telefone ? 'Número de WhatsApp salvo' : 'Número removido');
+  });
 }
 function resetUserPin(btn){
   requireAdmin(()=>{
@@ -2409,17 +2485,19 @@ function addUserAdmin(){
     const nome = document.getElementById('newUserNome').value.trim().toUpperCase();
     const pin = document.getElementById('newUserPin').value.trim();
     const perfil = document.getElementById('newUserPerfil').value;
+    const telefone = (document.getElementById('newUserTelefone').value||'').trim();
     if(!nome){ toast('Informe o nome do usuário'); return; }
     if((DATA.users||[]).some(u=>u.nome===nome)){ toast('Já existe um usuário com esse nome'); return; }
     if(!/^\d{4,}$/.test(pin)){ toast('PIN deve ter 4 ou mais dígitos numéricos'); return; }
     const salt = makeSalt();
     DATA.users = DATA.users||[];
-    DATA.users.push({nome, salt, pinHash: hashPin(pin, salt), perfil, admin: perfil==='ADM'});
+    DATA.users.push({nome, salt, pinHash: hashPin(pin, salt), perfil, admin: perfil==='ADM', telefone});
     saveData();
     fbPushEstoque();
     renderUserAdmin();
     document.getElementById('newUserNome').value='';
     document.getElementById('newUserPin').value='';
+    document.getElementById('newUserTelefone').value='';
     document.getElementById('newUserPerfil').value='OPERADOR';
     toast(`Usuário adicionado (${perfilLabel(perfil)})`);
   });
@@ -3370,6 +3448,83 @@ function renderDashboard(){
     elTalhao.innerHTML = topTalhoes.map(([talhao,qtd])=>`<div class="hbar-row">
         <div class="hbar-top"><span>${escapeHtml(talhao)}</span><span>${qtd} aplicaç${qtd===1?'ão':'ões'}</span></div>
         <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxContagemTalhao)*100))}%"></div></div>
+      </div>`).join('');
+  }
+
+  /* 30/09/2026 — a pedido do Flávio: tópico "Talhões / Áreas" do Dashboard — o que está
+     CADASTRADO/PLANTADO hoje nos talhões (área total, área e talhões por pivô, área e
+     talhões por cultura), diferente do tópico Aplicação acima que é sobre o que já foi
+     APLICADO. Soma DATA.ensaios de todos os pivôs/áreas da estação ativa (não só o pivô
+     selecionado na aba Talhões), pra dar uma visão geral. */
+  const ensaiosAtivos = (DATA.ensaios||[]).filter(e=>e.ativo!==false);
+  const areaTotalTalhoes = ensaiosAtivos.reduce((s,e)=>s+(Number(e.area)||0), 0);
+  const talhoesOcupados = ensaiosAtivos.filter(e=>(e.cultura||'').trim()).length;
+  const talhoesLivres = ensaiosAtivos.length - talhoesOcupados;
+
+  document.getElementById('dashStatAreaTotal').textContent = fmtNum(areaTotalTalhoes);
+  document.getElementById('dashStatTalhoesCad').textContent = ensaiosAtivos.length;
+  document.getElementById('dashStatTalhoesOcupados').textContent = talhoesOcupados;
+  document.getElementById('dashStatTalhoesLivres').textContent = talhoesLivres;
+
+  const areaPorPivoMap = {}, talhoesPorPivoMap = {};
+  ensaiosAtivos.forEach(e=>{
+    const pid = e.pivo || 'CRISTALINA';
+    areaPorPivoMap[pid] = (areaPorPivoMap[pid]||0) + (Number(e.area)||0);
+    talhoesPorPivoMap[pid] = (talhoesPorPivoMap[pid]||0) + 1;
+  });
+
+  const listaAreaPivo = Object.entries(areaPorPivoMap).sort((a,b)=>b[1]-a[1]);
+  const maxAreaPivo = Math.max(1, ...listaAreaPivo.map(x=>x[1]));
+  const elAreaPivo = document.getElementById('dashChartAreaPivo');
+  if(!listaAreaPivo.length){
+    elAreaPivo.innerHTML = '<p class="dash-empty">Nenhum talhão cadastrado ainda.</p>';
+  }else{
+    elAreaPivo.innerHTML = listaAreaPivo.map(([pid,area])=>`<div class="hbar-row">
+        <div class="hbar-top"><span>${escapeHtml(pivoLabel(pid))}</span><span>${fmtNum(area)} ha</span></div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((area/maxAreaPivo)*100))}%"></div></div>
+      </div>`).join('');
+  }
+
+  const listaTalhoesPivo = Object.entries(talhoesPorPivoMap).sort((a,b)=>b[1]-a[1]);
+  const maxTalhoesPivo = Math.max(1, ...listaTalhoesPivo.map(x=>x[1]));
+  const elTalhoesPivo = document.getElementById('dashChartTalhoesPorPivo');
+  if(!listaTalhoesPivo.length){
+    elTalhoesPivo.innerHTML = '<p class="dash-empty">Nenhum talhão cadastrado ainda.</p>';
+  }else{
+    elTalhoesPivo.innerHTML = listaTalhoesPivo.map(([pid,qtd])=>`<div class="hbar-row">
+        <div class="hbar-top"><span>${escapeHtml(pivoLabel(pid))}</span><span>${qtd} talh${qtd===1?'ão':'ões'}</span></div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxTalhoesPivo)*100))}%"></div></div>
+      </div>`).join('');
+  }
+
+  const areaPorCulturaTalhaoMap = {}, talhoesPorCulturaMap = {};
+  ensaiosAtivos.forEach(e=>{
+    const cultura = (e.cultura||'').trim() || 'LIVRE';
+    areaPorCulturaTalhaoMap[cultura] = (areaPorCulturaTalhaoMap[cultura]||0) + (Number(e.area)||0);
+    talhoesPorCulturaMap[cultura] = (talhoesPorCulturaMap[cultura]||0) + 1;
+  });
+
+  const listaAreaCulturaTalhao = Object.entries(areaPorCulturaTalhaoMap).sort((a,b)=>b[1]-a[1]);
+  const maxAreaCulturaTalhao = Math.max(1, ...listaAreaCulturaTalhao.map(x=>x[1]));
+  const elAreaCulturaTalhao = document.getElementById('dashChartAreaCulturaTalhao');
+  if(!listaAreaCulturaTalhao.length){
+    elAreaCulturaTalhao.innerHTML = '<p class="dash-empty">Nenhum talhão cadastrado ainda.</p>';
+  }else{
+    elAreaCulturaTalhao.innerHTML = listaAreaCulturaTalhao.map(([cultura,area])=>`<div class="hbar-row">
+        <div class="hbar-top"><span>${escapeHtml(tituloCultura(cultura))}</span><span>${fmtNum(area)} ha</span></div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((area/maxAreaCulturaTalhao)*100))}%"></div></div>
+      </div>`).join('');
+  }
+
+  const listaTalhoesCultura = Object.entries(talhoesPorCulturaMap).sort((a,b)=>b[1]-a[1]);
+  const maxTalhoesCultura = Math.max(1, ...listaTalhoesCultura.map(x=>x[1]));
+  const elTalhoesCultura = document.getElementById('dashChartTalhoesPorCultura');
+  if(!listaTalhoesCultura.length){
+    elTalhoesCultura.innerHTML = '<p class="dash-empty">Nenhum talhão cadastrado ainda.</p>';
+  }else{
+    elTalhoesCultura.innerHTML = listaTalhoesCultura.map(([cultura,qtd])=>`<div class="hbar-row">
+        <div class="hbar-top"><span>${escapeHtml(tituloCultura(cultura))}</span><span>${qtd} talh${qtd===1?'ão':'ões'}</span></div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxTalhoesCultura)*100))}%"></div></div>
       </div>`).join('');
   }
 
@@ -5820,6 +5975,43 @@ function resetNovaForm(){
   addProdRow();
 }
 
+/* 30/09/2026 — a pedido do Flávio: sempre que uma aplicação nova é registrada, o operador
+   responsável recebe um aviso pelo WhatsApp. Como o app é só uma página estática (sem
+   servidor por trás), não dá pra mandar a mensagem sozinho — o jeito é abrir o WhatsApp
+   (app no celular ou WhatsApp Web no PC) já com o número e o texto prontos, e quem estiver
+   registrando a aplicação só confirma o envio com um toque. Precisa do WhatsApp do operador
+   cadastrado na aba Usuários (botão "📱 WhatsApp" em cada linha) — se não tiver, só avisa
+   com um toast e segue o fluxo normal, sem travar nada. */
+function formatWhatsAppPhone(raw){
+  let d = String(raw||'').replace(/\D/g,'');
+  if(!d) return '';
+  if(d.startsWith('55') && (d.length===12 || d.length===13)) return d;
+  if(d.length===10 || d.length===11) return '55'+d;
+  return d;
+}
+function notificarOperadorWhatsApp(app){
+  const nome = (app.operador||'').trim().toUpperCase();
+  if(!nome) return;
+  const u = (DATA.users||[]).find(x=>x.nome===nome);
+  const telefone = u ? formatWhatsAppPhone(u.telefone) : '';
+  if(!telefone){
+    toast(`${app.operador}: sem WhatsApp cadastrado (adicione na aba Usuários pra avisar automaticamente)`);
+    return;
+  }
+  const ensaios = app.ensaiosSel||[];
+  const pivos = [...new Set(ensaios.map(e=>e.pivo).filter(Boolean))].join('/');
+  const talhoes = ensaios.map(e=>e.talhao||e.ensaio).filter(Boolean).join(', ');
+  const linhas = [
+    `Olá ${app.operador}! 📋 Nova aplicação registrada para ${fmtDateBR(app.dataAplicacao)}.`,
+    `Cultura: ${app.cultura||'–'}`
+  ];
+  if(pivos) linhas.push(`Pivô(s): ${pivos}`);
+  if(talhoes) linhas.push(`Talhões: ${talhoes}`);
+  linhas.push(`Equipamento: ${app.equipamento||'–'}`);
+  linhas.push(`Confira os detalhes e confirme no app quando concluir a aplicação.`);
+  const url = `https://wa.me/${telefone}?text=${encodeURIComponent(linhas.join('\n'))}`;
+  window.open(url, '_blank');
+}
 function registerApplication(){
   const dataAplicacao = document.getElementById('fData').value;
   const cultura = document.getElementById('fCultura').value;
@@ -5885,6 +6077,7 @@ function registerApplication(){
   fbPushApplication(app);
   fbPushEstoque();
   renderEstoque();
+  notificarOperadorWhatsApp(app);
   resetNovaForm();
   renderAguardandoConfirmacao();
   renderStats();
