@@ -545,7 +545,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   /* ---- Dashboard (barra lateral em telas largas) ---- */
   .app-shell{display:block;}
   .dash-panel{padding:16px 16px 4px;max-width:720px;margin:0 auto;}
-  .dash-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  .dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
   .dash-stat{background:var(--orange-light);border:1px solid #f6ddc2;border-radius:var(--radius-sm);padding:12px 14px;display:flex;flex-direction:column;gap:2px;cursor:pointer;transition:transform .12s,box-shadow .12s;}
   .dash-stat:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.1);}
   .dash-stat-num{font-size:21px;font-weight:800;color:var(--orange-dark);letter-spacing:-.3px;}
@@ -603,23 +603,13 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     .app-shell{max-width:1700px;margin:0 auto;padding:0 28px;}
     main{max-width:none;margin:0;}
     .dash-toggle-btn{display:inline-flex;}
-    .dash-panel-head{display:flex;}
-    .dash-panel{
-      display:block !important;
-      position:fixed;top:0;left:208px;bottom:0;width:320px;z-index:150;
-      padding:20px 16px;margin:0;max-width:320px;
-      background:var(--card);box-shadow:var(--shadow-lg);
-      overflow-y:auto;transform:translateX(calc(-100% - 208px));transition:transform .28s cubic-bezier(.32,.72,0,1);
-    }
-    .dash-panel.open{transform:translateX(0);}
-    .dash-backdrop.show{
-      display:block;position:fixed;inset:0;background:rgba(20,10,5,.45);z-index:140;
-      backdrop-filter:blur(2px);
-    }
-    /* 11/09/2026 (3º pedido no mesmo dia) — o botão Dashboard da lateral ficava escondido
-       no PC (só dava pra abrir pelo botão do cabeçalho); Flávio pediu pra também aparecer
-       na lateral. Continua sem entrar na lógica normal de troca de aba (é sempre um
-       painel deslizante por cima, não uma seção "cheia") — ver toggleDashboard(). */
+    /* 30/09/2026 — a pedido do Flávio: o Dashboard ficava um painel deslizante estreito
+       (320px) por cima do conteúdo, o que ele achava confuso ("continua abrindo uma
+       coluna lateral, não uma aba completa"). Virou uma aba de verdade, igual Estoque/
+       Talhões/Histórico etc.: mesma largura do <main>, sem posição fixa, sem fundo
+       escurecido por trás. Quem abre é o mesmo clique de aba normal (ver TABS no JS) —
+       toggleDashboard()/closeDashboard() ficaram só como no-op de compatibilidade. */
+    .dash-panel{max-width:none;margin:0;}
   }
   .card{
     background:var(--card);border:1px solid rgba(35,22,10,.05);
@@ -1746,7 +1736,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.1.0';
+const APP_BUILD_ID = 'v2.2.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -2302,14 +2292,15 @@ function renderUserChip(){
 function getUserRowNome(btn){
   return btn.closest('.user-row').dataset.nome;
 }
+/* 30/09/2026 — o Dashboard virou uma aba normal (ver TABS mais abaixo); toggleDashboard()
+   agora só clica a própria aba, e closeDashboard() ficou como no-op de compatibilidade
+   (o botão "✕" do painel antigo está escondido, mas se algo antigo ainda chamar essa
+   função não quebra nada). */
 function toggleDashboard(){
-  document.getElementById('tab-dashboard').classList.toggle('open');
-  document.getElementById('dashBackdrop').classList.toggle('show');
+  const target = document.querySelector('.tab-btn[data-tab="dashboard"]');
+  if(target) target.click();
 }
-function closeDashboard(){
-  document.getElementById('tab-dashboard').classList.remove('open');
-  document.getElementById('dashBackdrop').classList.remove('show');
-}
+function closeDashboard(){}
 /* 30/09/2026 — a pedido do Flávio: os cartões do Dashboard (Produtos, Aplicações...) agora
    abrem a aba correspondente em vez de ficar só como número estático. Fecha o painel do
    Dashboard (se estiver aberto, como no PC) e clica no botão da aba de verdade — mesmo
@@ -3033,14 +3024,10 @@ function toast(msg){
 /* ====================== TABS ====================== */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    /* 11/09/2026 — no PC o botão "Dashboard" da lateral agora abre o mesmo painel
-       deslizante do botão do cabeçalho (toggleDashboard), em vez de virar "a aba atual";
-       assim ele não esconde o conteúdo da aba que já estava aberta atrás dele. No celular
-       continua exatamente como antes (o Dashboard ocupa a tela inteira como qualquer aba). */
-    if(btn.dataset.tab==='dashboard' && window.matchMedia('(min-width:900px)').matches){
-      toggleDashboard();
-      return;
-    }
+    /* 30/09/2026 — a pedido do Flávio: o Dashboard virou uma aba de verdade (antes, no PC,
+       clicar aqui só abria um painel deslizante por cima da aba atual — ver histórico
+       de 11/09/2026 logo abaixo do CSS .dash-panel). Agora "Dashboard" entra na mesma
+       lógica normal de troca de aba que Estoque/Talhões/Histórico etc. */
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
