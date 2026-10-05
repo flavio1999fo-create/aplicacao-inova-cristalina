@@ -1792,7 +1792,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.4.0';
+const APP_BUILD_ID = 'v2.5.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -5981,7 +5981,16 @@ function resetNovaForm(){
    (app no celular ou WhatsApp Web no PC) já com o número e o texto prontos, e quem estiver
    registrando a aplicação só confirma o envio com um toque. Precisa do WhatsApp do operador
    cadastrado na aba Usuários (botão "📱 WhatsApp" em cada linha) — se não tiver, só avisa
-   com um toast e segue o fluxo normal, sem travar nada. */
+   com um toast e segue o fluxo normal, sem travar nada.
+   05/10/2026 — a pedido do Flávio: o ideal era mandar a FOTO da ficha junto com a legenda,
+   não só o texto. Só que o link do WhatsApp (wa.me) só abre com TEXTO — não existe um "wa.me"
+   que já chegue com imagem anexada, isso é uma limitação do próprio WhatsApp, não dá pra
+   contornar sem contratar a API paga deles. O único jeito do navegador de enviar foto+legenda
+   juntos é o Web Share API (navigator.share com "files"), que abre a telinha de compartilhar
+   do Windows/Android/iPhone — o Flávio escolhe o WhatsApp e o operador na hora (não abre
+   direto no contato certo como o texto puro abria). Por isso: tenta primeiro a foto+legenda
+   (se o aparelho/navegador suportar); se não suportar, ou se der erro, cai automaticamente
+   pro link de texto de sempre — nunca trava o registro da aplicação por causa disso. */
 function formatWhatsAppPhone(raw){
   let d = String(raw||'').replace(/\D/g,'');
   if(!d) return '';
@@ -5989,15 +5998,29 @@ function formatWhatsAppPhone(raw){
   if(d.length===10 || d.length===11) return '55'+d;
   return d;
 }
-function notificarOperadorWhatsApp(app){
+async function gerarFotoFichaParaCompartilhar(app){
+  const card = document.getElementById('receiptCard');
+  if(!card || typeof html2canvas==='undefined' || !navigator.share || !navigator.canShare) return null;
+  try{
+    const actions = card.querySelector('.receipt-actions');
+    if(actions) actions.style.display = 'none';
+    const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
+    if(actions) actions.style.display = '';
+    const blob = await new Promise(res=>canvas.toBlob(res, 'image/png'));
+    if(!blob) return null;
+    const file = new File([blob], `ficha_aplicacao_${app.serie}.png`, {type:'image/png'});
+    return navigator.canShare({files:[file]}) ? file : null;
+  }catch(e){
+    console.warn('Não deu pra gerar a foto da ficha pro WhatsApp, vai só o texto:', e);
+    return null;
+  }
+}
+async function notificarOperadorWhatsApp(app){
   const nome = (app.operador||'').trim().toUpperCase();
   if(!nome) return;
   const u = (DATA.users||[]).find(x=>x.nome===nome);
   const telefone = u ? formatWhatsAppPhone(u.telefone) : '';
-  if(!telefone){
-    toast(`${app.operador}: sem WhatsApp cadastrado (adicione na aba Usuários pra avisar automaticamente)`);
-    return;
-  }
+
   const ensaios = app.ensaiosSel||[];
   const pivos = [...new Set(ensaios.map(e=>e.pivo).filter(Boolean))].join('/');
   const talhoes = ensaios.map(e=>e.talhao||e.ensaio).filter(Boolean).join(', ');
@@ -6009,8 +6032,25 @@ function notificarOperadorWhatsApp(app){
   if(talhoes) linhas.push(`Talhões: ${talhoes}`);
   linhas.push(`Equipamento: ${app.equipamento||'–'}`);
   linhas.push(`Confira os detalhes e confirme no app quando concluir a aplicação.`);
-  const url = `https://wa.me/${telefone}?text=${encodeURIComponent(linhas.join('\n'))}`;
-  window.open(url, '_blank');
+  const mensagem = linhas.join('\n');
+
+  const arquivoFoto = await gerarFotoFichaParaCompartilhar(app);
+  if(arquivoFoto){
+    try{
+      await navigator.share({files:[arquivoFoto], text: mensagem, title:'Ficha de aplicação'});
+      return;
+    }catch(e){
+      if(e && e.name==='AbortError') return; // o Flávio cancelou a telinha de compartilhar
+      console.warn('Falha ao compartilhar foto+legenda, caindo pro link de texto do WhatsApp:', e);
+    }
+  }
+
+  if(telefone){
+    const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+  }else{
+    toast(`${app.operador}: sem WhatsApp cadastrado (adicione na aba Usuários pra avisar automaticamente)`);
+  }
 }
 function registerApplication(){
   const dataAplicacao = document.getElementById('fData').value;
@@ -6077,13 +6117,20 @@ function registerApplication(){
   fbPushApplication(app);
   fbPushEstoque();
   renderEstoque();
-  notificarOperadorWhatsApp(app);
   resetNovaForm();
   renderAguardandoConfirmacao();
   renderStats();
   toast('Aplicação registrada e estoque atualizado ✅');
   showReceipt(app);
-  setTimeout(()=>autoGerarFichaPdf(app), 80);
+  /* notificarOperadorWhatsApp roda DEPOIS de showReceipt(app) de propósito: ela reaproveita
+     o #receiptCard já preenchido (e visível) pra tirar a "foto" da ficha — se rodasse antes,
+     o card ainda estaria vazio/escondido e o html2canvas sairia em branco. O autoGerarFichaPdf
+     só começa depois que ela termina (.finally), porque os dois mexem no mesmo #receiptCard
+     (escondem/mostram os botões ".receipt-actions" antes de tirar o "print") — rodando ao
+     mesmo tempo, um atrapalharia a foto do outro. */
+  notificarOperadorWhatsApp(app).finally(()=>{
+    setTimeout(()=>autoGerarFichaPdf(app), 80);
+  });
 }
 
 /* ====================== RECIBO DE APLICAÇÃO (imagem/PDF) ====================== */
