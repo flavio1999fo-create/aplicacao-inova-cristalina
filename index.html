@@ -832,6 +832,11 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
      tinha plantio. Assim que uma cultura é cadastrada, o preenchimento (inline, via
      corTalhaoModalidade — a mesma função usada pelo Pivô 3) continua sobrepondo essa
      cor base normalmente, então o resultado fica idêntico nos dois pivôs. */
+  /* v2.6.0 — tooltip instantâneo da quadra (nome + comprimento), no lugar do title nativo, que demora ~1s */
+  #quadraTip{position:fixed;z-index:9999;pointer-events:none;display:none;max-width:260px;background:#241a12;color:#fff;border-radius:10px;padding:8px 11px;box-shadow:0 6px 18px rgba(0,0,0,.28);font-size:12px;line-height:1.35;}
+  #quadraTip .qt-name{font-size:15px;font-weight:800;letter-spacing:.2px;}
+  #quadraTip .qt-comp{font-size:13px;font-weight:700;color:#ffd43b;margin-top:1px;}
+  #quadraTip .qt-rest{opacity:.8;margin-top:3px;font-size:11px;}
   .pivo-svg-quadra{fill:#e6ddd0;stroke:#b7a88e;stroke-width:1.1;cursor:pointer;vector-effect:non-scaling-stroke;}
   .pivo-svg-quadra:active{opacity:.85;}
   /* 09/09/2026 — padronização visual pedida pelo Flávio: mesma cor/espessura de seleção
@@ -1792,7 +1797,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.5.0';
+const APP_BUILD_ID = 'v2.6.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -3090,6 +3095,72 @@ function todayISO(){
 function fmtNum(n){
   if(n===null||n===undefined||isNaN(n)) return '–';
   return (Math.round(n*1000)/1000).toString().replace('.',',');
+}
+/* v2.6.0 — tooltip instantâneo: lê o texto "NOME — x ha — N m de comprimento — ..." que cada quadra já
+   carrega no title (HTML) ou no <title> (SVG), guarda em data-qtip (pra o navegador não mostrar o
+   tooltip nativo junto) e mostra num balão próprio ao passar o mouse. */
+(function(){
+  const SEL = '.pivo-cell.quadra, .quadra-tile, .pivo-svg-quadra, .pivo-svg-quadra-excluida';
+  let tip = null, cur = null;
+  function ensureTip(){
+    if(!tip){ tip = document.createElement('div'); tip.id = 'quadraTip'; document.body.appendChild(tip); }
+    return tip;
+  }
+  function textOf(el){
+    if(el.dataset && el.dataset.qtip) return el.dataset.qtip;
+    let t = el.getAttribute('title');
+    if(t){ el.setAttribute('data-qtip', t); el.removeAttribute('title'); return t; }
+    const te = el.querySelector && el.querySelector(':scope > title');
+    if(te){ t = te.textContent; el.setAttribute('data-qtip', t); te.remove(); return t; }
+    return '';
+  }
+  function render(txt){
+    const parts = txt.split(' — ');
+    const nome = parts.shift();
+    const iComp = parts.findIndex(x=>/de comprimento/.test(x));
+    const comp = iComp>=0 ? parts.splice(iComp,1)[0] : '';
+    const esc = (typeof escapeHtml==='function') ? escapeHtml : (x=>x);
+    return `<div class="qt-name">${esc(nome)}</div>`+
+      (comp? `<div class="qt-comp">📏 ${esc(comp)}</div>` : '')+
+      (parts.length? `<div class="qt-rest">${esc(parts.join(' · '))}</div>` : '');
+  }
+  function place(ev){
+    const t = ensureTip(), pad = 14;
+    let x = ev.clientX + pad, y = ev.clientY + pad;
+    const w = t.offsetWidth, h = t.offsetHeight;
+    if(x + w > window.innerWidth - 6) x = ev.clientX - w - pad;
+    if(y + h > window.innerHeight - 6) y = ev.clientY - h - pad;
+    t.style.left = Math.max(6,x)+'px'; t.style.top = Math.max(6,y)+'px';
+  }
+  document.addEventListener('mouseover', ev=>{
+    const el = ev.target && ev.target.closest ? ev.target.closest(SEL) : null;
+    if(!el){ if(cur){ cur=null; ensureTip().style.display='none'; } return; }
+    const txt = textOf(el);
+    if(!txt){ return; }
+    cur = el;
+    const t = ensureTip();
+    t.innerHTML = render(txt);
+    t.style.display = 'block';
+    place(ev);
+  });
+  document.addEventListener('mousemove', ev=>{ if(cur) place(ev); });
+  document.addEventListener('mouseout', ev=>{
+    if(!cur) return;
+    const to = ev.relatedTarget;
+    if(!to || !to.closest || to.closest(SEL)!==cur){ cur=null; ensureTip().style.display='none'; }
+  });
+  document.addEventListener('scroll', ()=>{ if(cur){ cur=null; ensureTip().style.display='none'; } }, true);
+})();
+/* v2.6.0 — a pedido do Flávio: ao passar o mouse numa quadra aparece o nome e o comprimento.
+   Todas as quadras têm largura fixa de 20m (ver LARGURA_FIXA / campo "Comprimento da quadra"),
+   então o comprimento é o que foi ajustado manualmente (comprimentoManual) ou, se não tem,
+   área(ha) × 10000 ÷ 20. Devolve o texto pronto ("195 m de comprimento") ou '' se não há área. */
+function quadraCompTxt(areaHa, ens){
+  let m = null;
+  if(ens && ens.comprimentoManual && ens.comprimentoManual>0) m = Number(ens.comprimentoManual);
+  else if(areaHa && Number(areaHa)>0) m = Number(areaHa)*10000/20;
+  if(m===null || isNaN(m)) return '';
+  return `${fmtNum(Math.round(m*10)/10)} m de comprimento`;
 }
 function toast(msg){
   const t = document.getElementById('toast');
@@ -4762,6 +4833,7 @@ function renderQuadBlockCad(letra, quadInfo, q){
     const dataPlantioAtual = (plantioAtualCad && plantioAtualCad.dataPlantio) || '';
     let titleTxt = cell.q;
     if(cell.a) titleTxt += ` — ${cell.a} ha`;
+    { const _c = quadraCompTxt(cell.a, ens); if(_c) titleTxt += ` — ${_c}`; }
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
     if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
@@ -4849,6 +4921,7 @@ function renderMapaCad(){
         const dataPlantioAtual = (plantioAtualMapa && plantioAtualMapa.dataPlantio) || '';
         let titleTxt = e.talhao||'';
         if(e.area) titleTxt += ` — ${e.area} ha`;
+        { const _c = quadraCompTxt(e.area, e); if(_c) titleTxt += ` — ${_c}`; }
         if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
         if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
         if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
@@ -5023,6 +5096,7 @@ function renderMapa(){
         const numeroEnsaioAtual = (plantioAtualApl && plantioAtualApl.numeroEnsaio) || '';
         let titleTxt = e.talhao||'';
         if(e.area) titleTxt += ` — ${e.area} ha`;
+        { const _c = quadraCompTxt(e.area, e); if(_c) titleTxt += ` — ${_c}`; }
         if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
         if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
         const numHtml = numeroEnsaioAtual ? `${escapeHtml(numLabel)}<span class="tile-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : escapeHtml(numLabel);
@@ -5254,6 +5328,7 @@ function areaCellState(code, id, q, modoCad){
   const dataPlantioAtual = (plantioAtual && plantioAtual.dataPlantio) || '';
   let titleTxt = code;
   if(ens && ens.area) titleTxt += ` — ${ens.area} ha`;
+  { const _c = quadraCompTxt(ens && ens.area, ens); if(_c) titleTxt += ` — ${_c}`; }
   if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
   if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
   if(modoCad && dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
@@ -5344,6 +5419,7 @@ function renderQuadBlock(letra, quadInfo, q){
     const numeroEnsaioAtual = (plantioAtualApl && plantioAtualApl.numeroEnsaio) || '';
     let titleTxt = cell.q;
     if(cell.a) titleTxt += ` — ${cell.a} ha`;
+    { const _c = quadraCompTxt(cell.a, ens); if(_c) titleTxt += ` — ${_c}`; }
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
     const infoTxt = cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '';
@@ -5586,7 +5662,8 @@ function renderPivoSvg(wrapId, q, modoCad){
     const plantioAtualSvg = (ens && ens.plantios && ens.plantios[0]) || null;
     const numeroEnsaioAtualSvg = (plantioAtualSvg && plantioAtualSvg.numeroEnsaio) || '';
     let titleTxt = `${cell.code} — ${areaHa} ha`;
-    if(ens && ens.comprimentoManual) titleTxt += ` (${fmtNum(ens.comprimentoManual)}m × 20m — ajustado manualmente)`;
+    titleTxt += ` — ${quadraCompTxt(geom.area_m2/10000, ens)}`;
+    if(ens && ens.comprimentoManual) titleTxt += ` (ajustado manualmente, ${fmtNum(ens.comprimentoManual)}m × 20m)`;
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     if(numeroEnsaioAtualSvg) titleTxt += ` — Ensaio nº ${numeroEnsaioAtualSvg}`;
     const style = corModalidade? ` style="fill:${corModalidade}"` : '';
