@@ -1290,7 +1290,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <div class="map-stage">
       <div id="pivoWrap">
-        <p class="muted" style="margin:0 0 8px;">Arraste pra mover · roda do mouse ou os botões +/− pra dar zoom. Toque no número da quadra para selecionar.</p>
+        <p class="muted" style="margin:0 0 8px;">Arraste pra mover · pinça com 2 dedos, roda do mouse ou os botões +/− pra dar zoom. Toque no número da quadra para selecionar.</p>
         <div class="pivo-grid-outer"><div class="pivo-quadrantes" id="pivoGridWrap"></div></div>
       </div>
 
@@ -1389,7 +1389,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <div class="map-stage">
       <div id="pivoCadWrap">
-        <p class="muted" style="margin:0 0 8px;">Arraste pra mover · roda do mouse ou os botões +/− pra dar zoom. Toque no número da quadra pra cadastrar a cultura dela.</p>
+        <p class="muted" style="margin:0 0 8px;">Arraste pra mover · pinça com 2 dedos, roda do mouse ou os botões +/− pra dar zoom. Toque no número da quadra pra cadastrar a cultura dela.</p>
         <div class="pivo-grid-outer"><div class="pivo-quadrantes" id="pivoGridWrapCad"></div></div>
       </div>
 
@@ -1797,7 +1797,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.6.0';
+const APP_BUILD_ID = 'v2.7.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -5709,7 +5709,7 @@ function renderPivoSvg(wrapId, q, modoCad){
         <span class="item"><span class="swatch bordadura"></span>Bordadura (${svgData.bordaduras.length})</span>
         ${quadrasExcluidasCount? `<span class="item"><span class="swatch excluida"></span>Excluída (${quadrasExcluidasCount})</span>` : ''}
         <span class="item"><span class="swatch rua"></span>Rua</span>
-        <span class="item pivo-svg-zoom-hint">arraste pra mover · roda/± pra zoom</span>
+        <span class="item pivo-svg-zoom-hint">arraste pra mover · pinça/roda/± pra zoom</span>
       </div>
     </div>
   </div>`;
@@ -5721,6 +5721,53 @@ function renderPivoSvg(wrapId, q, modoCad){
    formulários ficam difíceis de usar), então o croqui precisa do próprio zoom independente:
    arrastar (pointer events, funciona com o dedo e com o mouse), roda do mouse, e botões
    +/−/ajustar (pro celular, que não tem roda). */
+/* v2.7.0 — a pedido do Flávio: zoom por gesto de pinça (dois dedos) no mapa, no celular. Antes só
+   dava pra arrastar com um dedo e usar os botões +/−. Helper único usado pelos dois mapas (SVG do
+   Pivô 4 e grade do Pivô 3/cadastro): 1 dedo/mouse arrasta; 2 dedos fazem pinça (zoom ancorado no
+   ponto médio entre os dedos) e também movem o mapa se os dois dedos deslizarem juntos. Quando o
+   segundo dedo sai, o que ficou continua arrastando sem "pulo". Devolve moved() = quanto o dedo
+   andou no total, pra cancelar o clique fantasma na quadra depois de um arrasto/pinça. */
+function attachPanPinch(el, api){
+  const ptrs = new Map();
+  let moved = 0, lastD = 0, lastCx = 0, lastCy = 0;
+  function pinchState(){
+    const a = Array.from(ptrs.values());
+    return {d: Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y) || 1, cx:(a[0].x+a[1].x)/2, cy:(a[0].y+a[1].y)/2};
+  }
+  el.addEventListener('pointerdown', e=>{
+    ptrs.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    try{ e.target.setPointerCapture(e.pointerId); }catch(err){}
+    if(ptrs.size===1){ moved = 0; }
+    if(ptrs.size===2){
+      const st = pinchState(); lastD = st.d; lastCx = st.cx; lastCy = st.cy;
+      moved += 100; /* pinça nunca conta como toque numa quadra */
+    }
+  });
+  el.addEventListener('pointermove', e=>{
+    const prev = ptrs.get(e.pointerId);
+    if(!prev) return;
+    const nx = e.clientX, ny = e.clientY;
+    ptrs.set(e.pointerId, {x:nx, y:ny});
+    if(ptrs.size===1){
+      api.pan(nx-prev.x, ny-prev.y);
+      moved += Math.abs(nx-prev.x) + Math.abs(ny-prev.y);
+    }else if(ptrs.size>=2){
+      const st = pinchState();
+      if(lastD>0) api.zoomAt(st.d/lastD, st.cx, st.cy);
+      api.pan(st.cx-lastCx, st.cy-lastCy);
+      lastD = st.d; lastCx = st.cx; lastCy = st.cy;
+    }
+  });
+  function up(e){
+    if(!ptrs.has(e.pointerId)) return;
+    ptrs.delete(e.pointerId);
+    if(ptrs.size===2){ const st = pinchState(); lastD = st.d; lastCx = st.cx; lastCy = st.cy; }
+  }
+  el.addEventListener('pointerup', up);
+  el.addEventListener('pointercancel', up);
+  el.addEventListener('lostpointercapture', up);
+  return { moved: ()=>moved };
+}
 const pivoSvgViews = {};
 function pivoSvgApplyView(svgEl){
   const v = pivoSvgViews[svgEl.id];
@@ -5759,30 +5806,33 @@ function pivoSvgAttachInteractions(svgEl, vb){
      tinha arrastado/dado zoom, mantém do jeito que estava e só reaplica no <svg> novo. */
   if(!pivoSvgViews[svgEl.id]) pivoSvgViews[svgEl.id] = {x: vb.minX, y: -(vb.minY+vb.h), w: vb.w, h: vb.h};
   pivoSvgApplyView(svgEl);
-  let dragging = false, lastX = 0, lastY = 0, pid = null, moved = 0;
-  svgEl.addEventListener('pointerdown', e=>{
-    dragging = true; lastX = e.clientX; lastY = e.clientY; moved = 0; pid = e.pointerId;
-    try{ e.target.setPointerCapture(pid); }catch(err){}
+  const gesture = attachPanPinch(svgEl, {
+    pan(dx, dy){
+      const v = pivoSvgViews[svgEl.id];
+      const rect = svgEl.getBoundingClientRect();
+      if(!v || !rect.width || !rect.height) return;
+      const scale = v.w/rect.width;
+      v.x -= dx*scale; v.y -= dy*scale;
+      pivoSvgApplyView(svgEl);
+    },
+    zoomAt(factor, cx, cy){
+      const v = pivoSvgViews[svgEl.id];
+      const rect = svgEl.getBoundingClientRect();
+      if(!v || !rect.width || !rect.height) return;
+      /* limita o zoom pra não perder o mapa: de 1/25 do tamanho inicial até 3× o tamanho inicial */
+      const minW = vb.w/25, maxW = vb.w*3;
+      const newW = Math.max(minW, Math.min(maxW, v.w/factor));
+      const real = v.w/newW;
+      const mx = v.x + (cx-rect.left)/rect.width*v.w;
+      const my = v.y + (cy-rect.top)/rect.height*v.h;
+      pivoSvgZoomBy(svgEl, real, mx, my);
+    }
   });
-  svgEl.addEventListener('pointermove', e=>{
-    if(!dragging || e.pointerId!==pid) return;
-    const v = pivoSvgViews[svgEl.id];
-    const rect = svgEl.getBoundingClientRect();
-    if(!rect.width || !rect.height) return;
-    const scale = v.w/rect.width;
-    v.x -= (e.clientX-lastX)*scale;
-    v.y -= (e.clientY-lastY)*scale;
-    moved += Math.abs(e.clientX-lastX) + Math.abs(e.clientY-lastY);
-    lastX = e.clientX; lastY = e.clientY;
-    pivoSvgApplyView(svgEl);
-  });
-  svgEl.addEventListener('pointerup', ()=>{ dragging = false; });
-  svgEl.addEventListener('pointercancel', ()=>{ dragging = false; });
   /* 30/09/2026, mesmo conserto do gridZoomAttachInteractions (Pivô 3) aplicado aqui pro
      croqui em SVG (Pivô 4): arrasto de verdade cancela o clique fantasma que sobraria na
      quadra embaixo do dedo. */
   svgEl.addEventListener('click', e=>{
-    if(moved > 8){ e.stopPropagation(); e.preventDefault(); }
+    if(gesture.moved() > 8){ e.stopPropagation(); e.preventDefault(); }
   }, true);
   svgEl.addEventListener('wheel', e=>{
     e.preventDefault();
@@ -5846,29 +5896,25 @@ function gridZoomAttachInteractions(wrapId){
      tinha zoom/arrasto feito, mantém e só reaplica no HTML novo (recriado a cada seleção). */
   if(!gridZoomViews[wrapId]) gridZoomViews[wrapId] = {scale:1, x:0, y:0};
   gridZoomApplyView(wrapId);
-  let dragging = false, lastX = 0, lastY = 0, pid = null, moved = 0;
-  vp.addEventListener('pointerdown', e=>{
-    dragging = true; lastX = e.clientX; lastY = e.clientY; moved = 0; pid = e.pointerId;
-    try{ e.target.setPointerCapture(pid); }catch(err){}
+  const gesture = attachPanPinch(vp, {
+    pan(dx, dy){
+      const v = gridZoomViews[wrapId];
+      if(!v) return;
+      v.x += dx; v.y += dy;
+      gridZoomApplyView(wrapId);
+    },
+    zoomAt(factor, cx, cy){
+      const rect = vp.getBoundingClientRect();
+      gridZoomBy(wrapId, factor, cx-rect.left, cy-rect.top);
+    }
   });
-  vp.addEventListener('pointermove', e=>{
-    if(!dragging || e.pointerId!==pid) return;
-    const v = gridZoomViews[wrapId];
-    v.x += (e.clientX-lastX);
-    v.y += (e.clientY-lastY);
-    moved += Math.abs(e.clientX-lastX) + Math.abs(e.clientY-lastY);
-    lastX = e.clientX; lastY = e.clientY;
-    gridZoomApplyView(wrapId);
-  });
-  vp.addEventListener('pointerup', ()=>{ dragging = false; });
-  vp.addEventListener('pointercancel', ()=>{ dragging = false; });
   /* 30/09/2026, a pedido do Flávio: arrastar o dedo pra mover/dar pan no mapa estava
      "sobrando" como um clique na quadra que ficou embaixo do dedo ao soltar — selecionando
      ela sem querer no meio do arrasto. Um arrasto de verdade (mais de ~8px de movimento
      total) agora cancela esse clique fantasma antes que ele chegue na quadra (fase de
      captura, então roda antes do onclick da própria célula). */
   vp.addEventListener('click', e=>{
-    if(moved > 8){ e.stopPropagation(); e.preventDefault(); }
+    if(gesture.moved() > 8){ e.stopPropagation(); e.preventDefault(); }
   }, true);
   vp.addEventListener('wheel', e=>{
     e.preventDefault();
