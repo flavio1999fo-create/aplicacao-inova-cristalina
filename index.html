@@ -1347,6 +1347,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
           <p class="muted" style="margin-top:0;">Cadastre qual cultura está em cada talhão/quadra e, quando for Milho ou Soja, a modalidade do ensaio. Isso também passa a filtrar automaticamente o mapa da aba Aplicação pela cultura escolhida ali.<br>💡 <b>Toque num talhão</b> (Pivô, Grade ou Lista) <b>pra selecionar ele</b> — aparece na hora a opção de editar a ficha ou limpar só aquele talhão.</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <button class="btn-ghost btn-sm" id="btnGerenciarListasAdm" onclick="abrirListasAdm()" style="white-space:nowrap;display:none;" title="Só administrador: adicionar culturas e modalidades de ensaio">⚙️ Culturas e modalidades</button>
           <button class="btn-ghost btn-sm" id="btnToggleAcoesMassaTalhaoCad" onclick="toggleAcoesMassaTalhaoCad()" style="white-space:nowrap;">🧹 Ações em massa ▾</button>
           <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapaCad" onclick="toggleFullscreenMapaCad()" style="white-space:nowrap;">⛶ Tela cheia</button>
         </div>
@@ -1654,6 +1655,22 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
 <!-- Trocar estação sem sair da sessão (só ADM) — pedido do Flávio em 26/08/2026: já tá
      logado, não precisa digitar o PIN de novo pra trocar de fazenda. -->
+<!-- v2.8.0 — Culturas e modalidades (só ADM) -->
+<div class="modal-overlay hidden" id="listasAdmOverlay">
+  <div class="receipt-card" style="max-width:460px;">
+    <div class="receipt-head">
+      <div class="titles">
+        <h3>Culturas e modalidades</h3>
+        <span>Só administrador pode adicionar</span>
+      </div>
+    </div>
+    <div class="receipt-body" id="listasAdmBody"></div>
+    <div class="receipt-actions">
+      <button class="btn-ghost" onclick="fecharListasAdm()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay hidden" id="trocarEstacaoOverlay">
   <div class="receipt-card" style="max-width:380px;">
     <div class="receipt-head">
@@ -1797,7 +1814,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.7.0';
+const APP_BUILD_ID = 'v2.8.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -1958,6 +1975,7 @@ function enforcePivo4Ensaios(){
 
 function enforceCulturas(){
   DATA.lists = DATA.lists || {};
+  aplicarListasExtras();
   const atual = DATA.lists.culturas||[];
   const igual = atual.length===CULTURAS_PERMITIDAS.length && atual.every((c,i)=>c===CULTURAS_PERMITIDAS[i]);
   if(!igual){
@@ -2028,6 +2046,8 @@ function applyRoleUI(){
   });
   const dashBtn = document.getElementById('dashToggleBtn');
   if(dashBtn) dashBtn.style.display = isOperador ? 'none' : '';
+  const btnListasAdm = document.getElementById('btnGerenciarListasAdm');
+  if(btnListasAdm) btnListasAdm.style.display = isAdmin() ? '' : 'none';
   const activeBtn = document.querySelector('.tab-btn.active');
   if(isOperador && activeBtn && !OPERADOR_TABS.includes(activeBtn.dataset.tab)){
     const target = document.querySelector('.tab-btn[data-tab="limpeza"]');
@@ -4197,6 +4217,188 @@ const CORES_MODALIDADE = {
   }
 };
 const CORES_CULTURA_GENERICA = { 'MILHO': '#2f9e44', 'SOJA': '#ea580c' };
+
+/* v2.8.0 — a pedido do Flávio: só o ADM pode adicionar novas culturas e novas modalidades de
+   ensaio. As listas "de fábrica" (CULTURAS_PERMITIDAS / MODALIDADES_POR_CULTURA / cores) continuam
+   exatamente como eram; o que o ADM adiciona fica guardado em DATA.lists (culturasExtra,
+   modalidadesExtra, coresExtra) — então sincroniza com a nuvem e com os outros aparelhos igual
+   o resto — e aplicarListasExtras() reconstrói as listas em uso a partir de "fábrica + extras"
+   (roda dentro de enforceCulturas, ou seja: no carregamento, depois de cada sincronização e
+   depois de importar backup). */
+const CULTURAS_BASE = CULTURAS_PERMITIDAS.slice();
+const MODALIDADES_BASE = JSON.parse(JSON.stringify(MODALIDADES_POR_CULTURA));
+const CORES_MODALIDADE_BASE = JSON.parse(JSON.stringify(CORES_MODALIDADE));
+const CORES_CULTURA_BASE = Object.assign({}, CORES_CULTURA_GENERICA);
+function aplicarListasExtras(){
+  const L = (typeof DATA!=='undefined' && DATA && DATA.lists) || {};
+  const extraC = (L.culturasExtra||[]).map(c=>String(c).trim().toUpperCase()).filter(Boolean);
+  const extraM = L.modalidadesExtra || {};
+  const extraCores = L.coresExtra || {};
+  CULTURAS_PERMITIDAS.length = 0;
+  CULTURAS_BASE.concat(extraC).forEach(c=>{ if(!CULTURAS_PERMITIDAS.includes(c)) CULTURAS_PERMITIDAS.push(c); });
+  Object.keys(MODALIDADES_POR_CULTURA).forEach(k=>delete MODALIDADES_POR_CULTURA[k]);
+  Object.keys(MODALIDADES_BASE).forEach(k=>{ MODALIDADES_POR_CULTURA[k] = MODALIDADES_BASE[k].slice(); });
+  Object.keys(extraM).forEach(c=>{
+    if(!CULTURAS_PERMITIDAS.includes(c)) return;
+    (extraM[c]||[]).forEach(m=>{
+      const arr = MODALIDADES_POR_CULTURA[c] = MODALIDADES_POR_CULTURA[c] || [];
+      if(!arr.includes(m)) arr.push(m);
+    });
+  });
+  Object.keys(CORES_MODALIDADE).forEach(k=>delete CORES_MODALIDADE[k]);
+  Object.keys(CORES_MODALIDADE_BASE).forEach(k=>{ CORES_MODALIDADE[k] = Object.assign({}, CORES_MODALIDADE_BASE[k]); });
+  Object.keys(CORES_CULTURA_GENERICA).forEach(k=>delete CORES_CULTURA_GENERICA[k]);
+  Object.assign(CORES_CULTURA_GENERICA, CORES_CULTURA_BASE);
+  Object.keys(extraCores).forEach(key=>{
+    const i = key.indexOf('|');
+    if(i<0){ CORES_CULTURA_GENERICA[key] = extraCores[key]; }
+    else{
+      const c = key.slice(0,i), m = key.slice(i+1);
+      (CORES_MODALIDADE[c] = CORES_MODALIDADE[c] || {})[m] = extraCores[key];
+    }
+  });
+}
+
+/* ---- Painel "Culturas e modalidades" (só ADM) ---- */
+let listasAdmCulturaSel = '';
+function listasAdmEmUso(cultura, modalidade){
+  let n = 0;
+  (DATA.ensaios||[]).forEach(e=>{
+    const hit = (c,m)=> c===cultura && (!modalidade || m===modalidade);
+    if(hit(e.cultura, e.modalidade) || (e.plantios||[]).some(p=>hit(p.cultura||e.cultura, p.modalidade))) n++;
+  });
+  return n;
+}
+function abrirListasAdm(){
+  requireAdmin(()=>{
+    if(!listasAdmCulturaSel || !CULTURAS_PERMITIDAS.includes(listasAdmCulturaSel)) listasAdmCulturaSel = CULTURAS_PERMITIDAS[0] || '';
+    renderListasAdm();
+    document.getElementById('listasAdmOverlay').classList.remove('hidden');
+  });
+}
+function fecharListasAdm(){ document.getElementById('listasAdmOverlay').classList.add('hidden'); }
+function renderListasAdm(){
+  const body = document.getElementById('listasAdmBody');
+  if(!body) return;
+  const L = DATA.lists || {};
+  const extraC = L.culturasExtra || [];
+  const chipsCult = CULTURAS_PERMITIDAS.map(c=>{
+    const ehExtra = extraC.includes(c);
+    const cor = CORES_CULTURA_GENERICA[c];
+    const dot = cor? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${cor};margin-right:5px;vertical-align:middle;"></span>` : '';
+    const uso = listasAdmEmUso(c);
+    const acao = ehExtra
+      ? ` <button type="button" class="btn-ghost btn-sm" style="padding:0 6px;" title="${uso? 'Em uso em '+uso+' talhão(ões) — limpe antes de remover' : 'Remover cultura'}" onclick="removerCulturaAdm('${escapeHtml(c).replace(/'/g,'&#39;')}')">✕</button>`
+      : ' <span class="muted" title="Cultura padrão do app">🔒</span>';
+    return `<span style="display:inline-flex;align-items:center;gap:2px;background:#f6efe6;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;">${dot}${escapeHtml(c)}${acao}</span>`;
+  }).join(' ');
+  const sel = listasAdmCulturaSel;
+  const base = (MODALIDADES_BASE[sel]||[]);
+  const extraM = ((L.modalidadesExtra||{})[sel]) || [];
+  const mods = MODALIDADES_POR_CULTURA[sel] || [];
+  const chipsMod = mods.length? mods.map(m=>{
+    const ehExtra = extraM.includes(m) && !base.includes(m);
+    const cor = (CORES_MODALIDADE[sel]||{})[m];
+    const dot = cor? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${cor};margin-right:5px;vertical-align:middle;"></span>` : '';
+    const uso = listasAdmEmUso(sel, m);
+    const acao = ehExtra
+      ? ` <button type="button" class="btn-ghost btn-sm" style="padding:0 6px;" title="${uso? 'Em uso em '+uso+' talhão(ões) — troque antes de remover' : 'Remover modalidade'}" onclick="removerModalidadeAdm('${escapeHtml(m).replace(/'/g,'&#39;')}')">✕</button>`
+      : '';
+    return `<span style="display:inline-flex;align-items:center;gap:2px;background:#f6efe6;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;">${dot}${escapeHtml(m)}${acao}</span>`;
+  }).join(' ') : '<span class="muted" style="font-size:12px;">Nenhuma modalidade cadastrada pra essa cultura ainda.</span>';
+  body.innerHTML = `
+    <div style="margin-bottom:14px;">
+      <div style="font-weight:800;margin-bottom:6px;">Culturas</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">${chipsCult}</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="novaCulturaAdm" placeholder="Nova cultura (ex: TRIGO)" maxlength="30" style="flex:1;min-width:140px;" onkeydown="if(event.key==='Enter'){addCulturaAdm();}">
+        <input type="color" id="novaCulturaCor" value="#7048e8" title="Cor da cultura no mapa" style="width:38px;height:34px;padding:0;border:none;background:none;">
+        <button class="btn-sm" onclick="addCulturaAdm()">+ Adicionar</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-weight:800;margin-bottom:6px;">Modalidades de ensaio</div>
+      <select id="listasAdmCulturaSel" onchange="listasAdmCulturaSel=this.value;renderListasAdm();" style="width:100%;margin-bottom:8px;">
+        ${CULTURAS_PERMITIDAS.map(c=>`<option value="${escapeHtml(c)}" ${c===sel?'selected':''}>${escapeHtml(c)}</option>`).join('')}
+      </select>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">${chipsMod}</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="novaModalidadeAdm" placeholder="Nova modalidade pra ${escapeHtml(sel)}" maxlength="30" style="flex:1;min-width:140px;" onkeydown="if(event.key==='Enter'){addModalidadeAdm();}">
+        <input type="color" id="novaModalidadeCor" value="#7048e8" title="Cor da modalidade no mapa" style="width:38px;height:34px;padding:0;border:none;background:none;">
+        <button class="btn-sm" onclick="addModalidadeAdm()">+ Adicionar</button>
+      </div>
+    </div>
+    <p class="muted" style="font-size:11px;margin:12px 0 0;">🔒 = padrão do app (não dá pra remover). O que você adiciona aqui aparece pra todos os aparelhos nos seletores de Cultura/Modalidade e no mapa. Só dá pra remover o que ainda não está em uso em nenhum talhão.</p>`;
+}
+function persistirListasAdm(){
+  aplicarListasExtras();
+  enforceCulturas();
+  saveData();
+  if(fbReady) fbPushEstoque();
+  renderListasAdm();
+  try{ refreshFormListsPreservingSelection(); }catch(e){}
+  try{ refreshTalhaoCadUI(); }catch(e){}
+}
+function addCulturaAdm(){
+  requireAdmin(()=>{
+    const el = document.getElementById('novaCulturaAdm');
+    const nome = (el.value||'').trim().toUpperCase().replace(/\s+/g,' ');
+    if(!nome){ toast('Digite o nome da cultura'); return; }
+    if(CULTURAS_PERMITIDAS.some(c=>c.toUpperCase()===nome)){ toast('Essa cultura já existe'); return; }
+    if(nome.includes('|')){ toast('O nome não pode ter o caractere |'); return; }
+    DATA.lists.culturasExtra = (DATA.lists.culturasExtra||[]).concat([nome]);
+    DATA.lists.coresExtra = Object.assign({}, DATA.lists.coresExtra||{}, {[nome]: document.getElementById('novaCulturaCor').value || '#7048e8'});
+    listasAdmCulturaSel = nome;
+    persistirListasAdm();
+    toast(`Cultura ${nome} adicionada`);
+  });
+}
+function removerCulturaAdm(nome){
+  requireAdmin(()=>{
+    if(!(DATA.lists.culturasExtra||[]).includes(nome)){ toast('Cultura padrão não pode ser removida'); return; }
+    const uso = listasAdmEmUso(nome);
+    if(uso){ toast(`${nome} está em uso em ${uso} talhão(ões) — limpe antes de remover`); return; }
+    if(!confirm(`Remover a cultura ${nome} (e as modalidades que você criou pra ela)?`)) return;
+    DATA.lists.culturasExtra = DATA.lists.culturasExtra.filter(c=>c!==nome);
+    if(DATA.lists.modalidadesExtra) delete DATA.lists.modalidadesExtra[nome];
+    if(DATA.lists.coresExtra){
+      Object.keys(DATA.lists.coresExtra).forEach(k=>{ if(k===nome || k.startsWith(nome+'|')) delete DATA.lists.coresExtra[k]; });
+    }
+    if(listasAdmCulturaSel===nome) listasAdmCulturaSel = '';
+    persistirListasAdm();
+    if(!listasAdmCulturaSel){ listasAdmCulturaSel = CULTURAS_PERMITIDAS[0]||''; renderListasAdm(); }
+    toast(`Cultura ${nome} removida`);
+  });
+}
+function addModalidadeAdm(){
+  requireAdmin(()=>{
+    const cultura = listasAdmCulturaSel;
+    if(!cultura){ toast('Escolha a cultura'); return; }
+    const nome = (document.getElementById('novaModalidadeAdm').value||'').trim().toUpperCase().replace(/\s+/g,' ');
+    if(!nome){ toast('Digite o nome da modalidade'); return; }
+    if((MODALIDADES_POR_CULTURA[cultura]||[]).some(m=>m.toUpperCase()===nome)){ toast('Essa modalidade já existe nessa cultura'); return; }
+    if(nome.includes('|')){ toast('O nome não pode ter o caractere |'); return; }
+    DATA.lists.modalidadesExtra = DATA.lists.modalidadesExtra || {};
+    DATA.lists.modalidadesExtra[cultura] = (DATA.lists.modalidadesExtra[cultura]||[]).concat([nome]);
+    DATA.lists.coresExtra = Object.assign({}, DATA.lists.coresExtra||{}, {[cultura+'|'+nome]: document.getElementById('novaModalidadeCor').value || '#7048e8'});
+    persistirListasAdm();
+    toast(`Modalidade ${nome} adicionada em ${cultura}`);
+  });
+}
+function removerModalidadeAdm(nome){
+  requireAdmin(()=>{
+    const cultura = listasAdmCulturaSel;
+    const extras = (DATA.lists.modalidadesExtra||{})[cultura] || [];
+    if(!extras.includes(nome) || (MODALIDADES_BASE[cultura]||[]).includes(nome)){ toast('Modalidade padrão não pode ser removida'); return; }
+    const uso = listasAdmEmUso(cultura, nome);
+    if(uso){ toast(`${nome} está em uso em ${uso} talhão(ões) — troque antes de remover`); return; }
+    if(!confirm(`Remover a modalidade ${nome} de ${cultura}?`)) return;
+    DATA.lists.modalidadesExtra[cultura] = extras.filter(m=>m!==nome);
+    if(DATA.lists.coresExtra) delete DATA.lists.coresExtra[cultura+'|'+nome];
+    persistirListasAdm();
+    toast(`Modalidade ${nome} removida`);
+  });
+}
 
 function corTalhaoModalidade(cultura, modalidade){
   if(!cultura) return '';
