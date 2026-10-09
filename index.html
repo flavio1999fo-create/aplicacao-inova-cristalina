@@ -851,6 +851,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .filtro-cultmod-esmaecer{display:flex;align-items:flex-start;justify-content:flex-start;gap:8px;margin-top:8px;font-size:12px;text-align:left;}
   .filtro-cultmod-esmaecer input{width:auto;flex:0 0 auto;margin:2px 0 0;}
   .quadra-tile.dim{opacity:.25;}
+  .cell-mais{background:#ffd43b;color:#2b1206;border-radius:4px;padding:0 3px;font-size:9px;margin-left:2px;}
+  .tag-mais{display:inline-block;background:#fff3bf;color:#5c4a00;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700;}
   .pivo-cell.reservada,.quadra-tile.reservada{outline:2px dashed #7c3aed;outline-offset:-2px;}
   .pivo-cell.quadra.reservada{color:#4a2f86;}
   .pivo-svg-quadra.reservada{stroke:#7c3aed;stroke-width:2;stroke-dasharray:4 2;}
@@ -1856,7 +1858,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.11.0';
+const APP_BUILD_ID = 'v2.13.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -4546,6 +4548,24 @@ function ensurePlantiosArray(e){
 function ensurePlantiosAllEnsaios(){
   (DATA.ensaios||[]).forEach(ensurePlantiosArray);
 }
+/* v2.13.0 — vários ensaios ao mesmo tempo na mesma quadra (ex.: B105 com 3 ensaios plantados).
+   plantios[0] continua sendo o "atual" (cor, cultura e modalidade do mapa). Os outros plantios com
+   emCampo=true também estão plantados agora; os demais (sem a marca) são só histórico. */
+function ensaiosEmCampo(e){
+  if(!e) return [];
+  ensurePlantiosArray(e);
+  return (e.plantios||[]).filter((p,i)=> i===0 || p.emCampo===true);
+}
+function nEnsaiosExtras(e){ return Math.max(0, ensaiosEmCampo(e).length-1); }
+function maisEnsaiosTag(e){ const n = nEnsaiosExtras(e); return n? ` +${n}` : ''; }
+function ensaioEmCampoLabel(p){
+  const nome = [p.cultura, p.modalidade].filter(Boolean).join(' · ');
+  return `${p.numeroEnsaio? p.numeroEnsaio : 'sem nº'}${nome? ' ('+nome+')' : ''}`;
+}
+function ensaiosEmCampoTxt(e){
+  const l = ensaiosEmCampo(e);
+  return l.length>1 ? `${l.length} ensaios em campo: ${l.map(ensaioEmCampoLabel).join('; ')}` : '';
+}
 function syncEnsaioTopFields(e){
   const atual = e.plantios && e.plantios[0];
   e.cultura = atual ? (atual.cultura||'') : '';
@@ -4589,7 +4609,7 @@ function renderTalhaoCadastro(){
       return `<div class="talhao-cadastro-row ${rowCls}" onclick="onTalhaoCadastroTileClick('${e.id}')" style="cursor:pointer;">
         <div class="tc-info"><b>${escapeHtml(e.talhao||'')}</b>${e.area? `<div class="muted">${escapeHtml(String(e.area))}ha</div>`:''}</div>
         <div class="tc-status">
-          <div>${label? escapeHtml(label) : '<span class="muted">Sem cultura cadastrada</span>'}${e.reservado? ' <b class="tag-reservado">'+escapeHtml(reservaTxt(e))+'</b>':''}</div>
+          <div>${label? escapeHtml(label) : '<span class="muted">Sem cultura cadastrada</span>'}${e.reservado? ' <b class="tag-reservado">'+escapeHtml(reservaTxt(e))+'</b>':''}${nEnsaiosExtras(e)? ' <b class="tag-mais">+'+nEnsaiosExtras(e)+' ensaio'+(nEnsaiosExtras(e)===1?'':'s')+'</b>':''}</div>
           <div class="muted">${nPlantios} plantio${nPlantios===1?'':'s'}${detalhes.length? ' · '+escapeHtml(detalhes.join(' · ')) : ''}</div>
         </div>
         ${actionBtn}
@@ -4615,6 +4635,20 @@ function updateTalhaoPlantioField(ensaioId, plantioId, campo, valor){
   toast('Talhão atualizado');
 }
 
+function addEnsaioEmCampo(ensaioId){
+  const e = (DATA.ensaios||[]).find(x=>x.id===ensaioId);
+  if(!e) return;
+  ensurePlantiosArray(e);
+  const novo = {id: genPlantioId(), cultura:'', modalidade:'', dataPlantio:'', numeroEnsaio:'', emCampo:true};
+  if(e.plantios.length===0){ delete novo.emCampo; e.plantios.push(novo); }
+  else e.plantios.splice(1,0,novo);
+  syncEnsaioTopFields(e);
+  saveData();
+  fbPushEstoque();
+  refreshTalhaoCadUI();
+  refreshTalhaoUI();
+  toast('Ensaio adicionado nesta quadra — preencha cultura, modalidade, data e nº do ensaio');
+}
 function addTalhaoPlantio(ensaioId){
   const e = (DATA.ensaios||[]).find(x=>x.id===ensaioId);
   if(!e) return;
@@ -4760,6 +4794,8 @@ function aplicarBulkTalhaoCad(){
   const numeroEnsaio = document.getElementById('bulkCadEnsaio').value;
   const sitEl = document.getElementById('bulkCadSituacao');
   const reservar = !!sitEl && sitEl.value==='reservada';
+  const juntoEl = document.getElementById('bulkCadJunto');
+  const junto = !!juntoEl && juntoEl.checked;
   const motivoEl = document.getElementById('bulkCadMotivo');
   const motivo = motivoEl ? motivoEl.value.trim() : '';
   if(!cultura && !reservar){ toast('Escolha uma cultura pra aplicar aos talhões selecionados'); return; }
@@ -4768,13 +4804,15 @@ function aplicarBulkTalhaoCad(){
     if(!e) return;
     if(cultura){
       ensurePlantiosArray(e);
-      e.plantios.unshift({
+      const novoPlantio = {
         id: genPlantioId(),
         cultura,
         modalidade: MODALIDADES_POR_CULTURA[cultura] ? modalidade : '',
         dataPlantio,
         numeroEnsaio
-      });
+      };
+      if(junto && e.plantios.length && e.plantios[0].cultura){ novoPlantio.emCampo = true; e.plantios.splice(1,0,novoPlantio); }
+      else e.plantios.unshift(novoPlantio);
       syncEnsaioTopFields(e);
     }
     if(reservar){ e.reservado = true; if(motivo) e.reservadoMotivo = motivo; else delete e.reservadoMotivo; }
@@ -4833,6 +4871,15 @@ function renderTalhaoCadBulkPanel(){
      reconstrução sempre voltava em branco). Ver focoEmCampoDeTexto() acima. */
   if(focoEmCampoDeTexto(box)) return;
   box.style.display = 'block';
+  /* v2.12.0 — guarda o que já foi escolhido no formulário (cultura, modalidade, situação, motivo, data,
+     nº do ensaio) antes de redesenhar o painel. A sincronização com a nuvem (a cada ~45s, ou ao voltar o
+     sinal) redesenhava o painel do zero e zerava as escolhas de quem estava cadastrando ensaios — o
+     formulário "sumia" no meio do preenchimento. Restaurado logo depois do innerHTML abaixo. */
+  const __prevBulk = {};
+  ['bulkCadCultura','bulkCadModalidade','bulkCadSituacao','bulkCadMotivo','bulkCadData','bulkCadEnsaio','bulkReservaMotivo'].forEach(fid=>{
+    const el = document.getElementById(fid); if(el) __prevBulk[fid] = el.value;
+  });
+  { const el = document.getElementById('bulkCadJunto'); if(el) __prevBulk.bulkCadJunto = el.checked; }
   const listaTxt = ids.map(id=>selectedTalhaoCad[id].talhao).join(', ');
   /* 04/09/2026 (v1.69) — a pedido do Flávio: excluir quadra também em lote, igual já
      funciona a seleção múltipla pra cultura/modalidade. "Excluir quadra" só existe pro
@@ -4883,6 +4930,7 @@ function renderTalhaoCadBulkPanel(){
       <div class="field"><label>Data de plantio</label><input type="date" id="bulkCadData" oninput="marcarDigitandoTalhaoCad()"></div>
       <div class="field"><label>Número do ensaio</label><input type="text" id="bulkCadEnsaio" placeholder="Ex: 1234" oninput="marcarDigitandoTalhaoCad()"></div>
     </div>
+    <label class="reserva-chk" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:700;margin:6px 0;text-align:left;"><input type="checkbox" id="bulkCadJunto" style="width:auto;margin-top:2px;"> <span>Somar ao ensaio que já está na quadra <span class="muted" style="font-weight:600;">(mais de um ensaio plantado na mesma quadra — não substitui o atual)</span></span></label>
     <div class="reserva-box">
       <div class="row">
         <div class="field"><label>Situação</label><select id="bulkCadSituacao" onchange="onBulkCadSituacaoChange(this.value)">
@@ -4900,6 +4948,24 @@ function renderTalhaoCadBulkPanel(){
       ${btnExcluirHtml}
     </div>
   </div>`;
+  restaurarFormBulkTalhaoCad(__prevBulk);
+}
+function restaurarFormBulkTalhaoCad(prev){
+  if(!prev) return;
+  const set = (fid, v)=>{ const el = document.getElementById(fid); if(el && v!==undefined && v!==null) el.value = v; };
+  if(prev.bulkCadCultura){
+    set('bulkCadCultura', prev.bulkCadCultura);
+    onBulkCadCulturaChange(prev.bulkCadCultura);
+    set('bulkCadModalidade', prev.bulkCadModalidade);
+  }
+  if(prev.bulkCadSituacao){
+    set('bulkCadSituacao', prev.bulkCadSituacao);
+    onBulkCadSituacaoChange(prev.bulkCadSituacao);
+  }
+  set('bulkCadMotivo', prev.bulkCadMotivo);
+  set('bulkCadData', prev.bulkCadData);
+  set('bulkCadEnsaio', prev.bulkCadEnsaio);
+  { const el = document.getElementById('bulkCadJunto'); if(el && prev.bulkCadJunto) el.checked = true; }
 }
 function reservaDatalistHtml(){
   const set = new Set(['Purificação milho','Purificação soja']);
@@ -5021,12 +5087,14 @@ function renderTalhaoCadEditor(){
   box.style.display = 'block';
   const plantiosHtml = e.plantios.length ? e.plantios.map((p,idx)=>{
     const disabledModalidade = !MODALIDADES_POR_CULTURA[p.cultura];
-    const tag = idx===0 ? '<span class="tag">Plantio atual</span>' : `<span class="tag">Plantio ${idx+1}</span>`;
+    const tag = idx===0 ? '<span class="tag">Plantio atual</span>' : (p.emCampo ? '<span class="tag tag-mais">Também em campo</span>' : `<span class="tag">Histórico ${idx}</span>`);
+    const emCampoChk = idx===0 ? '' : `<label class="reserva-chk" style="display:flex;gap:6px;align-items:center;font-size:12px;font-weight:700;margin-bottom:6px;"><input type="checkbox" style="width:auto;" ${p.emCampo?'checked':''} onchange="updateTalhaoPlantioField('${e.id}','${p.id}','emCampo', this.checked)"> Ainda plantado junto com o atual (marque se esse ensaio continua nessa quadra)</label>`;
     return `<div class="talhao-plantio-row">
       <div class="talhao-plantio-head">
         ${tag}
         ${e.plantios.length>1? `<button type="button" class="btn-ghost btn-sm" onclick="deleteTalhaoPlantio('${e.id}','${p.id}')">🗑 Remover</button>` : ''}
       </div>
+      ${emCampoChk}
       <div class="row">
         <div class="field"><label>Cultura</label><select onchange="updateTalhaoPlantioField('${e.id}','${p.id}','cultura', this.value)">${culturaOptionsHtml(p.cultura)}</select></div>
         <div class="field"><label>Modalidade</label><select ${disabledModalidade?'disabled':''} onchange="updateTalhaoPlantioField('${e.id}','${p.id}','modalidade', this.value)">${modalidadeOptionsHtml(p.cultura, p.modalidade)}</select></div>
@@ -5080,7 +5148,8 @@ function renderTalhaoCadEditor(){
     ${plantiosHtml}
     <div class="row" style="margin-top:8px;">
       <button type="button" class="btn-primary btn-sm" onclick="salvarTalhaoCadEditor('${e.id}', this)">💾 Salvar</button>
-      <button type="button" class="btn-ghost btn-sm" onclick="addTalhaoPlantio('${e.id}')">+ Adicionar outro plantio/ensaio</button>
+      <button type="button" class="btn-primary btn-sm" onclick="addEnsaioEmCampo('${e.id}')">➕ Mais um ensaio nesta quadra (junto com o atual)</button>
+      <button type="button" class="btn-ghost btn-sm" onclick="addTalhaoPlantio('${e.id}')">Novo plantio (o atual vai pro histórico)</button>
     </div>
   </div>`;
 }
@@ -5199,9 +5268,10 @@ function renderQuadBlockCad(letra, quadInfo, q){
     { const _c = quadraCompTxt(cell.a, ens); if(_c) titleTxt += ` — ${_c}`; }
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
+    { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
     if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
     if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
-    const infoTxt = cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '';
+    const infoTxt = (cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
     const codeMain = (ensaioReservado(ens)? '🔒 ':'') + (isSelected? '☑ ' : isEditing? '✎ ':'') + escapeHtml(cell.q);
     const codeTxt = numeroEnsaioAtual ? `${codeMain}<span class="cell-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : codeMain;
     return `<div class="${cls}" style="${style.join(';')}" onclick="onTalhaoCadastroTileClick('${id}')" title="${escapeHtml(titleTxt)}"><span class="cell-code">${codeTxt}</span>${infoTxt? `<span class="cell-info">${infoTxt}</span>`:''}</div>`;
@@ -5288,6 +5358,7 @@ function renderMapaCad(){
         { const _c = quadraCompTxt(e.area, e); if(_c) titleTxt += ` — ${_c}`; }
         if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
         { const _r = reservaTxt(e); if(_r) titleTxt += ` — ${_r}`; }
+        { const _m = ensaiosEmCampoTxt(e); if(_m) titleTxt += ` — ${_m}`; }
         if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
         if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
         const numHtml = numeroEnsaioAtual ? `${escapeHtml(numLabel)}<span class="tile-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : escapeHtml(numLabel);
@@ -5414,7 +5485,7 @@ function renderEnsaioList(){
     const checked = selectedEnsaios[e.id]? 'checked':'';
     return `<label class="ensaio-item${filtroCultModFora(e)? ' dim':''}">
       <input type="checkbox" data-id="${e.id}" ${checked} onchange="toggleEnsaio('${e.id}', this.checked)">
-      <div class="info"><b>${escapeHtml(e.ensaio||'')}</b><span>${escapeHtml(pivoLabel(e.pivo||'CRISTALINA'))} · Talhão ${escapeHtml(e.talhao||'-')}${e.area? ' · '+escapeHtml(String(e.area))+' ha':''}${talhaoCulturaLabel(e)? ' · '+escapeHtml(talhaoCulturaLabel(e)):''}${e.reservado? ' · <b class="tag-reservado">'+escapeHtml(reservaTxt(e))+'</b>':''}</span></div>
+      <div class="info"><b>${escapeHtml(e.ensaio||'')}</b><span>${escapeHtml(pivoLabel(e.pivo||'CRISTALINA'))} · Talhão ${escapeHtml(e.talhao||'-')}${e.area? ' · '+escapeHtml(String(e.area))+' ha':''}${talhaoCulturaLabel(e)? ' · '+escapeHtml(talhaoCulturaLabel(e)):''}${e.reservado? ' · <b class="tag-reservado">'+escapeHtml(reservaTxt(e))+'</b>':''}${nEnsaiosExtras(e)? ' · <b class="tag-mais">+'+nEnsaiosExtras(e)+' ensaio'+(nEnsaiosExtras(e)===1?'':'s')+'</b>':''}</span></div>
     </label>`;
   }).join('');
   updateSelSummary();
@@ -5465,6 +5536,7 @@ function renderMapa(){
         { const _c = quadraCompTxt(e.area, e); if(_c) titleTxt += ` — ${_c}`; }
         if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
         { const _r = reservaTxt(e); if(_r) titleTxt += ` — ${_r}`; }
+        { const _m = ensaiosEmCampoTxt(e); if(_m) titleTxt += ` — ${_m}`; }
         if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
         const numHtml = numeroEnsaioAtual ? `${escapeHtml(numLabel)}<span class="tile-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : escapeHtml(numLabel);
         return `<button type="button" class="quadra-tile ${sel} ${temCultura}${ensaioReservado(e)?' reservada':''}" data-id="${e.id}" onclick="toggleTalhaoTile('${e.id}')" title="${escapeHtml(titleTxt)}">${ensaioReservado(e)?'🔒 ':''}${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
@@ -5520,7 +5592,7 @@ function toggleFullscreenMapa(){
 }
 
 function selecionarPorCultura(cultura){
-  const daCultura = (DATA.ensaios||[]).filter(e=> e.ativo!==false && (e.cultura||'').toUpperCase()===cultura);
+  const daCultura = (DATA.ensaios||[]).filter(e=> e.ativo!==false && ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===cultura));
   const ativos = daCultura.filter(e=>!e.reservado);
   const nRes = daCultura.length - ativos.length;
   if(!ativos.length){ toast(daCultura.length? `Os ${daCultura.length} talhão(ões) de ${tituloCultura(cultura)} estão reservados` : `Nenhum talhão cadastrado com cultura ${tituloCultura(cultura)}`); return; }
@@ -5539,9 +5611,12 @@ let filtroCultModEsmaecer = true;
 function filtroCultModAtivo(){ return !!filtroCultMod.cultura; }
 function filtroCultModBate(e){
   if(!e || e.reservado) return false;
-  if((e.cultura||'').toUpperCase()!==filtroCultMod.cultura) return false;
-  if(!filtroCultMod.mods.length) return true;
-  return filtroCultMod.mods.includes(e.modalidade||'');
+  /* v2.13.0 — quadra com mais de um ensaio em campo entra no filtro se QUALQUER um deles bate */
+  return ensaiosEmCampo(e).some(p=>{
+    if((p.cultura||'').toUpperCase()!==filtroCultMod.cultura) return false;
+    if(!filtroCultMod.mods.length) return true;
+    return filtroCultMod.mods.includes(p.modalidade||'');
+  });
 }
 function filtroCultModFora(e){ return filtroCultModAtivo() && filtroCultModEsmaecer && !filtroCultModBate(e); }
 function filtroCultModTalhoesDoPivo(){
@@ -5555,7 +5630,7 @@ function renderFiltroCultMod(){
   if(!chipsC) return;
   const todos = filtroCultModTalhoesDoPivo();
   const cont = {};
-  todos.forEach(e=>{ const c=(e.cultura||'').toUpperCase(); if(c) cont[c]=(cont[c]||0)+1; });
+  todos.forEach(e=>{ new Set(ensaiosEmCampo(e).map(p=>(p.cultura||'').toUpperCase()).filter(Boolean)).forEach(c=>{ cont[c]=(cont[c]||0)+1; }); });
   if(filtroCultMod.cultura && !cont[filtroCultMod.cultura]) filtroCultMod = {cultura:'', mods:[]};
   const emoji = {MILHO:'🌽 ', SOJA:'🌱 '};
   chipsC.innerHTML = CULTURAS_PERMITIDAS.map(c=>{
@@ -5570,9 +5645,9 @@ function renderFiltroCultMod(){
   acoes.style.display = ativo? '' : 'none';
   esm.style.display = ativo? '' : 'none';
   if(!ativo) return;
-  const daCultura = todos.filter(e=>(e.cultura||'').toUpperCase()===filtroCultMod.cultura);
+  const daCultura = todos.filter(e=>ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===filtroCultMod.cultura));
   const contM = {};
-  daCultura.forEach(e=>{ const m=e.modalidade||''; contM[m]=(contM[m]||0)+1; });
+  daCultura.forEach(e=>{ new Set(ensaiosEmCampo(e).filter(p=>(p.cultura||'').toUpperCase()===filtroCultMod.cultura).map(p=>p.modalidade||'')).forEach(m=>{ contM[m]=(contM[m]||0)+1; }); });
   const ordem = (MODALIDADES_POR_CULTURA[filtroCultMod.cultura]||[]).filter(m=>contM[m]);
   Object.keys(contM).forEach(m=>{ if(m && !ordem.includes(m)) ordem.push(m); });
   if(contM['']) ordem.push('');
@@ -5779,9 +5854,10 @@ function areaCellState(code, id, q, modoCad){
   { const _c = quadraCompTxt(ens && ens.area, ens); if(_c) titleTxt += ` — ${_c}`; }
   if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
   { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
+  { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
   if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
   if(modoCad && dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
-  const infoTxt = cultura ? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '';
+  const infoTxt = (cultura ? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
   return {cls, titleTxt, marker, numeroEnsaioAtual, infoTxt, corBg};
 }
 function renderAreaCellNormal(code, q, modoCad){
@@ -5872,8 +5948,9 @@ function renderQuadBlock(letra, quadInfo, q){
     { const _c = quadraCompTxt(cell.a, ens); if(_c) titleTxt += ` — ${_c}`; }
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
+    { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
     if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
-    const infoTxt = cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '';
+    const infoTxt = (cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
     const codeMain = (ensaioReservado(ens)? '🔒 ':'') + (isSel? '✓ ':'') + escapeHtml(cell.q);
     const codeTxt = numeroEnsaioAtual ? `${codeMain}<span class="cell-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : codeMain;
     return `<div class="${cls}" style="${style.join(';')}" onclick="toggleTalhaoTile('${id}')" title="${escapeHtml(titleTxt)}"><span class="cell-code">${codeTxt}</span>${infoTxt? `<span class="cell-info">${infoTxt}</span>`:''}</div>`;
@@ -6118,6 +6195,7 @@ function renderPivoSvg(wrapId, q, modoCad){
     if(ens && ens.comprimentoManual) titleTxt += ` (ajustado manualmente, ${fmtNum(ens.comprimentoManual)}m × 20m)`;
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
+    { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
     if(numeroEnsaioAtualSvg) titleTxt += ` — Ensaio nº ${numeroEnsaioAtualSvg}`;
     const style = corModalidade? ` style="fill:${corModalidade}"` : '';
     const path = `<path d="${pivoSvgPointsToPath(geom.pts,true)}" class="${cls}"${style} data-id="${id}" onclick="${clickFn}"><title>${escapeHtml(titleTxt)}</title></path>`;
@@ -6806,7 +6884,7 @@ function buildReceiptBodyHTML(app){
      cultura/número de ensaio do talhão homônimo do Pivô 3. Corrigido em 02/09/2026. */
   const detalheTalhoes = mapHtml ? '' : talhoesArr.map(t=>{
     const ens = (DATA.ensaios||[]).find(e=>e.talhao===t && (e.pivo||'CRISTALINA')===pivoIdDaApp);
-    const label = talhaoCulturaLabel(ens);
+    const label = ens ? ensaiosEmCampo(ens).map(p=>[p.cultura,p.modalidade].filter(Boolean).join(' · ')).filter(Boolean).join(' + ') : talhaoCulturaLabel(ens);
     return label? `${t} (${label})` : null;
   }).filter(Boolean).join(', ');
   /* Número do ensaio na ficha (pedido do Flávio em 25/08/2026) — se todos os talhões
@@ -6814,7 +6892,7 @@ function buildReceiptBodyHTML(app){
      mostra o número de cada talhão separado, pra não ficar ambíguo. */
   const numerosEnsaioPorTalhao = talhoesArr.map(t=>{
     const ens = (DATA.ensaios||[]).find(e=>e.talhao===t && (e.pivo||'CRISTALINA')===pivoIdDaApp);
-    const num = (ens && ens.plantios && ens.plantios[0] && ens.plantios[0].numeroEnsaio) || '';
+    const num = ens ? ensaiosEmCampo(ens).map(p=>p.numeroEnsaio).filter(Boolean).join(' + ') : '';
     return {talhao: t, numero: num};
   }).filter(x=>x.numero);
   const numerosEnsaioUnicos = [...new Set(numerosEnsaioPorTalhao.map(x=>x.numero))];
