@@ -851,6 +851,13 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .filtro-cultmod-esmaecer{display:flex;align-items:flex-start;justify-content:flex-start;gap:8px;margin-top:8px;font-size:12px;text-align:left;}
   .filtro-cultmod-esmaecer input{width:auto;flex:0 0 auto;margin:2px 0 0;}
   .quadra-tile.dim{opacity:.25;}
+  .pivo-cell.reservada,.quadra-tile.reservada{outline:2px dashed #7c3aed;outline-offset:-2px;}
+  .pivo-cell.quadra.reservada{color:#4a2f86;}
+  .pivo-svg-quadra.reservada{stroke:#7c3aed;stroke-width:2;stroke-dasharray:4 2;}
+  .tag-reservado{display:inline-block;background:#ede9fe;color:#5b21b6;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700;}
+  .reserva-box{border:1.5px dashed #7c3aed;border-radius:12px;padding:10px;margin:8px 0;background:rgba(124,58,237,.06);}
+  .reserva-box .muted{font-weight:600;}
+  .reserva-box select,.reserva-box input[type=text]{width:100%;margin-top:6px;}
   .ensaio-item.dim{opacity:.4;}
   .pivo-svg-quadra{fill:#e6ddd0;stroke:#b7a88e;stroke-width:1.1;cursor:pointer;vector-effect:non-scaling-stroke;}
   .pivo-svg-quadra:active{opacity:.85;}
@@ -1316,6 +1323,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
           <button class="btn-sm" id="btnFiltroSelTodos" onclick="filtroCultModSelecionarTodos()">☑ Selecionar todos</button>
           <button class="btn-ghost btn-sm" onclick="filtroCultModLimpar()">Limpar filtro</button>
         </div>
+        <div class="muted" id="filtroReservaNota" style="display:none;font-size:12px;margin-top:6px;"></div>
         <label class="filtro-cultmod-esmaecer" id="filtroEsmaecerLbl" style="display:none;"><input type="checkbox" id="filtroEsmaecer" checked onchange="filtroCultModEsmaecerChange(this.checked)"> Esmaecer no mapa o que não é desse filtro (pra tocar só nas quadras que quero)</label>
       </div>
       </div>
@@ -1846,7 +1854,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.9.0';
+const APP_BUILD_ID = 'v2.10.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -4438,6 +4446,18 @@ function corTalhaoModalidade(cultura, modalidade){
   if(porModalidade && modalidade && porModalidade[modalidade]) return porModalidade[modalidade];
   return CORES_CULTURA_GENERICA[cultura] || '';
 }
+/* v2.10.0 — quadra reservada aparece com a cor da cultura/modalidade em tom mais claro (ou lilás claro
+   se ainda não tem cultura), pra diferenciar de quem já está plantado. */
+function corEnsaioExibida(ens, cultura, modalidade){
+  const base = corTalhaoModalidade(cultura, modalidade);
+  if(!ensaioReservado(ens)) return base;
+  if(!base) return '#e4dcf8';
+  const m = /^#([0-9a-f]{6})$/i.exec(base.trim());
+  if(!m) return `color-mix(in srgb, ${base} 38%, white)`;
+  const n = parseInt(m[1],16), k = 0.62;
+  const ch = v=>Math.round(v+(255-v)*k).toString(16).padStart(2,'0');
+  return '#'+ch((n>>16)&255)+ch((n>>8)&255)+ch(n&255);
+}
 let talhaoCadastroSearch = '';
 let talhaoCadView = 'pivo';
 let talhaoCadEditingId = null;
@@ -4536,7 +4556,7 @@ function renderTalhaoCadastro(){
       return `<div class="talhao-cadastro-row ${rowCls}" onclick="onTalhaoCadastroTileClick('${e.id}')" style="cursor:pointer;">
         <div class="tc-info"><b>${escapeHtml(e.talhao||'')}</b>${e.area? `<div class="muted">${escapeHtml(String(e.area))}ha</div>`:''}</div>
         <div class="tc-status">
-          <div>${label? escapeHtml(label) : '<span class="muted">Sem cultura cadastrada</span>'}</div>
+          <div>${label? escapeHtml(label) : '<span class="muted">Sem cultura cadastrada</span>'}${e.reservado? ' <b class="tag-reservado">'+escapeHtml(reservaTxt(e))+'</b>':''}</div>
           <div class="muted">${nPlantios} plantio${nPlantios===1?'':'s'}${detalhes.length? ' · '+escapeHtml(detalhes.join(' · ')) : ''}</div>
         </div>
         ${actionBtn}
@@ -4596,6 +4616,12 @@ function talhaoCulturaLabel(e){
   if(!e || !e.cultura) return '';
   return e.modalidade ? `${e.cultura} · ${e.modalidade}` : e.cultura;
 }
+/* v2.10.0 — Situação do talhão no cadastro: "Já plantada" (normal) ou "Reservada" (quadra separada
+   pra um fim específico, ex.: Purificação milho). Reservada fica de fora de "Selecionar tudo de
+   Milho/Soja" e do filtro por cultura/modalidade na aba Aplicação (dá pra tocar nela na mão).
+   Campos no talhão: reservado (bool) + reservadoMotivo (texto). */
+function ensaioReservado(e){ return !!(e && e.reservado); }
+function reservaTxt(e){ return (e && e.reservado) ? ('🔒 Reservado'+(e.reservadoMotivo? ': '+e.reservadoMotivo : '')) : ''; }
 function tituloCultura(c){
   if(!c) return '';
   return c.toLowerCase().split(' ').map(w=> w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
@@ -4699,24 +4725,32 @@ function aplicarBulkTalhaoCad(){
   const modalidade = document.getElementById('bulkCadModalidade').value;
   const dataPlantio = document.getElementById('bulkCadData').value;
   const numeroEnsaio = document.getElementById('bulkCadEnsaio').value;
-  if(!cultura){ toast('Escolha uma cultura pra aplicar aos talhões selecionados'); return; }
+  const sitEl = document.getElementById('bulkCadSituacao');
+  const reservar = !!sitEl && sitEl.value==='reservada';
+  const motivoEl = document.getElementById('bulkCadMotivo');
+  const motivo = motivoEl ? motivoEl.value.trim() : '';
+  if(!cultura && !reservar){ toast('Escolha uma cultura pra aplicar aos talhões selecionados'); return; }
   ids.forEach(id=>{
     const e = ensaioById(id);
     if(!e) return;
-    ensurePlantiosArray(e);
-    e.plantios.unshift({
-      id: genPlantioId(),
-      cultura,
-      modalidade: MODALIDADES_POR_CULTURA[cultura] ? modalidade : '',
-      dataPlantio,
-      numeroEnsaio
-    });
-    syncEnsaioTopFields(e);
+    if(cultura){
+      ensurePlantiosArray(e);
+      e.plantios.unshift({
+        id: genPlantioId(),
+        cultura,
+        modalidade: MODALIDADES_POR_CULTURA[cultura] ? modalidade : '',
+        dataPlantio,
+        numeroEnsaio
+      });
+      syncEnsaioTopFields(e);
+    }
+    if(reservar){ e.reservado = true; if(motivo) e.reservadoMotivo = motivo; else delete e.reservadoMotivo; }
+    else{ delete e.reservado; delete e.reservadoMotivo; }
   });
   saveData();
   fbPushEstoque();
   refreshTalhaoUI();
-  toast(ids.length===1 ? '1 talhão atualizado' : `${ids.length} talhões atualizados`);
+  toast((ids.length===1 ? '1 talhão atualizado' : `${ids.length} talhões atualizados`)+(reservar? ' (reservado'+(ids.length===1?'':'s')+(motivo? ': '+motivo : '')+')' : ''));
   toggleTalhaoCadSelMode();
 }
 
@@ -4816,11 +4850,62 @@ function renderTalhaoCadBulkPanel(){
       <div class="field"><label>Data de plantio</label><input type="date" id="bulkCadData" oninput="marcarDigitandoTalhaoCad()"></div>
       <div class="field"><label>Número do ensaio</label><input type="text" id="bulkCadEnsaio" placeholder="Ex: 1234" oninput="marcarDigitandoTalhaoCad()"></div>
     </div>
+    <div class="reserva-box">
+      <div class="row">
+        <div class="field"><label>Situação</label><select id="bulkCadSituacao" onchange="onBulkCadSituacaoChange(this.value)">
+          <option value="plantada">Já plantada (normal)</option>
+          <option value="reservada">🔒 Reservada — fora de "tudo de Milho/Soja"</option>
+        </select></div>
+        <div class="field" id="bulkCadMotivoWrap" style="display:none;"><label>Reservada pra quê?</label><input type="text" id="bulkCadMotivo" list="reservaMotivosList" placeholder="Ex: Purificação milho" oninput="marcarDigitandoTalhaoCad()"></div>
+      </div>
+      <div class="muted" style="font-size:11px;margin-top:4px;">Reservada: a cultura/modalidade acima é opcional (só colore a quadra). "Já plantada" tira a reserva, se tinha.</div>
+      ${reservaDatalistHtml()}
+    </div>
     <div class="row" style="margin-top:8px; align-items:center; gap:8px;">
       <button type="button" class="btn-primary btn-sm" ${ids.length? '' : 'disabled'} onclick="aplicarBulkTalhaoCad()">✓ Aplicar a ${ids.length} ${ids.length===1?'talhão':'talhões'} selecionado${ids.length===1?'':'s'}</button>
+      ${ids.some(id=>ensaioReservado(ensaioById(id)))? `<button type="button" class="btn-ghost btn-sm" onclick="tirarReservaSelecionados()">🔓 Tirar reserva</button>` : ''}
       ${btnExcluirHtml}
     </div>
   </div>`;
+}
+function reservaDatalistHtml(){
+  const set = new Set(['Purificação milho','Purificação soja']);
+  (DATA.ensaios||[]).forEach(e=>{ if(e.reservado && e.reservadoMotivo) set.add(e.reservadoMotivo); });
+  return `<datalist id="reservaMotivosList">${[...set].map(m=>`<option value="${escapeHtml(m)}"></option>`).join('')}</datalist>`;
+}
+function onBulkCadSituacaoChange(v){
+  const w = document.getElementById('bulkCadMotivoWrap');
+  if(w) w.style.display = v==='reservada' ? '' : 'none';
+}
+function updateTalhaoReserva(id, flag, motivo){
+  const e = ensaioById(id);
+  if(!e) return;
+  if(flag!==null && flag!==undefined){
+    e.reservado = !!flag;
+    if(!flag) delete e.reservadoMotivo;
+  }
+  if(motivo!==null && motivo!==undefined){
+    const m = String(motivo).trim();
+    if(m){ e.reservadoMotivo = m; e.reservado = true; }
+    else delete e.reservadoMotivo;
+  }
+  if(!e.reservado){ delete e.reservado; delete e.reservadoMotivo; }
+  saveData();
+  fbPushEstoque();
+  refreshTalhaoCadUI();
+  refreshTalhaoUI();
+  toast(e.reservado ? `Talhão ${e.talhao||''} reservado${e.reservadoMotivo? ' ('+e.reservadoMotivo+')':''}` : `Talhão ${e.talhao||''}: sem reserva`);
+}
+function tirarReservaSelecionados(){
+  const ids = Object.keys(selectedTalhaoCad);
+  let n = 0;
+  ids.forEach(id=>{ const e = ensaioById(id); if(e && e.reservado){ delete e.reservado; delete e.reservadoMotivo; n++; } });
+  if(!n){ toast('Nenhum dos selecionados está reservado'); return; }
+  saveData();
+  fbPushEstoque();
+  toggleTalhaoCadSelMode();
+  refreshTalhaoUI();
+  toast(`Reserva removida de ${n} talhão(ões)`);
 }
 /* 29/09/2026 — a pedido do Flávio: limpar a cultura de 1 talhão só, direto do painel de
    seleção (sem precisar usar o "Limpar tudo de Soja/Milho", que afeta todos os talhões do
@@ -4949,6 +5034,16 @@ function renderTalhaoCadEditor(){
       <button type="button" class="btn-ghost btn-sm" onclick="closeTalhaoCadEditor()">✕ Fechar</button>
     </div>
     ${comprimentoHtml}
+    <div class="reserva-box">
+      <div class="field"><label>Situação do talhão</label>
+        <select onchange="updateTalhaoReserva('${e.id}', this.value==='reservada', null)">
+          <option value="plantada" ${e.reservado?'':'selected'}>Já plantada (normal)</option>
+          <option value="reservada" ${e.reservado?'selected':''}>🔒 Reservada — fora de "tudo de Milho/Soja" na Aplicação</option>
+        </select>
+      </div>
+      ${e.reservado? `<div class="field"><label>Reservada pra quê?</label><input type="text" list="reservaMotivosList" placeholder="Ex: Purificação milho" value="${escapeHtml(e.reservadoMotivo||'')}" onchange="updateTalhaoReserva('${e.id}', null, this.value)" oninput="marcarDigitandoTalhaoCad()"></div>` : ''}
+      ${reservaDatalistHtml()}
+    </div>
     ${plantiosHtml}
     <div class="row" style="margin-top:8px;">
       <button type="button" class="btn-primary btn-sm" onclick="salvarTalhaoCadEditor('${e.id}', this)">💾 Salvar</button>
@@ -5047,7 +5142,7 @@ function renderQuadBlockCad(letra, quadInfo, q){
     const cultura = (ens && ens.cultura) || '';
     const modalidade = (ens && ens.modalidade) || '';
     const culturaClass = culturaCellClass(cultura);
-    const corModalidade = corTalhaoModalidade(cultura, modalidade);
+    const corModalidade = corEnsaioExibida(ens, cultura, modalidade);
     if(corModalidade) style.push(`background:${corModalidade}`);
     let cls = 'pivo-cell quadra';
     if(culturaClass) cls += ' '+culturaClass;
@@ -5056,6 +5151,7 @@ function renderQuadBlockCad(letra, quadInfo, q){
     if(isSelected) cls += ' multisel';
     if(isDim) cls += ' dim';
     if(isMatch) cls += ' match';
+    if(ensaioReservado(ens)) cls += ' reservada';
     const edge = colEdges[cell.c];
     if(edge){
       if(cell.r===edge.min) cls += ' borda-inicio';
@@ -5069,10 +5165,11 @@ function renderQuadBlockCad(letra, quadInfo, q){
     if(cell.a) titleTxt += ` — ${cell.a} ha`;
     { const _c = quadraCompTxt(cell.a, ens); if(_c) titleTxt += ` — ${_c}`; }
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
+    { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
     if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
     if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
     const infoTxt = cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '';
-    const codeMain = (isSelected? '☑ ' : isEditing? '✎ ':'') + escapeHtml(cell.q);
+    const codeMain = (ensaioReservado(ens)? '🔒 ':'') + (isSelected? '☑ ' : isEditing? '✎ ':'') + escapeHtml(cell.q);
     const codeTxt = numeroEnsaioAtual ? `${codeMain}<span class="cell-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : codeMain;
     return `<div class="${cls}" style="${style.join(';')}" onclick="onTalhaoCadastroTileClick('${id}')" title="${escapeHtml(titleTxt)}"><span class="cell-code">${codeTxt}</span>${infoTxt? `<span class="cell-info">${infoTxt}</span>`:''}</div>`;
   }).join('');
@@ -5157,10 +5254,11 @@ function renderMapaCad(){
         if(e.area) titleTxt += ` — ${e.area} ha`;
         { const _c = quadraCompTxt(e.area, e); if(_c) titleTxt += ` — ${_c}`; }
         if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
+        { const _r = reservaTxt(e); if(_r) titleTxt += ` — ${_r}`; }
         if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
         if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
         const numHtml = numeroEnsaioAtual ? `${escapeHtml(numLabel)}<span class="tile-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : escapeHtml(numLabel);
-        return `<button type="button" class="quadra-tile ${isEditing?'sel':''} ${isSelected?'multisel':''} ${temCultura}" data-id="${e.id}" onclick="onTalhaoCadastroTileClick('${e.id}')" title="${escapeHtml(titleTxt)}">${isSelected?'☑ ':''}${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
+        return `<button type="button" class="quadra-tile ${isEditing?'sel':''} ${isSelected?'multisel':''} ${temCultura}${ensaioReservado(e)?' reservada':''}" data-id="${e.id}" onclick="onTalhaoCadastroTileClick('${e.id}')" title="${escapeHtml(titleTxt)}">${ensaioReservado(e)?'🔒 ':''}${isSelected?'☑ ':''}${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
       }).join('');
       return `<div class="faixa-row"><div class="flabel">Faixa ${escapeHtml(fx)}</div><div class="faixa-tiles">${tiles}</div></div>`;
     }).join('');
@@ -5283,7 +5381,7 @@ function renderEnsaioList(){
     const checked = selectedEnsaios[e.id]? 'checked':'';
     return `<label class="ensaio-item${filtroCultModFora(e)? ' dim':''}">
       <input type="checkbox" data-id="${e.id}" ${checked} onchange="toggleEnsaio('${e.id}', this.checked)">
-      <div class="info"><b>${escapeHtml(e.ensaio||'')}</b><span>${escapeHtml(pivoLabel(e.pivo||'CRISTALINA'))} · Talhão ${escapeHtml(e.talhao||'-')}${e.area? ' · '+escapeHtml(String(e.area))+' ha':''}${talhaoCulturaLabel(e)? ' · '+escapeHtml(talhaoCulturaLabel(e)):''}</span></div>
+      <div class="info"><b>${escapeHtml(e.ensaio||'')}</b><span>${escapeHtml(pivoLabel(e.pivo||'CRISTALINA'))} · Talhão ${escapeHtml(e.talhao||'-')}${e.area? ' · '+escapeHtml(String(e.area))+' ha':''}${talhaoCulturaLabel(e)? ' · '+escapeHtml(talhaoCulturaLabel(e)):''}${e.reservado? ' · <b class="tag-reservado">'+escapeHtml(reservaTxt(e))+'</b>':''}</span></div>
     </label>`;
   }).join('');
   updateSelSummary();
@@ -5333,9 +5431,10 @@ function renderMapa(){
         if(e.area) titleTxt += ` — ${e.area} ha`;
         { const _c = quadraCompTxt(e.area, e); if(_c) titleTxt += ` — ${_c}`; }
         if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
+        { const _r = reservaTxt(e); if(_r) titleTxt += ` — ${_r}`; }
         if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
         const numHtml = numeroEnsaioAtual ? `${escapeHtml(numLabel)}<span class="tile-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : escapeHtml(numLabel);
-        return `<button type="button" class="quadra-tile ${sel} ${temCultura}" data-id="${e.id}" onclick="toggleTalhaoTile('${e.id}')" title="${escapeHtml(titleTxt)}">${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
+        return `<button type="button" class="quadra-tile ${sel} ${temCultura}${ensaioReservado(e)?' reservada':''}" data-id="${e.id}" onclick="toggleTalhaoTile('${e.id}')" title="${escapeHtml(titleTxt)}">${ensaioReservado(e)?'🔒 ':''}${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
       }).join('');
       return `<div class="faixa-row"><div class="flabel">Faixa ${escapeHtml(fx)}</div><div class="faixa-tiles">${tiles}</div></div>`;
     }).join('');
@@ -5388,12 +5487,14 @@ function toggleFullscreenMapa(){
 }
 
 function selecionarPorCultura(cultura){
-  const ativos = (DATA.ensaios||[]).filter(e=> e.ativo!==false && (e.cultura||'').toUpperCase()===cultura);
-  if(!ativos.length){ toast(`Nenhum talhão cadastrado com cultura ${tituloCultura(cultura)}`); return; }
+  const daCultura = (DATA.ensaios||[]).filter(e=> e.ativo!==false && (e.cultura||'').toUpperCase()===cultura);
+  const ativos = daCultura.filter(e=>!e.reservado);
+  const nRes = daCultura.length - ativos.length;
+  if(!ativos.length){ toast(daCultura.length? `Os ${daCultura.length} talhão(ões) de ${tituloCultura(cultura)} estão reservados` : `Nenhum talhão cadastrado com cultura ${tituloCultura(cultura)}`); return; }
   ativos.forEach(e=>setTalhaoSelected(e.id, true, false));
   recomputeAreaFromSelection();
   refreshTalhaoUI();
-  toast(`${ativos.length} talhão(ões) de ${tituloCultura(cultura)} selecionado(s)`);
+  toast(`${ativos.length} talhão(ões) de ${tituloCultura(cultura)} selecionado(s)`+(nRes? ` — ${nRes} reservado(s) ficaram de fora`:''));
 }
 
 /* ---- v2.9.0: filtro por cultura + modalidade (aba Aplicação) ----
@@ -5404,14 +5505,17 @@ let filtroCultMod = {cultura:'', mods:[]};
 let filtroCultModEsmaecer = true;
 function filtroCultModAtivo(){ return !!filtroCultMod.cultura; }
 function filtroCultModBate(e){
-  if(!e) return false;
+  if(!e || e.reservado) return false;
   if((e.cultura||'').toUpperCase()!==filtroCultMod.cultura) return false;
   if(!filtroCultMod.mods.length) return true;
   return filtroCultMod.mods.includes(e.modalidade||'');
 }
 function filtroCultModFora(e){ return filtroCultModAtivo() && filtroCultModEsmaecer && !filtroCultModBate(e); }
 function filtroCultModTalhoesDoPivo(){
-  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pivoAtivoId);
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && !e.reservado && (e.pivo||'CRISTALINA')===pivoAtivoId);
+}
+function filtroCultModNReservadasDoPivo(){
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && e.reservado && (e.pivo||'CRISTALINA')===pivoAtivoId).length;
 }
 function renderFiltroCultMod(){
   const chipsC = document.getElementById('filtroCultChips');
@@ -5446,6 +5550,9 @@ function renderFiltroCultMod(){
   }).join('');
   const n = daCultura.filter(filtroCultModBate).length;
   document.getElementById('btnFiltroSelTodos').textContent = `☑ Selecionar todos (${n})`;
+  const nRes = filtroCultModNReservadasDoPivo();
+  const notaRes = document.getElementById('filtroReservaNota');
+  if(notaRes){ notaRes.style.display = nRes? '' : 'none'; notaRes.textContent = `🔒 ${nRes} quadra${nRes===1?'':'s'} reservada${nRes===1?'':'s'} neste pivô não entra${nRes===1?'':'m'} no filtro (dá pra tocar nela${nRes===1?'':'s'} na mão).`; }
   document.getElementById('filtroEsmaecer').checked = filtroCultModEsmaecer;
 }
 function filtroCultModSetCultura(c){
@@ -5611,7 +5718,7 @@ function areaCellState(code, id, q, modoCad){
   const cultura = (ens && ens.cultura) || '';
   const modalidade = (ens && ens.modalidade) || '';
   const culturaClass = culturaCellClass(cultura);
-  const corBg = corTalhaoModalidade(cultura, modalidade);
+  const corBg = corEnsaioExibida(ens, cultura, modalidade);
   let cls = 'pivo-cell quadra';
   if(culturaClass) cls += ' '+culturaClass;
   else if(cultura) cls += ' tem-cultura';
@@ -5629,6 +5736,7 @@ function areaCellState(code, id, q, modoCad){
   }
   if(isDim) cls += ' dim';
   if(isMatch) cls += ' match';
+  if(ensaioReservado(ens)){ cls += ' reservada'; marker += '🔒 '; }
   const culturaLabel = talhaoCulturaLabel(ens);
   const plantioAtual = (ens && ens.plantios && ens.plantios[0]) || null;
   const numeroEnsaioAtual = (plantioAtual && plantioAtual.numeroEnsaio) || '';
@@ -5637,6 +5745,7 @@ function areaCellState(code, id, q, modoCad){
   if(ens && ens.area) titleTxt += ` — ${ens.area} ha`;
   { const _c = quadraCompTxt(ens && ens.area, ens); if(_c) titleTxt += ` — ${_c}`; }
   if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
+  { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
   if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
   if(modoCad && dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
   const infoTxt = cultura ? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '';
@@ -5708,7 +5817,7 @@ function renderQuadBlock(letra, quadInfo, q){
     const cultura = (ens && ens.cultura) || '';
     const modalidade = (ens && ens.modalidade) || '';
     const culturaClass = culturaCellClass(cultura);
-    const corModalidade = corTalhaoModalidade(cultura, modalidade);
+    const corModalidade = corEnsaioExibida(ens, cultura, modalidade);
     if(corModalidade) style.push(`background:${corModalidade}`);
     let cls = 'pivo-cell quadra';
     if(culturaClass) cls += ' '+culturaClass;
@@ -5716,6 +5825,7 @@ function renderQuadBlock(letra, quadInfo, q){
     if(isSel) cls += ' sel';
     if(isDim) cls += ' dim';
     if(isMatch) cls += ' match';
+    if(ensaioReservado(ens)) cls += ' reservada';
     const edge = colEdges[cell.c];
     if(edge){
       if(cell.r===edge.min) cls += ' borda-inicio';
@@ -5728,9 +5838,10 @@ function renderQuadBlock(letra, quadInfo, q){
     if(cell.a) titleTxt += ` — ${cell.a} ha`;
     { const _c = quadraCompTxt(cell.a, ens); if(_c) titleTxt += ` — ${_c}`; }
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
+    { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
     if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
     const infoTxt = cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '';
-    const codeMain = (isSel? '✓ ':'') + escapeHtml(cell.q);
+    const codeMain = (ensaioReservado(ens)? '🔒 ':'') + (isSel? '✓ ':'') + escapeHtml(cell.q);
     const codeTxt = numeroEnsaioAtual ? `${codeMain}<span class="cell-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : codeMain;
     return `<div class="${cls}" style="${style.join(';')}" onclick="toggleTalhaoTile('${id}')" title="${escapeHtml(titleTxt)}"><span class="cell-code">${codeTxt}</span>${infoTxt? `<span class="cell-info">${infoTxt}</span>`:''}</div>`;
   }).join('');
@@ -5947,7 +6058,7 @@ function renderPivoSvg(wrapId, q, modoCad){
     }
     const cultura = (ens && ens.cultura) || '';
     const modalidade = (ens && ens.modalidade) || '';
-    const corModalidade = corTalhaoModalidade(cultura, modalidade);
+    const corModalidade = corEnsaioExibida(ens, cultura, modalidade);
     const isMatch = q && cell.code.toUpperCase().includes(q);
     const isDim = (q && !isMatch) || (!modoCad && filtroCultModFora(ens));
     let cls = 'pivo-svg-quadra';
@@ -5962,6 +6073,7 @@ function renderPivoSvg(wrapId, q, modoCad){
     }
     if(isDim) cls += ' dim';
     if(isMatch) cls += ' match';
+    if(ensaioReservado(ens)) cls += ' reservada';
     const clickFn = modoCad? `onTalhaoCadastroTileClick('${id}')` : `toggleTalhaoTile('${id}')`;
     const geom = pivoSvgEffectiveGeom(cell, ens);
     const areaHa = (geom.area_m2/10000).toFixed(3);
@@ -5972,6 +6084,7 @@ function renderPivoSvg(wrapId, q, modoCad){
     titleTxt += ` — ${quadraCompTxt(geom.area_m2/10000, ens)}`;
     if(ens && ens.comprimentoManual) titleTxt += ` (ajustado manualmente, ${fmtNum(ens.comprimentoManual)}m × 20m)`;
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
+    { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
     if(numeroEnsaioAtualSvg) titleTxt += ` — Ensaio nº ${numeroEnsaioAtualSvg}`;
     const style = corModalidade? ` style="fill:${corModalidade}"` : '';
     const path = `<path d="${pivoSvgPointsToPath(geom.pts,true)}" class="${cls}"${style} data-id="${id}" onclick="${clickFn}"><title>${escapeHtml(titleTxt)}</title></path>`;
