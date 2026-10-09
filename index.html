@@ -837,6 +837,21 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   #quadraTip .qt-name{font-size:15px;font-weight:800;letter-spacing:.2px;}
   #quadraTip .qt-comp{font-size:13px;font-weight:700;color:#ffd43b;margin-top:1px;}
   #quadraTip .qt-rest{opacity:.8;margin-top:3px;font-size:11px;}
+  /* v2.9.0 — filtro por cultura e modalidade na aba Aplicação */
+  .filtro-cultmod{border:2px dashed var(--orange);border-radius:14px;padding:10px 12px;margin-top:10px;}
+  .filtro-cultmod-titulo{font-weight:800;font-size:13px;margin-bottom:2px;}
+  .filtro-cultmod-passo{font-size:11px;font-weight:800;color:var(--orange-dark);margin:8px 0 5px;}
+  .filtro-cultmod-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .fcm-chip{border:1.5px solid var(--border,#e4d8c8);background:#fff;color:var(--text);border-radius:999px;padding:6px 11px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+  .fcm-chip small{font-weight:600;opacity:.65;margin-left:3px;}
+  .fcm-chip.on{background:var(--orange-dark);border-color:var(--orange-dark);color:#fff;}
+  .fcm-chip.on small{opacity:.85;}
+  .fcm-chip:disabled{opacity:.4;cursor:default;}
+  .filtro-cultmod-acoes{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .filtro-cultmod-esmaecer{display:flex;align-items:flex-start;justify-content:flex-start;gap:8px;margin-top:8px;font-size:12px;text-align:left;}
+  .filtro-cultmod-esmaecer input{width:auto;flex:0 0 auto;margin:2px 0 0;}
+  .quadra-tile.dim{opacity:.25;}
+  .ensaio-item.dim{opacity:.4;}
   .pivo-svg-quadra{fill:#e6ddd0;stroke:#b7a88e;stroke-width:1.1;cursor:pointer;vector-effect:non-scaling-stroke;}
   .pivo-svg-quadra:active{opacity:.85;}
   /* 09/09/2026 — padronização visual pedida pelo Flávio: mesma cor/espessura de seleção
@@ -1285,6 +1300,23 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('MILHO')">🌽 Selecionar tudo de Milho</button>
         <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('SOJA')">🌱 Selecionar tudo de Soja</button>
         <button class="btn-ghost btn-sm" onclick="clearAllTalhoes()">Limpar seleção</button>
+      </div>
+
+      <!-- v2.9.0 — a pedido do Flávio: selecionar/filtrar por cultura E modalidade (ex: tudo de Soja >
+           Purificação + Preliminar I), e aí marcar só as quadras que quer aplicar. Vale pro pivô aberto. -->
+      <div class="filtro-cultmod" id="filtroCultModBox">
+        <div class="filtro-cultmod-titulo">🎯 Selecionar por cultura e modalidade <span class="muted">· só do pivô aberto</span></div>
+        <div class="filtro-cultmod-passo">1 · Cultura</div>
+        <div class="filtro-cultmod-chips" id="filtroCultChips"></div>
+        <div id="filtroModWrap" style="display:none;">
+          <div class="filtro-cultmod-passo" id="filtroModTitulo">2 · Modalidades</div>
+          <div class="filtro-cultmod-chips" id="filtroModChips"></div>
+        </div>
+        <div class="filtro-cultmod-acoes" id="filtroCultModAcoes" style="display:none;">
+          <button class="btn-sm" id="btnFiltroSelTodos" onclick="filtroCultModSelecionarTodos()">☑ Selecionar todos</button>
+          <button class="btn-ghost btn-sm" onclick="filtroCultModLimpar()">Limpar filtro</button>
+        </div>
+        <label class="filtro-cultmod-esmaecer" id="filtroEsmaecerLbl" style="display:none;"><input type="checkbox" id="filtroEsmaecer" checked onchange="filtroCultModEsmaecerChange(this.checked)"> Esmaecer no mapa o que não é desse filtro (pra tocar só nas quadras que quero)</label>
       </div>
       </div>
 
@@ -1814,7 +1846,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.8.0';
+const APP_BUILD_ID = 'v2.9.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -5161,6 +5193,7 @@ function toggleAcoesMassaTalhaoCad(){
 }
 
 function refreshTalhaoUI(){
+  renderFiltroCultMod();
   if(talhaoView==='pivo') renderPivo();
   else if(talhaoView==='mapa') renderMapa();
   else renderEnsaioList();
@@ -5248,7 +5281,7 @@ function renderEnsaioList(){
   }
   wrap.innerHTML = ativos.map(e=>{
     const checked = selectedEnsaios[e.id]? 'checked':'';
-    return `<label class="ensaio-item">
+    return `<label class="ensaio-item${filtroCultModFora(e)? ' dim':''}">
       <input type="checkbox" data-id="${e.id}" ${checked} onchange="toggleEnsaio('${e.id}', this.checked)">
       <div class="info"><b>${escapeHtml(e.ensaio||'')}</b><span>${escapeHtml(pivoLabel(e.pivo||'CRISTALINA'))} · Talhão ${escapeHtml(e.talhao||'-')}${e.area? ' · '+escapeHtml(String(e.area))+' ha':''}${talhaoCulturaLabel(e)? ' · '+escapeHtml(talhaoCulturaLabel(e)):''}</span></div>
     </label>`;
@@ -5290,7 +5323,7 @@ function renderMapa(){
     const faixasHtml = Object.keys(faixas).sort().map(fx=>{
       const itens = faixas[fx].sort((a,b)=>(a.talhao||'').localeCompare(b.talhao||'', undefined, {numeric:true}));
       const tiles = itens.map(e=>{
-        const sel = selectedEnsaios[e.id]? 'sel':'';
+        const sel = (selectedEnsaios[e.id]? 'sel':'') + (filtroCultModFora(e)? ' dim':'');
         const numLabel = (e.talhao||'').replace(/^[A-Za-z_]+-?/, '');
         const culturaLabel = talhaoCulturaLabel(e);
         const temCultura = culturaLabel? 'tem-cultura':'';
@@ -5361,6 +5394,78 @@ function selecionarPorCultura(cultura){
   recomputeAreaFromSelection();
   refreshTalhaoUI();
   toast(`${ativos.length} talhão(ões) de ${tituloCultura(cultura)} selecionado(s)`);
+}
+
+/* ---- v2.9.0: filtro por cultura + modalidade (aba Aplicação) ----
+   Cultura escolhida → aparecem só as modalidades dela (com a quantidade de quadras no pivô aberto).
+   Marcando uma ou mais modalidades (ou nenhuma = todas), o mapa esmaece o que está fora, e dá pra
+   "Selecionar todos" do filtro de uma vez ou tocar só nas quadras desejadas. */
+let filtroCultMod = {cultura:'', mods:[]};
+let filtroCultModEsmaecer = true;
+function filtroCultModAtivo(){ return !!filtroCultMod.cultura; }
+function filtroCultModBate(e){
+  if(!e) return false;
+  if((e.cultura||'').toUpperCase()!==filtroCultMod.cultura) return false;
+  if(!filtroCultMod.mods.length) return true;
+  return filtroCultMod.mods.includes(e.modalidade||'');
+}
+function filtroCultModFora(e){ return filtroCultModAtivo() && filtroCultModEsmaecer && !filtroCultModBate(e); }
+function filtroCultModTalhoesDoPivo(){
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pivoAtivoId);
+}
+function renderFiltroCultMod(){
+  const chipsC = document.getElementById('filtroCultChips');
+  if(!chipsC) return;
+  const todos = filtroCultModTalhoesDoPivo();
+  const cont = {};
+  todos.forEach(e=>{ const c=(e.cultura||'').toUpperCase(); if(c) cont[c]=(cont[c]||0)+1; });
+  if(filtroCultMod.cultura && !cont[filtroCultMod.cultura]) filtroCultMod = {cultura:'', mods:[]};
+  const emoji = {MILHO:'🌽 ', SOJA:'🌱 '};
+  chipsC.innerHTML = CULTURAS_PERMITIDAS.map(c=>{
+    const n = cont[c]||0;
+    return `<button type="button" class="fcm-chip${filtroCultMod.cultura===c?' on':''}" ${n?'':'disabled'} onclick="filtroCultModSetCultura(this.dataset.c)" data-c="${escapeHtml(c)}">${emoji[c]||''}${escapeHtml(tituloCultura(c))} <small>${n}</small></button>`;
+  }).join('');
+  const wrapM = document.getElementById('filtroModWrap');
+  const acoes = document.getElementById('filtroCultModAcoes');
+  const esm = document.getElementById('filtroEsmaecerLbl');
+  const ativo = filtroCultModAtivo();
+  wrapM.style.display = ativo? '' : 'none';
+  acoes.style.display = ativo? '' : 'none';
+  esm.style.display = ativo? '' : 'none';
+  if(!ativo) return;
+  const daCultura = todos.filter(e=>(e.cultura||'').toUpperCase()===filtroCultMod.cultura);
+  const contM = {};
+  daCultura.forEach(e=>{ const m=e.modalidade||''; contM[m]=(contM[m]||0)+1; });
+  const ordem = (MODALIDADES_POR_CULTURA[filtroCultMod.cultura]||[]).filter(m=>contM[m]);
+  Object.keys(contM).forEach(m=>{ if(m && !ordem.includes(m)) ordem.push(m); });
+  if(contM['']) ordem.push('');
+  document.getElementById('filtroModTitulo').innerHTML = `2 · Modalidades de ${escapeHtml(tituloCultura(filtroCultMod.cultura))} <span class="muted" style="font-weight:600;">(marque uma ou mais — sem marcar = todas)</span>`;
+  document.getElementById('filtroModChips').innerHTML = ordem.map(m=>{
+    const on = filtroCultMod.mods.includes(m);
+    return `<button type="button" class="fcm-chip${on?' on':''}" onclick="filtroCultModToggleMod(this.dataset.m)" data-m="${escapeHtml(m)}">${m? escapeHtml(m) : 'Sem modalidade'} <small>${contM[m]}</small></button>`;
+  }).join('');
+  const n = daCultura.filter(filtroCultModBate).length;
+  document.getElementById('btnFiltroSelTodos').textContent = `☑ Selecionar todos (${n})`;
+  document.getElementById('filtroEsmaecer').checked = filtroCultModEsmaecer;
+}
+function filtroCultModSetCultura(c){
+  filtroCultMod = (filtroCultMod.cultura===c) ? {cultura:'', mods:[]} : {cultura:c, mods:[]};
+  refreshTalhaoUI();
+}
+function filtroCultModToggleMod(m){
+  const i = filtroCultMod.mods.indexOf(m);
+  if(i>=0) filtroCultMod.mods.splice(i,1); else filtroCultMod.mods.push(m);
+  refreshTalhaoUI();
+}
+function filtroCultModEsmaecerChange(v){ filtroCultModEsmaecer = !!v; refreshTalhaoUI(); }
+function filtroCultModLimpar(){ filtroCultMod = {cultura:'', mods:[]}; refreshTalhaoUI(); }
+function filtroCultModSelecionarTodos(){
+  const alvo = filtroCultModTalhoesDoPivo().filter(filtroCultModBate);
+  if(!alvo.length){ toast('Nenhum talhão nesse filtro'); return; }
+  alvo.forEach(e=>setTalhaoSelected(e.id, true, false));
+  recomputeAreaFromSelection();
+  refreshTalhaoUI();
+  toast(`${alvo.length} talhão(ões) selecionado(s)`);
 }
 
 function setTalhaoSelected(id, selected, recompute){
@@ -5501,8 +5606,8 @@ function areaCellClickHandler(id, modoCad){
 // funcionar tanto na faixa reta quanto na faixa fina do leque.
 function areaCellState(code, id, q, modoCad){
   const isMatch = q && code.toUpperCase().includes(q);
-  const isDim = q && !isMatch;
   const ens = ensaioById(id);
+  const isDim = (q && !isMatch) || (!modoCad && filtroCultModFora(ens));
   const cultura = (ens && ens.cultura) || '';
   const modalidade = (ens && ens.modalidade) || '';
   const culturaClass = culturaCellClass(cultura);
@@ -5598,8 +5703,8 @@ function renderQuadBlock(letra, quadInfo, q){
     const id = 'quadra_'+(pivoAtivo().idPrefix||'')+cell.q;
     const isSel = !!selectedEnsaios[id];
     const isMatch = q && cell.q.toUpperCase().includes(q);
-    const isDim = q && !isMatch;
     const ens = ensaioById(id);
+    const isDim = (q && !isMatch) || filtroCultModFora(ens);
     const cultura = (ens && ens.cultura) || '';
     const modalidade = (ens && ens.modalidade) || '';
     const culturaClass = culturaCellClass(cultura);
@@ -5844,7 +5949,7 @@ function renderPivoSvg(wrapId, q, modoCad){
     const modalidade = (ens && ens.modalidade) || '';
     const corModalidade = corTalhaoModalidade(cultura, modalidade);
     const isMatch = q && cell.code.toUpperCase().includes(q);
-    const isDim = q && !isMatch;
+    const isDim = (q && !isMatch) || (!modoCad && filtroCultModFora(ens));
     let cls = 'pivo-svg-quadra';
     let codePrefixSvg = '';
     if(modoCad){
