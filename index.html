@@ -1679,6 +1679,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <div class="field">
           <label>Usuário</label>
           <select id="loginUserSelect"></select>
+          <div class="muted" style="font-size:12px;margin-top:6px;">Não achou seu nome? Confira a <b>Estação</b> acima (cada estação tem seus usuários) ou <a href="#" onclick="atualizarListaLogin(this);return false;" style="color:var(--orange-dark);font-weight:700;">atualize a lista</a>.</div>
+          <div class="muted" id="loginUserHint" style="font-size:12px;margin-top:4px;"></div>
         </div>
         <div class="field">
           <label>PIN</label>
@@ -1854,7 +1856,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.10.0';
+const APP_BUILD_ID = 'v2.11.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -2128,7 +2130,12 @@ function ensureUsersFromOperadores(){
    pode ter vindo de outro lugar (nuvem, arquivo) — reconfere se quem está logado ainda existe
    e se o perfil dele não mudou, e ajusta as abas visíveis de novo. */
 function refreshCurrentUserFromData(){
-  if(!currentUser) return;
+  if(!currentUser){
+    /* ainda na tela de login: só refaz a lista de nomes com o que acabou de chegar da nuvem */
+    const ov = document.getElementById('loginOverlay');
+    if(ov && !ov.classList.contains('hidden')) renderLoginUserOptions();
+    return;
+  }
   const u = (DATA.users||[]).find(x=>x.nome===currentUser.nome);
   if(u){ currentUser.perfil = u.perfil; }else{ currentUser = null; localStorage.removeItem(SESSION_KEY); }
   renderUserChip();
@@ -2196,9 +2203,35 @@ function requireAdmin(action){
   __pendingAdminAction = action;
   openLoginModal();
 }
-function openLoginModal(){
+/* v2.11.0 — a lista de usuários do login era montada uma única vez (ao abrir a tela), com o que o
+   aparelho tinha guardado. Quem foi cadastrado depois, ou num aparelho novo, só aparecia depois de
+   fechar e abrir o app de novo (a sincronização com a nuvem chegava e a lista não era refeita).
+   Agora a lista é refeita sozinha quando a nuvem responde, e tem um botão "Atualizar lista". */
+function renderLoginUserOptions(){
   const sel = document.getElementById('loginUserSelect');
+  if(!sel) return;
+  const anterior = sel.value;
   sel.innerHTML = (DATA.users||[]).map(u=>`<option value="${escapeHtml(u.nome)}">${escapeHtml(u.nome)} (${perfilLabel(u.perfil)})</option>`).join('') || '<option value="">Nenhum usuário cadastrado</option>';
+  if(anterior && (DATA.users||[]).some(u=>u.nome===anterior)) sel.value = anterior;
+}
+async function atualizarListaLogin(btn){
+  const msg = document.getElementById('loginUserHint');
+  if(btn) btn.disabled = true;
+  if(msg) msg.textContent = '⏳ Buscando usuários na nuvem...';
+  try{
+    await syncNow({silent:true});
+    renderLoginUserOptions();
+    const n = (DATA.users||[]).length;
+    if(msg) msg.textContent = `✔ Lista atualizada: ${n} usuário${n===1?'':'s'} nesta estação.`;
+  }catch(e){
+    if(msg) msg.textContent = 'Não consegui atualizar agora — confira o sinal e tente de novo.';
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+function openLoginModal(){
+  renderLoginUserOptions();
+  { const h = document.getElementById('loginUserHint'); if(h) h.textContent = ''; }
   document.getElementById('loginPin').value='';
   const mandatorio = !currentUser;
   document.getElementById('loginMsg').textContent = __pendingAdminAction
