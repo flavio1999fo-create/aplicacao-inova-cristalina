@@ -948,6 +948,15 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     box-shadow:inset 0 0 0 1px rgba(234,88,12,.35);
   }
   nav.tabs button:active{background:rgba(255,255,255,.1);}
+  /* v2.15.0 — atalhos pros outros sistemas (Contagem) e pra página inicial com todos eles */
+  nav.tabs a.nav-link{
+    flex:0 0 auto;display:flex;flex-direction:row;align-items:center;gap:12px;padding:12px 12px;
+    font-size:14px;font-weight:600;color:rgba(255,224,201,.78);border-radius:12px;text-decoration:none;line-height:1.2;
+  }
+  nav.tabs a.nav-link .ic{font-size:19px;flex:0 0 auto;width:22px;text-align:center;}
+  nav.tabs a.nav-link:active{background:rgba(255,255,255,.1);}
+  .login-outros{margin:14px 0 0;text-align:center;font-size:13px;}
+  .login-outros a{color:#ffd9b8;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(255,217,184,.5);}
   .nav-sync{
     margin-top:auto;display:flex;flex-direction:column;align-items:flex-start;gap:3px;
     padding:12px 8px 2px;font-size:10px;font-weight:700;color:rgba(255,224,201,.55);
@@ -1650,6 +1659,9 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <button class="tab-btn" data-tab="limpeza"><span class="ic">🧼</span>Limpeza</button>
   <button class="tab-btn" data-tab="usuarios"><span class="ic">👤</span>Usuários</button>
   <button class="tab-btn" data-tab="backup"><span class="ic">💾</span>Backup</button>
+  <div class="nav-section-label" style="margin-top:14px;">Outros sistemas</div>
+  <a class="nav-link" href="./inicio.html"><span class="ic">🏠</span>Todos os sistemas</a>
+  <a class="nav-link" href="https://flavio1999fo-create.github.io/App-contagem-/"><span class="ic">🔢</span>Contagem</a>
   <div class="nav-sync" id="navSyncStatus" data-status="off" title="Sincronização na nuvem não configurada">
     <span class="dot"></span><span class="lbl">Nuvem</span>
   </div>
@@ -1694,6 +1706,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="btn-primary" onclick="submitLogin()">Entrar</button>
       </div>
     </div>
+    <p class="login-outros">Procurando outro sistema? <a href="./inicio.html">Ver todos os sistemas</a></p>
   </div>
 </div>
 
@@ -1858,7 +1871,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.14.0';
+const APP_BUILD_ID = 'v2.15.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
