@@ -1858,7 +1858,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.13.0';
+const APP_BUILD_ID = 'v2.14.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -6898,7 +6898,10 @@ function buildReceiptBodyHTML(app){
   const numerosEnsaioUnicos = [...new Set(numerosEnsaioPorTalhao.map(x=>x.numero))];
   let numeroEnsaioTxt = '';
   if(numerosEnsaioUnicos.length===1) numeroEnsaioTxt = numerosEnsaioUnicos[0];
-  else if(numerosEnsaioUnicos.length>1) numeroEnsaioTxt = numerosEnsaioPorTalhao.map(x=>`${x.talhao}: ${x.numero}`).join(', ');
+  /* v2.14.0 — a pedido do Flávio: com muitos talhões de ensaios diferentes a ficha ficava enorme
+     (um "talhão: ensaio" pra cada quadra). Agora só mostra o número quando é um ensaio só; com
+     vários, mostra só quantos são — os talhões já aparecem no mapa / na linha de talhões. */
+  else if(numerosEnsaioUnicos.length>1) numeroEnsaioTxt = `${numerosEnsaioUnicos.length} ensaios diferentes`;
   const caldaInfo = app.volumeCalda ? {volume:app.volumeCalda, capacidade:app.capacidadeTanque, tanques:app.tanques, ultimaCarga:app.ultimaCarga} : null;
   const prodHtml = (app.produtos||[]).map(p=>{
     const doseTxt = (p.doseHa!==null && p.doseHa!==undefined && p.doseHa!=='') ? `${fmtNum(p.doseHa)} ${p.unidade||''}/ha` : '—';
