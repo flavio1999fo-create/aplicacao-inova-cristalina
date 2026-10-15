@@ -878,6 +878,9 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .pivo-svg-bordadura{fill:#d9a066;fill-opacity:.55;stroke:#b9773a;stroke-width:.6;stroke-dasharray:3,2;vector-effect:non-scaling-stroke;pointer-events:none;}
   .pivo-svg-quadra-excluida{fill:#c9c4bb;fill-opacity:.5;stroke:#8a8478;stroke-width:.6;stroke-dasharray:2,2;vector-effect:non-scaling-stroke;pointer-events:none;}
   .pivo-svg-quadra-excluida.clicavel{pointer-events:auto;cursor:pointer;}
+  /* v2.17.0 — quadra excluída também no Pivô 3 (grade): mesma aparência cinza/riscada do Pivô 4 */
+  .pivo-cell.quadra.excluida{background:#c9c4bb!important;opacity:.55;text-decoration:line-through;pointer-events:none;}
+  .pivo-cell.quadra.excluida.clicavel{pointer-events:auto;cursor:pointer;}
   .pivo-svg-label.excluida{font-size:12px;fill:#5a564c;stroke:#f2f0ea;text-decoration:line-through;}
   .pivo-svg-rua{fill:#9a9082;fill-opacity:.8;stroke:#9a9082;stroke-width:.6;vector-effect:non-scaling-stroke;pointer-events:none;}
   .pivo-svg-rua.added{stroke:#c2410c;stroke-width:1.6;stroke-dasharray:4,2;}
@@ -1872,7 +1875,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.16.0';
+const APP_BUILD_ID = 'v2.17.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -4900,10 +4903,10 @@ function renderTalhaoCadBulkPanel(){
      Pivô 4 (ver excluirTalhaoPivo4), então esse botão só conta/afeta as selecionadas
      que forem do Pivô 4 e ainda ativas — as demais (Pivô 3, ou já excluídas) ficam de
      fora da exclusão, mas continuam valendo pro "✓ Aplicar" de cultura acima. */
-  const elegiveisExcluir = ids.map(id=>ensaioById(id)).filter(e=>e && e.pivo==='PIVO4' && e.ativo!==false);
+  const elegiveisExcluir = ids.map(id=>ensaioById(id)).filter(e=>e && e.ativo!==false);
   const nExc = elegiveisExcluir.length;
   const btnExcluirHtml = nExc
-    ? `<button type="button" class="btn-danger btn-sm" onclick="excluirSelecionadosTalhaoCad()">🗑 Excluir ${nExc} quadra${nExc===1?'':'s'} do Pivô 4</button>`
+    ? `<button type="button" class="btn-danger btn-sm" onclick="excluirSelecionadosTalhaoCad()">🗑 Excluir ${nExc} quadra${nExc===1?'':'s'}</button>`
     : '';
   /* 28/09/2026 — a pedido do Flávio: como agora um único clique já seleciona o talhão (não
      abre mais o editor direto — ver onTalhaoCadastroTileClick), quando só tem 1 selecionado
@@ -5050,10 +5053,10 @@ function limparCulturaTalhaoUnico(id){
 function excluirSelecionadosTalhaoCad(){
   requireAdmin(()=>{
     const ids = Object.keys(selectedTalhaoCad);
-    const alvos = ids.map(id=>ensaioById(id)).filter(e=>e && e.pivo==='PIVO4' && e.ativo!==false);
-    if(!alvos.length){ toast('Nenhuma quadra do Pivô 4 selecionada pra excluir'); return; }
+    const alvos = ids.map(id=>ensaioById(id)).filter(e=>e && e.ativo!==false);
+    if(!alvos.length){ toast('Nenhuma quadra selecionada pra excluir'); return; }
     const nomes = alvos.map(e=>e.talhao).join(', ');
-    if(!confirm(`Excluir ${alvos.length} quadra${alvos.length===1?'':'s'} do Pivô 4 (${nomes})? Elas somem do croqui, da Grade, da Lista e da seleção de Aplicação. Não apaga aplicações já registradas.`)) return;
+    if(!confirm(`Excluir ${alvos.length} quadra${alvos.length===1?'':'s'} (${nomes})? Elas somem do croqui, da Grade, da Lista e da seleção de Aplicação. Não apaga aplicações já registradas.`)) return;
     alvos.forEach(e=>{ e.ativo = false; });
     saveData();
     fbPushEstoque();
@@ -5130,12 +5133,13 @@ function renderTalhaoCadEditor(){
      croqui (fica cinza/riscada, sem clique — ver renderPivoSvg), da Grade, da Lista e da
      seleção de Aplicação, sem precisar mexer em mais nada. */
   let comprimentoHtml = '';
-  if(e.pivo==='PIVO4'){
-    const original = pivoSvgOriginalComprimento(e.talhao);
+  {
+    const ePivo4 = e.pivo==='PIVO4';
+    const original = ePivo4 ? pivoSvgOriginalComprimento(e.talhao) : null;
     const hint = original? ` — real do levantamento: ${fmtNum(original)}m` : '';
     comprimentoHtml = `<div class="row" style="margin-top:8px; align-items:flex-end;">
-      <div class="field"><label>Comprimento da quadra (m) <span class="muted">— largura fixa 20m${escapeHtml(hint)}</span></label>
-        <input type="text" inputmode="decimal" placeholder="Deixe vazio pra usar o formato real" value="${e.comprimentoManual? escapeHtml(fmtNum(e.comprimentoManual)):''}" onchange="updateTalhaoComprimento('${e.id}', this.value)" oninput="marcarDigitandoTalhaoCad()"></div>
+      <div class="field"><label>Comprimento da quadra (m) <span class="muted">— largura fixa 20m${escapeHtml(hint)}${ePivo4?'':' — só informativo, não muda o desenho'}</span></label>
+        <input type="text" inputmode="decimal" placeholder="${ePivo4?'Deixe vazio pra usar o formato real':'Deixe vazio pra calcular pela área'}" value="${e.comprimentoManual? escapeHtml(fmtNum(e.comprimentoManual)):''}" onchange="updateTalhaoComprimento('${e.id}', this.value)" oninput="marcarDigitandoTalhaoCad()"></div>
       <div class="field" style="flex:0 0 auto;">
         ${e.ativo===false
           ? `<button type="button" class="btn-primary btn-sm" onclick="reativarTalhaoPivo4('${e.id}')">↩ Reativar quadra</button>`
@@ -5192,7 +5196,7 @@ function updateTalhaoComprimento(id, valorTxt){
   saveData();
   fbPushEstoque();
   refreshTalhaoCadUI();
-  toast(e.comprimentoManual? `Quadra redesenhada: ${fmtNum(e.comprimentoManual)}m × 20m` : 'Voltou a usar o formato real da quadra');
+  toast(e.comprimentoManual? (e.pivo==='PIVO4' ? `Quadra redesenhada: ${fmtNum(e.comprimentoManual)}m × 20m` : `Comprimento salvo: ${fmtNum(e.comprimentoManual)}m`) : (e.pivo==='PIVO4' ? 'Voltou a usar o formato real da quadra' : 'Voltou a calcular pela área'));
 }
 /* Excluir quadra do Pivô 4 (03/09/2026, a pedido do Flávio) — botão colocado junto do
    campo de comprimento no editor de talhão. É uma exclusão "reversível": não apaga o
@@ -5204,7 +5208,7 @@ function updateTalhaoComprimento(id, valorTxt){
 function excluirTalhaoPivo4(id){
   requireAdmin(()=>{
     const e = ensaioById(id);
-    if(!e || e.pivo!=='PIVO4') return;
+    if(!e) return;
     if(!confirm(`Excluir a quadra ${e.talhao}? Ela some do croqui, da Grade, da Lista e da seleção de Aplicação. Não apaga aplicações já registradas nessa quadra.`)) return;
     e.ativo = false;
     saveData();
@@ -5219,7 +5223,7 @@ function excluirTalhaoPivo4(id){
 function reativarTalhaoPivo4(id){
   requireAdmin(()=>{
     const e = ensaioById(id);
-    if(!e || e.pivo!=='PIVO4') return;
+    if(!e) return;
     e.ativo = true;
     saveData();
     fbPushEstoque();
@@ -5268,6 +5272,7 @@ function renderQuadBlockCad(letra, quadInfo, q){
     if(isDim) cls += ' dim';
     if(isMatch) cls += ' match';
     if(ensaioReservado(ens)) cls += ' reservada';
+    if(ens && ens.ativo===false) cls += ' excluida clicavel';
     const edge = colEdges[cell.c];
     if(edge){
       if(cell.r===edge.min) cls += ' borda-inicio';
@@ -5285,6 +5290,7 @@ function renderQuadBlockCad(letra, quadInfo, q){
     { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
     if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
     if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
+    if(ens && ens.ativo===false) titleTxt += ' — excluída (toque pra reativar)';
     const infoTxt = (cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
     const codeMain = (ensaioReservado(ens)? '🔒 ':'') + (isSelected? '☑ ' : isEditing? '✎ ':'') + escapeHtml(cell.q);
     const codeTxt = numeroEnsaioAtual ? `${codeMain}<span class="cell-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : codeMain;
@@ -5949,6 +5955,7 @@ function renderQuadBlock(letra, quadInfo, q){
     if(isDim) cls += ' dim';
     if(isMatch) cls += ' match';
     if(ensaioReservado(ens)) cls += ' reservada';
+    if(ens && ens.ativo===false) cls += ' excluida';
     const edge = colEdges[cell.c];
     if(edge){
       if(cell.r===edge.min) cls += ' borda-inicio';
@@ -5964,6 +5971,7 @@ function renderQuadBlock(letra, quadInfo, q){
     { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
     { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
     if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
+    if(ens && ens.ativo===false) titleTxt += ' — excluída';
     const infoTxt = (cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
     const codeMain = (ensaioReservado(ens)? '🔒 ':'') + (isSel? '✓ ':'') + escapeHtml(cell.q);
     const codeTxt = numeroEnsaioAtual ? `${codeMain}<span class="cell-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : codeMain;
