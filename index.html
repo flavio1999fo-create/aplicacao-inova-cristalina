@@ -1875,7 +1875,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.17.0';
+const APP_BUILD_ID = 'v2.17.1';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -5865,6 +5865,7 @@ function areaCellState(code, id, q, modoCad){
   if(isDim) cls += ' dim';
   if(isMatch) cls += ' match';
   if(ensaioReservado(ens)){ cls += ' reservada'; marker += '🔒 '; }
+  if(ens && ens.ativo===false) cls += ' excluida'+(modoCad?' clicavel':'');
   const culturaLabel = talhaoCulturaLabel(ens);
   const plantioAtual = (ens && ens.plantios && ens.plantios[0]) || null;
   const numeroEnsaioAtual = (plantioAtual && plantioAtual.numeroEnsaio) || '';
@@ -5877,6 +5878,7 @@ function areaCellState(code, id, q, modoCad){
   { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
   if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
   if(modoCad && dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
+  if(ens && ens.ativo===false) titleTxt += modoCad ? ' — excluída (toque pra reativar)' : ' — excluída';
   const infoTxt = (cultura ? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
   return {cls, titleTxt, marker, numeroEnsaioAtual, infoTxt, corBg};
 }
