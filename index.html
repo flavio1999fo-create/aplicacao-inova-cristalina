@@ -815,6 +815,30 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .leque{display:flex;align-items:flex-end;gap:1px;width:150px;box-sizing:border-box;padding:4px 4px 0;border-radius:8px 8px 0 0;}
   .leque.alt{border:1px dashed #ea580c88;background:#fdecdc55;}
   .leque .pivo-cell.quadra{flex:1;min-width:0;height:auto;padding:0 0 5px;justify-content:center;writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.3px;border-radius:6px 6px 0 0;}
+  /* Área da Sede da Lucas (v2.18.0) — croqui feito a partir da foto aérea */
+  .sede-map{display:flex;gap:18px;align-items:stretch;min-width:max-content;}
+  .sede-grupo{display:flex;flex-direction:column;gap:4px;}
+  .sede-estacao{background:#6b5a3d;color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:13px;line-height:1.25;height:66px;padding:4px 8px;user-select:none;}
+  .sede-lin{display:flex;gap:18px;align-items:stretch;flex:1;}
+  .sede-col1{display:flex;flex-direction:column;gap:1px;width:198px;}
+  .sede-col2,.sede-col3{display:flex;flex-direction:column;gap:4px;}
+  .sede-col3{margin-top:31px;}
+  .sede-t{font-size:11px;font-weight:800;color:#7d6a58;text-transform:uppercase;letter-spacing:.05em;margin:0 0 3px;}
+  .sede-strips{display:flex;gap:1px;align-items:flex-start;}
+  .sede-map .pivo-cell.quadra.sede-row{width:198px;height:23px;justify-content:center;padding:0 6px;font-size:11px;}
+  .sede-par{display:grid;grid-template-columns:1fr 1fr;gap:1px;}
+  .sede-map .pivo-cell.quadra.sede-ws{height:23px;justify-content:center;padding:0 4px;font-size:11px;}
+  .sede-ws .cell-info,.sede-row .cell-info{display:none;}
+  .sede-vazio{background:transparent;}
+  .sede-gap{height:5px;}
+  .sede-map .pivo-cell.quadra.sede-big{width:198px;justify-content:center;flex-direction:column;gap:3px;font-size:14px;white-space:normal;text-align:center;}
+  .sede-map .pivo-cell.quadra.sede-big:nth-last-child(2){height:150px;}
+  .sede-map .pivo-cell.quadra.sede-big:last-child{height:110px;}
+  .sede-map .pivo-cell.quadra.sede-strip{width:52px;height:430px;padding:0;justify-content:center;border-radius:6px 6px 0 0;font-size:12px;}
+  .sede-rot{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;}
+  .sede-map .pivo-cell.quadra.sede-ref{opacity:.6;cursor:default;pointer-events:none;}
+  .sede-pousio{flex:1;min-height:40px;background:#3d3a36;color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;user-select:none;}
+  .pivo-grid-outer:has(.sede-map){overflow-x:auto;max-width:100%;}
   .leque-nota{font-size:9px;color:#c2410c;font-weight:700;width:150px;text-align:center;margin-top:2px;}
   .quadra-tile.tem-cultura{box-shadow:inset 0 -3px 0 #2f9e44;}
   .quadra-tile.sel.tem-cultura{box-shadow:inset 0 -3px 0 #dff5e1;}
@@ -1875,7 +1899,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.17.1';
+const APP_BUILD_ID = 'v2.18.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -1899,8 +1923,24 @@ function gerarCodigosArea(prefixo, inicio, qtd){
    PPTX "CROQUI Atualizado MAIO25"): Área da Sede (20 talhões) e Área do Fundo (T_A a T_G,
    11+21+21+21+18+15+1 = 108 talhões). Todos vazios (sem cultura) — ele cadastra a cultura de
    cada um direto no app, igual já faz na Cristalina. */
+/* Croqui da Área da Sede refeito em 15/10/2026 (v2.18.0) a partir do croqui aéreo enviado pelo
+   Flávio: coluna "Vitrine" (VA + WS + Milho + bloco cinza), 4 faixas e o bloco Isolamento/STW/VCU.
+   O código de cada quadra é o próprio nome escrito no croqui. Isolamento e os "Pousio" são só
+   referência no mapa (sem clique). */
+const SEDE_ESTRUTURA = {
+  va: ['VA7501I2X','VA7703I2X','VA7905I2X','VA8002I2X','VA8006I2X'],
+  ws: [['WS134CE','WS135CE'],['WS136CE','WS149CE'],['WS129I2X','WS130I2X'],['WS131I2X','WS132I2X'],['WS133I2X','WS137I2X'],['WS138I2X','WS139I2X'],['WS140I2X','WS141I2X'],['WS142I2X','WS143I2X'],['WS144I2X','WS145I2X'],['WS146I2X','WS147I2X'],['WS148I2X']],
+  milho: 'Milho',
+  cinza: 'Cinza (nome a definir)',
+  faixas: ['Faixa 5003_27 1ª época','Faixa 5003_27 2ª época (A)','Faixa 5006_27 População','Faixa 5003_27 2ª época (B)'],
+  bloco3: [{ref:'Isolamento'},{code:'STW'},{ref:'Isolamento'},{code:'VCU 1ª epo 505/506_27'},{code:'VCU 1ª epo 507/508_27'},{code:'VCU 1ª epo 509/510_27'},{code:'VCU 1ª epo 511/512_27'},{code:'VCU 1ª epo 515/516_27'},{code:'VCU 1ª epo 513_27'}]
+};
+function sedeTodosCodigos(){
+  const E = SEDE_ESTRUTURA;
+  return [...E.va, ...[].concat(...E.ws), E.milho, E.cinza, ...E.faixas, ...E.bloco3.filter(x=>x.code).map(x=>x.code)];
+}
 const AREAS_LUCAS_CODIGOS = {
-  LUCAS_SEDE: gerarCodigosArea('SEDE',1,20),
+  LUCAS_SEDE: sedeTodosCodigos(),
   LUCAS_FUNDO: [
     ...gerarCodigosArea('T_A',1,11),
     ...gerarCodigosArea('T_B',1,21),
@@ -1988,8 +2028,40 @@ const PIVO4_COMPRIMENTO_PADRAO_192 = (function(){
 /* Garante que as quadras do Pivô 4 existam em DATA.ensaios, mesmo em dispositivos
    que já tinham dados salvos antes dessa atualização (SEED_DATA só é usado em instalação
    nova/storage vazio) — mesma lógica de enforceCulturas() logo abaixo. */
+/* v2.18.0 — a Área da Sede da Lucas foi redesenhada (ver SEDE_ESTRUTURA). Em aparelhos/nuvem que
+   ainda têm as 20 quadras genéricas SEDE-1..SEDE-20: apaga só as que estão totalmente vazias
+   (sem cultura, reserva, plantio, área, ensaio em campo nem aplicação) e cria as quadras novas
+   que faltarem. Quadras antigas com algum dado ficam guardadas (não aparecem no croqui). */
+function enforceLucasSedeEnsaios(){
+  if(estacaoAtivaId!=='LUCAS_RIO_VERDE') return;
+  DATA.ensaios = DATA.ensaios || [];
+  let mudou = false;
+  const usadas = new Set();
+  (DATA.applications||[]).forEach(a=>(a.ensaiosSel||[]).forEach(x=>{ const i = typeof x==='string' ? x : (x && x.id); if(i) usadas.add(i); }));
+  const antes = DATA.ensaios.length;
+  DATA.ensaios = DATA.ensaios.filter(e=>{
+    if(e.pivo==='LUCAS_SEDE' && /^SEDE-\d+$/.test(e.talhao||'')){
+      const vazio = !e.cultura && !e.reservado && !e.area && !e.nomeCampo && !e.comprimentoManual
+        && !(e.plantios||[]).some(pl=>pl && (pl.dataPlantio||pl.numeroEnsaio||pl.cultura||pl.modalidade))
+        && !(e.ensaiosEmCampo && e.ensaiosEmCampo.length)
+        && !usadas.has(e.id);
+      return !vazio;
+    }
+    return true;
+  });
+  if(DATA.ensaios.length!==antes) mudou = true;
+  const ids = new Set(DATA.ensaios.map(e=>e.id));
+  AREAS_LUCAS_CODIGOS.LUCAS_SEDE.forEach(code=>{
+    const id = 'quadra_lsede_'+code;
+    if(ids.has(id)) return;
+    DATA.ensaios.push({ id, ensaio: code, pivo:'LUCAS_SEDE', talhao: code, cultura:'', dataPlantio:'', ciclo:null, estagio:'', tecnologia:'', nomeCampo:'', testeHerbic:'', area:null, kclUreia:'', ativo:true });
+    mudou = true;
+  });
+  if(mudou){ saveData(); if(fbReady) fbPushEstoque(); }
+}
 function enforcePivo4Ensaios(){
   DATA.ensaios = DATA.ensaios || [];
+  enforceLucasSedeEnsaios();
   const existentes = new Set(DATA.ensaios.map(e=>e.id));
   const faltando = PIVO4_ENSAIOS_SEED.filter(e=>!existentes.has(e.id));
   let mudou = false;
@@ -5818,11 +5890,7 @@ function switchPivoAtivo(id){
    área INTEIRA já é nesse sentido (Bloco 1 e Bloco 2 da Área da Sede); "misto" é só o caso do
    T_A, que tem um bloco reto embaixo (T_A-1 a T_A-8) e um leque destacado em cima (T_A-9/10/11). */
 const AREAS_LUCAS_LAYOUT = {
-  LUCAS_SEDE: [
-    { nome:'Bloco 1', estilo:'leque', codigos: gerarCodigosArea('SEDE',1,7), alturas:[130,122,114,106,98,92,86] },
-    { nome:'Bloco 1b', estilo:'leque-alt', codigos: gerarCodigosArea('SEDE',8,1), alturas:[92] },
-    { nome:'Bloco 2', estilo:'leque', codigos: gerarCodigosArea('SEDE',9,12), alturas:[112,116,120,116,104,100,96,92,108,112,96,90] }
-  ],
+  LUCAS_SEDE: [ { nome:'Área da Sede', estilo:'sede' } ],
   LUCAS_FUNDO: [
     { nome:'T_A', estilo:'misto', codigosBaixo: gerarCodigosArea('T_A',1,8), codigosLeque: gerarCodigosArea('T_A',9,3), alturasLeque:[78,98,118] },
     { nome:'T_B', estilo:'normal', codigos: gerarCodigosArea('T_B',1,21) },
@@ -5896,7 +5964,37 @@ function renderAreaCellLeque(code, altura, q, modoCad){
   const bgPart = st.corBg ? `background:${st.corBg};` : '';
   return `<div class="${st.cls} leque-bar" style="height:${altura}px;${bgPart}" onclick="${areaCellClickHandler(id, modoCad)}" title="${escapeHtml(st.titleTxt)}">${st.marker}${escapeHtml(code)}</div>`;
 }
+function renderSedeCell(code, q, modoCad, kind){
+  const id = 'quadra_'+(pivoAtivo().idPrefix||'')+code;
+  const st = areaCellState(code, id, q, modoCad);
+  const bgPart = st.corBg ? ` style="background:${st.corBg}"` : '';
+  const oc = `onclick="${areaCellClickHandler(id, modoCad)}" title="${escapeHtml(st.titleTxt)}"`;
+  if(kind==='strip'){
+    return `<div class="${st.cls} sede-strip"${bgPart} ${oc}><span class="sede-rot">${st.marker}${escapeHtml(code)}</span></div>`;
+  }
+  const codeMain = st.marker + escapeHtml(code);
+  const codeTxt = st.numeroEnsaioAtual ? `${codeMain}<span class="cell-ensaio">${escapeHtml(st.numeroEnsaioAtual)}</span>` : codeMain;
+  return `<div class="${st.cls} sede-${kind}"${bgPart} ${oc}><span class="cell-code">${codeTxt}</span>${(kind==='big' && st.infoTxt)? `<span class="cell-info">${st.infoTxt}</span>`:''}</div>`;
+}
+function renderSedeCroqui(q, modoCad){
+  const E = SEDE_ESTRUTURA;
+  const va = E.va.map(c=>renderSedeCell(c,q,modoCad,'row')).join('');
+  const ws = E.ws.map(par=>`<div class="sede-par">${par.map(c=>renderSedeCell(c,q,modoCad,'ws')).join('')}${par.length<2?'<div class="sede-vazio"></div>':''}</div>`).join('');
+  const faixas = E.faixas.map(c=>renderSedeCell(c,q,modoCad,'strip')).join('');
+  const b3 = E.bloco3.map(x=> x.ref ? `<div class="pivo-cell quadra sede-strip sede-ref"><span class="sede-rot">${escapeHtml(x.ref)}</span></div>` : renderSedeCell(x.code,q,modoCad,'strip')).join('');
+  return `<div class="sede-map">
+    <div class="sede-grupo">
+      <div class="sede-estacao">Estação Inova<br>Lucas do Rio Verde</div>
+      <div class="sede-lin">
+        <div class="sede-col1"><div class="sede-t">Vitrine</div>${va}${ws}<div class="sede-gap"></div>${renderSedeCell(E.milho,q,modoCad,'big')}${renderSedeCell(E.cinza,q,modoCad,'big')}</div>
+        <div class="sede-col2"><div class="sede-t">Faixas</div><div class="sede-strips">${faixas}</div><div class="sede-pousio">Pousio</div></div>
+      </div>
+    </div>
+    <div class="sede-col3"><div class="sede-t">Isolamento · STW · VCU</div><div class="sede-strips">${b3}</div><div class="sede-pousio">Pousio</div></div>
+  </div>`;
+}
 function renderAreaGrupo(grupo, q, modoCad){
+  if(grupo.estilo==='sede') return renderSedeCroqui(q, modoCad);
   if(grupo.estilo==='normal'){
     const cellsHtml = grupo.codigos.map(code=>renderAreaCellNormal(code, q, modoCad)).join('');
     return `<div class="pivo-quad-wrapper"><div class="pivo-quad-label-tag">${escapeHtml(grupo.nome)}</div><div class="pivo-quad-block flow">${cellsHtml}</div></div>`;
