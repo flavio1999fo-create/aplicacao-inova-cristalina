@@ -1917,7 +1917,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.20.0';
+const APP_BUILD_ID = 'v2.20.1';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -7126,6 +7126,42 @@ function buildReceiptMapHTML(selectedCodes, pivoObj){
   return `<div style="display:block;width:${outerW}px;background:linear-gradient(160deg,#fbf8f5,#f4ede4);padding:10px;border-radius:10px;font-size:0;line-height:0;text-align:center;">${blocks}${legenda}</div>`;
 }
 
+/* v2.20.1 — mapa do Pivô 4 na ficha (SVG), igual ao mapa em grade do Pivô 3: quadra aplicada com contorno
+   escuro e cor da cultura/modalidade; as demais ficam neutras. */
+function buildReceiptMapSvgHTML(selectedCodes, pivoObj){
+  const svgData = pivoObj && pivoObj.svg;
+  if(!svgData || !svgData.quadras) return '';
+  const idPrefix = pivoObj.idPrefix||'';
+  const vb = svgData.viewBox;
+  const W = 330, H = Math.round(W*vb.h/vb.w);
+  let temMilho = false, temSoja = false;
+  const ruas = (svgData.ruas||[]).map(r=>`<path d="${pivoSvgPointsToPath(r.pts,true)}" fill="#efe8dc" stroke="none"/>`).join('');
+  const quads = svgData.quadras.map(cell=>{
+    const ens = ensaioById('quadra_'+idPrefix+cell.code);
+    if(ens && ens.ativo===false) return '';
+    const isSel = selectedCodes.has(cell.code);
+    const cultura = (ens && ens.cultura) || '';
+    const modalidade = (ens && ens.modalidade) || '';
+    if(isSel){ if(cultura==='MILHO') temMilho = true; if(cultura==='SOJA') temSoja = true; }
+    const fill = isSel ? receiptCulturaBg(cultura, modalidade) : '#e6ddd0';
+    const stroke = isSel ? ' stroke="#241a12" stroke-width="2.5"' : '';
+    return `<path d="${pivoSvgPointsToPath(cell.pts,true)}" fill="${fill}"${stroke}/>`;
+  }).join('');
+  let legenda = '';
+  if(temMilho || temSoja){
+    const itens = [];
+    if(temMilho) itens.push('<span style="display:inline-block;width:9px;height:9px;background:#2f9e44;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>Milho');
+    if(temSoja) itens.push('<span style="display:inline-block;width:9px;height:9px;background:#ea580c;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>Soja');
+    legenda = `<div style="margin-top:6px;font-size:9px;line-height:1.4;font-weight:700;color:#8a7d70;">${itens.join('&nbsp;&nbsp;&nbsp;')}</div>`;
+  }
+  return `<div style="display:block;width:${W+20}px;background:linear-gradient(160deg,#fbf8f5,#f4ede4);padding:10px;border-radius:10px;font-size:0;line-height:0;text-align:center;"><svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${vb.minX} ${-(vb.minY+vb.h)} ${vb.w} ${vb.h}" style="display:block;margin:0 auto;">${ruas}${quads}</svg>${legenda}</div>`;
+}
+function buildReceiptMapPorPivo(selectedCodes, pivoObj){
+  if(!pivoObj) return '';
+  if(pivoObj.tipo==='pivo_svg') return buildReceiptMapSvgHTML(selectedCodes, pivoObj);
+  if(pivoObj.grid) return buildReceiptMapHTML(selectedCodes, pivoObj);
+  return '';
+}
 function buildReceiptBodyHTML(app){
   /* v2.20.0 — uma aplicação pode cobrir mais de um pivô (Pivô 3 + Pivô 4). A ficha agora separa por
      pivô: um mapa por pivô (quando o croqui dele é em grade) e as listas/números de ensaio sempre
@@ -7136,25 +7172,39 @@ function buildReceiptBodyHTML(app){
   itensApp.forEach(x=>{
     const pid = x.pivo || 'CRISTALINA';
     let g = grupos.find(y=>y.pid===pid);
-    if(!g){ g = {pid, obj: PIVOS.find(p=>p.id===pid) || PIVOS[0], codes:[]}; grupos.push(g); }
+    if(!g){ g = {pid, obj: PIVOS.find(p=>p.id===pid) || PIVOS[0], codes:[], ha:0}; grupos.push(g); }
     g.codes.push(x.talhao);
+    g.ha += (parseFloat(x.area)||0);
   });
   if(!grupos.length) grupos.push({pid:'CRISTALINA', obj:PIVOS[0], codes:[]});
   const multi = grupos.length>1;
   grupos.forEach(g=>{
     g.codes.sort();
-    g.mapa = g.codes.length ? buildReceiptMapHTML(new Set(g.codes), g.obj) : '';
+    g.mapa = g.codes.length ? buildReceiptMapPorPivo(new Set(g.codes), g.obj) : '';
   });
-  const mapHtml = grupos.map(g=> g.mapa ? (multi? `<div style="font-size:12px;font-weight:800;color:#c94a08;margin:8px 0 4px;">${escapeHtml(g.obj.nome)}</div>` : '')+g.mapa : '').join('');
+  /* Um cartão por pivô (título, nº de quadras/ha, mapa e, quando poucas, os códigos) — antes tudo ficava
+     junto e dava pra confundir o que era Pivô 3 e o que era Pivô 4. */
+  const mapHtml = grupos.map(g=>{
+    const n = g.codes.length;
+    const listaCodes = (!g.mapa || n<=24) ? `<div style="font-size:11px;line-height:1.4;color:#5a4636;margin-top:6px;word-break:break-word;">${escapeHtml(g.codes.join(', '))}</div>` : '';
+    return `<div style="border:1.5px solid #e0cdb8;border-radius:12px;padding:8px 10px 10px;margin:10px 0;background:#fffdfa;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px solid #f0e4d4;padding-bottom:5px;margin-bottom:8px;">
+        <span style="font-size:14px;font-weight:800;color:#c94a08;">📍 ${escapeHtml(g.obj.nome)}</span>
+        <span style="font-size:12px;font-weight:700;color:#5a4636;">${n} quadra${n===1?'':'s'} · ${fmtNum(g.ha)} ha</span>
+      </div>
+      ${g.mapa? `<div style="text-align:center;overflow:auto;">${g.mapa}</div>` : ''}
+      ${listaCodes}
+    </div>`;
+  }).join('');
   const talhoes = talhoesArr.join(', ') || '—';
   /* Com o mapa mostrando quais quadras foram aplicadas (contorno escuro) e a cultura de
      cada uma (cor de fundo), a lista de talhões em texto fica redundante. Então, quando o
      mapa do pivô está disponível, mostra só a quantidade; se não puder ser desenhado
      (ex.: Pivô 4, croqui em SVG), mantém a lista completa em texto. */
-  const resumoGrupo = g => g.mapa ? `${g.codes.length} selecionado${g.codes.length===1?'':'s'}` : g.codes.join(', ');
+  const resumoGrupo = g => `${g.codes.length} selecionado${g.codes.length===1?'':'s'}`;
   const talhoesResumo = multi
     ? grupos.map(g=>`${g.obj.nome}: ${resumoGrupo(g)}`).join(' · ')
-    : (grupos[0].mapa ? resumoGrupo(grupos[0]) : talhoes);
+    : resumoGrupo(grupos[0]);
   const ensDe = (t,pid)=>(DATA.ensaios||[]).find(e=>e.talhao===t && (e.pivo||'CRISTALINA')===pid);
   const detalheTalhoes = grupos.filter(g=>!g.mapa).map(g=>g.codes.map(t=>{
     const ens = ensDe(t,g.pid);
@@ -7210,7 +7260,7 @@ function buildReceiptBodyHTML(app){
     <div class="r-row"><span class="r-label">Área aplicada</span><span class="r-val">${fmtNum(app.area)} ha</span></div>
     <div class="r-row"><span class="r-label">Período de reentrada</span><span class="r-val">24 horas</span></div>
     ${caldaRows}
-    ${mapHtml? `<h4>Mapa da aplicação</h4><div style="text-align:center;overflow:auto;">${mapHtml}</div><div style="text-align:center;font-size:10px;color:#8a7d70;margin-top:4px;">Contorno escuro = quadra aplicada nesta ficha · cor = cultura cadastrada</div>` : ''}
+    ${mapHtml? `<h4>${multi? 'Mapas da aplicação (por pivô)' : 'Mapa da aplicação'}</h4>${mapHtml}<div style="text-align:center;font-size:10px;color:#8a7d70;margin-top:2px;">Contorno escuro = quadra aplicada nesta ficha · cor = cultura cadastrada</div>` : ''}
     <h4>Produtos aplicados</h4>
     ${prodHtml}
     ${app.obs? `<h4>Observações</h4><div class="r-row" style="border-bottom:none;"><span class="r-val" style="text-align:left;">${escapeHtml(app.obs)}</span></div>` : ''}
