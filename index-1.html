@@ -849,6 +849,13 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .qi-table td{padding:6px;border-bottom:1px solid #f1ebe0;}
   .qi-vazio{font-size:13px;color:#7d6a58;padding:6px 0;}
   .qi-reserva{margin-top:6px;font-size:12px;color:#4a2f86;font-weight:700;}
+  /* Aplicação em mais de um pivô (v2.20.0) */
+  .pivo-sel-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 8px;}
+  .psc-label{font-size:12px;font-weight:800;color:#5a4636;}
+  .psc-dica{font-size:11px;color:#8a7458;flex-basis:100%;}
+  .pivo-sel-chip{border:1.5px solid #e6dccd;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;color:#5a4636;cursor:pointer;}
+  .pivo-sel-chip.parcial{border-color:#ea580c;background:#fff3e8;color:#c2410c;}
+  .pivo-sel-chip.todos{border-color:#c2410c;background:#ea580c;color:#fff;}
   .leque-nota{font-size:9px;color:#c2410c;font-weight:700;width:150px;text-align:center;margin-top:2px;}
   .quadra-tile.tem-cultura{box-shadow:inset 0 -3px 0 #2f9e44;}
   .quadra-tile.sel.tem-cultura{box-shadow:inset 0 -3px 0 #dff5e1;}
@@ -1336,6 +1343,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapa" onclick="toggleFullscreenMapa()" style="white-space:nowrap;">⛶ Tela cheia</button>
       </div>
 
+      <div id="pivoSelChips" class="pivo-sel-chips"></div>
       <div class="subtabs pivo-tabs">
         <button class="subtab-btn pivo-tab-btn active" data-pivo="CRISTALINA" onclick="switchPivoAtivo('CRISTALINA')">📍 Pivô 3</button>
         <button class="subtab-btn pivo-tab-btn" data-pivo="PIVO4" onclick="switchPivoAtivo('PIVO4')">📍 Pivô 4</button>
@@ -1909,7 +1917,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.19.0';
+const APP_BUILD_ID = 'v2.20.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -2080,7 +2088,7 @@ function enforceLucasSedeEnsaios(){
   DATA.ensaios = DATA.ensaios || [];
   let mudou = false;
   const usadas = new Set();
-  (DATA.applications||[]).forEach(a=>(a.ensaiosSel||[]).forEach(x=>{ const i = typeof x==='string' ? x : (x && x.id); if(i) usadas.add(i); }));
+  (DATA.applications||[]).forEach(a=>(a.ensaiosSel||[]).forEach(x=>{ const i = typeof x==='string' ? x : (x && x.id); if(i) usadas.add(i); if(x && x.pivo==='LUCAS_SEDE') usadas.add('quadra_lsede_'+(x.talhao||x.ensaio)); }));
   const antes = DATA.ensaios.length;
   DATA.ensaios = DATA.ensaios.filter(e=>{
     if(e.pivo==='LUCAS_SEDE' && /^SEDE-\d+$/.test(e.talhao||'')){
@@ -4848,6 +4856,7 @@ function refreshTalhaoCadUI(){
   else renderTalhaoCadastro();
   renderTalhaoCadEditor();
   renderTalhaoCadBulkPanel();
+  atualizarQuadraInfo();
 }
 
 /* ---- Seleção múltipla + preenchimento em massa (aba Talhões, cadastro) ---- */
@@ -4907,9 +4916,11 @@ function selecionarFaixaTalhaoCad(){
 function toggleTalhaoCadSelecao(id){
   const e = ensaioById(id);
   if(!e) return;
-  if(selectedTalhaoCad[id]) delete selectedTalhaoCad[id];
+  const desmarcando = !!selectedTalhaoCad[id];
+  if(desmarcando) delete selectedTalhaoCad[id];
   else selectedTalhaoCad[id] = {talhao: e.talhao||'', area: e.area||0};
   refreshTalhaoCadUI();
+  if(desmarcando) esconderQuadraInfo(); else mostrarQuadraInfo(id);
 }
 
 function onBulkCadCulturaChange(valor){
@@ -5196,6 +5207,7 @@ function switchTalhaoCadView(view){
 function openTalhaoCadEditor(id){
   talhaoCadEditingId = id;
   refreshTalhaoCadUI();
+  mostrarQuadraInfo(id);
 }
 
 function closeTalhaoCadEditor(){
@@ -5533,6 +5545,8 @@ function toggleAcoesMassaTalhaoCad(){
 }
 
 function refreshTalhaoUI(){
+  atualizarQuadraInfo();
+  renderPivoSelChips();
   renderFiltroCultMod();
   if(talhaoView==='pivo') renderPivo();
   else if(talhaoView==='mapa') renderMapa();
@@ -5708,6 +5722,10 @@ function toggleTalhaoTile(id){
 /* v2.19.0 — a pedido do Flávio: na aba Aplicação, ao tocar numa quadra aparece uma tabelinha com todos
    os ensaios plantados nela (nº do ensaio, cultura/modalidade e data de plantio). Vale pra todas as
    áreas (Pivô 3, Pivô 4, Sede e Fundo da Lucas). */
+function atualizarQuadraInfo(){
+  const el = document.getElementById('quadraInfoSheet');
+  if(el && el.style.display==='block' && el.dataset.id) mostrarQuadraInfo(el.dataset.id);
+}
 function esconderQuadraInfo(){
   const el = document.getElementById('quadraInfoSheet');
   if(el) el.style.display = 'none';
@@ -5732,6 +5750,7 @@ function mostrarQuadraInfo(id){
     ? `<table class="qi-table"><thead><tr><th>Ensaio</th><th>Cultura · Modalidade</th><th>Plantio</th></tr></thead><tbody>${linhas}</tbody></table>`
     : `<div class="qi-vazio">Nenhum ensaio plantado nesta quadra.</div>`;
   el.innerHTML = `<div class="qi-head"><span>${escapeHtml(e.talhao||id)}</span><button type="button" class="qi-x" onclick="esconderQuadraInfo()" aria-label="Fechar">✕</button></div>${corpo}${reserva}`;
+  el.dataset.id = id;
   el.style.display = 'block';
 }
 
@@ -5866,17 +5885,60 @@ function recomputeAreaFromSelection(){
   updateSelSummary();
 }
 
+/* v2.20.0 — a pedido do Flávio: uma mesma aplicação (uma só requisição) pode valer pra mais de um pivô
+   (ex.: Pivô 3 + Pivô 4 na soja). A seleção de quadras é única e continua valendo ao trocar de aba de pivô
+   (e ao sair/voltar da aba Aplicação); estes botões marcam/desmarcam o pivô inteiro de uma vez. */
+function nomePivoPorId(pid){
+  const p = PIVOS.find(x=>x.id===pid) || Object.values(PIVOS_POR_ESTACAO).flat().find(x=>x.id===pid);
+  return p ? p.nome : pid;
+}
+function ensaiosAlvoDoPivo(pid){
+  const cultura = (document.getElementById('fCultura')||{}).value || '';
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pid
+    && (!cultura || !e.cultura || e.cultura===cultura)
+    && (!filtroCultModAtivo() || filtroCultModBate(e)));
+}
+function renderPivoSelChips(){
+  const box = document.getElementById('pivoSelChips');
+  if(!box) return;
+  if(PIVOS.length<2){ box.innerHTML = ''; return; }
+  const btns = PIVOS.map(p=>{
+    const alvo = ensaiosAlvoDoPivo(p.id);
+    const sel = alvo.filter(e=>selectedEnsaios[e.id]).length;
+    const cls = !sel ? '' : (sel===alvo.length ? ' todos' : ' parcial');
+    return `<button type="button" class="pivo-sel-chip${cls}" onclick="toggleSelecionarPivoInteiro('${p.id}')">${p.icone? p.icone+' ':''}${escapeHtml(p.nome)} · ${sel}/${alvo.length}</button>`;
+  }).join('');
+  box.innerHTML = `<span class="psc-label">Aplicar em:</span>${btns}<span class="psc-dica">toque para marcar/desmarcar o pivô inteiro — ou escolha quadra por quadra em cada aba</span>`;
+}
+function toggleSelecionarPivoInteiro(pid){
+  const alvo = ensaiosAlvoDoPivo(pid);
+  if(!alvo.length){ toast('Nenhuma quadra disponível nesse pivô para essa cultura/filtro'); return; }
+  const todos = alvo.every(e=>selectedEnsaios[e.id]);
+  alvo.forEach(e=>setTalhaoSelected(e.id, !todos, false));
+  recomputeAreaFromSelection();
+  refreshTalhaoUI();
+}
 function updateSelSummary(){
   const box = document.getElementById('selSummary');
   const items = Object.values(selectedEnsaios);
   if(!items.length){ box.textContent = 'Nenhum talhão selecionado'; return; }
   const total = items.reduce((s,x)=>s+(x.area||0),0);
-  const ordenados = items.slice().sort((a,b)=>(a.talhao||'').localeCompare(b.talhao||'', undefined, {numeric:true}));
-  const detalhes = ordenados.map(x=>{
+  const cmp = (a,b)=>(a.talhao||'').localeCompare(b.talhao||'', undefined, {numeric:true});
+  const det = x=>{
     const info = x.modalidade? `${x.cultura} · ${x.modalidade}` : (x.cultura||'sem cultura cadastrada');
     return `${escapeHtml(x.talhao||'')} <span class="sel-summary-cultura">(${escapeHtml(info)})</span>`;
-  }).join(', ');
-  box.innerHTML = `${items.length} talhão(ões) selecionado(s) · ${fmtNum(total)} ha total<br>${detalhes}`;
+  };
+  const pids = [...new Set(items.map(x=>x.pivo||'CRISTALINA'))];
+  if(pids.length<2){
+    box.innerHTML = `${items.length} talhão(ões) selecionado(s) · ${fmtNum(total)} ha total<br>${items.slice().sort(cmp).map(det).join(', ')}`;
+    return;
+  }
+  const linhas = pids.map(pid=>{
+    const g = items.filter(x=>(x.pivo||'CRISTALINA')===pid);
+    const ha = g.reduce((s,x)=>s+(x.area||0),0);
+    return `<b>${escapeHtml(nomePivoPorId(pid))}</b>: ${g.length} talhão(ões) · ${fmtNum(ha)} ha<br>${g.slice().sort(cmp).map(det).join(', ')}`;
+  }).join('<br>');
+  box.innerHTML = `${items.length} talhão(ões) em ${pids.length} pivôs · ${fmtNum(total)} ha total<br>${linhas}`;
 }
 
 function toggleEnsaio(id, checked){
@@ -7065,46 +7127,49 @@ function buildReceiptMapHTML(selectedCodes, pivoObj){
 }
 
 function buildReceiptBodyHTML(app){
-  const talhoesArr = (app.ensaiosSel||[]).map(x=>x.talhao).filter(Boolean).sort();
+  /* v2.20.0 — uma aplicação pode cobrir mais de um pivô (Pivô 3 + Pivô 4). A ficha agora separa por
+     pivô: um mapa por pivô (quando o croqui dele é em grade) e as listas/números de ensaio sempre
+     consultados pelo pivô de cada quadra (os códigos A101 etc. se repetem entre os dois pivôs). */
+  const itensApp = (app.ensaiosSel||[]).filter(x=>x && x.talhao);
+  const talhoesArr = itensApp.map(x=>x.talhao).sort();
+  const grupos = [];
+  itensApp.forEach(x=>{
+    const pid = x.pivo || 'CRISTALINA';
+    let g = grupos.find(y=>y.pid===pid);
+    if(!g){ g = {pid, obj: PIVOS.find(p=>p.id===pid) || PIVOS[0], codes:[]}; grupos.push(g); }
+    g.codes.push(x.talhao);
+  });
+  if(!grupos.length) grupos.push({pid:'CRISTALINA', obj:PIVOS[0], codes:[]});
+  const multi = grupos.length>1;
+  grupos.forEach(g=>{
+    g.codes.sort();
+    g.mapa = g.codes.length ? buildReceiptMapHTML(new Set(g.codes), g.obj) : '';
+  });
+  const mapHtml = grupos.map(g=> g.mapa ? (multi? `<div style="font-size:12px;font-weight:800;color:#c94a08;margin:8px 0 4px;">${escapeHtml(g.obj.nome)}</div>` : '')+g.mapa : '').join('');
   const talhoes = talhoesArr.join(', ') || '—';
-  const selectedCodes = new Set(talhoesArr);
-  const pivoIdDaApp = (app.ensaiosSel && app.ensaiosSel[0] && app.ensaiosSel[0].pivo) || 'CRISTALINA';
-  const pivoObjDaApp = PIVOS.find(p=>p.id===pivoIdDaApp) || PIVOS[0];
-  const mapHtml = selectedCodes.size ? buildReceiptMapHTML(selectedCodes, pivoObjDaApp) : '';
   /* Com o mapa mostrando quais quadras foram aplicadas (contorno escuro) e a cultura de
-     cada uma (cor de fundo), a lista de talhões em texto fica redundante e, quando são
-     muitos talhões, deixa a ficha poluída. Então, quando o mapa está disponível, mostra só
-     a quantidade selecionada aqui — os códigos e a cultura de cada um já aparecem no mapa.
-     Se por algum motivo o mapa não puder ser desenhado (ex.: talhão fora do padrão do
-     croqui), mantém a lista completa em texto como alternativa, pra não perder a informação. */
-  const talhoesResumo = mapHtml
-    ? `${talhoesArr.length} selecionado${talhoesArr.length===1?'':'s'}`
-    : talhoes;
-  /* IMPORTANTE: filtrar também por pivo (pivoIdDaApp), não só pelo código do talhão.
-     Pivô 3 e Pivô 4 reaproveitam os mesmos códigos de talhão (ex.: "A101" existe nos
-     dois), então buscar só por e.talhao===t pegava sempre o primeiro que aparecesse em
-     DATA.ensaios — que é sempre um talhão do Pivô 3, porque os 344 ensaios dele vêm
-     antes dos do Pivô 4 na lista. Isso fazia a ficha de uma aplicação no Pivô 4 mostrar
-     cultura/número de ensaio do talhão homônimo do Pivô 3. Corrigido em 02/09/2026. */
-  const detalheTalhoes = mapHtml ? '' : talhoesArr.map(t=>{
-    const ens = (DATA.ensaios||[]).find(e=>e.talhao===t && (e.pivo||'CRISTALINA')===pivoIdDaApp);
+     cada uma (cor de fundo), a lista de talhões em texto fica redundante. Então, quando o
+     mapa do pivô está disponível, mostra só a quantidade; se não puder ser desenhado
+     (ex.: Pivô 4, croqui em SVG), mantém a lista completa em texto. */
+  const resumoGrupo = g => g.mapa ? `${g.codes.length} selecionado${g.codes.length===1?'':'s'}` : g.codes.join(', ');
+  const talhoesResumo = multi
+    ? grupos.map(g=>`${g.obj.nome}: ${resumoGrupo(g)}`).join(' · ')
+    : (grupos[0].mapa ? resumoGrupo(grupos[0]) : talhoes);
+  const ensDe = (t,pid)=>(DATA.ensaios||[]).find(e=>e.talhao===t && (e.pivo||'CRISTALINA')===pid);
+  const detalheTalhoes = grupos.filter(g=>!g.mapa).map(g=>g.codes.map(t=>{
+    const ens = ensDe(t,g.pid);
     const label = ens ? ensaiosEmCampo(ens).map(p=>[p.cultura,p.modalidade].filter(Boolean).join(' · ')).filter(Boolean).join(' + ') : talhaoCulturaLabel(ens);
-    return label? `${t} (${label})` : null;
-  }).filter(Boolean).join(', ');
-  /* Número do ensaio na ficha (pedido do Flávio em 25/08/2026) — se todos os talhões
-     aplicados são do mesmo ensaio, mostra só o número; se são de ensaios diferentes,
-     mostra o número de cada talhão separado, pra não ficar ambíguo. */
-  const numerosEnsaioPorTalhao = talhoesArr.map(t=>{
-    const ens = (DATA.ensaios||[]).find(e=>e.talhao===t && (e.pivo||'CRISTALINA')===pivoIdDaApp);
+    return label? `${multi? g.obj.nome+' ':''}${t} (${label})` : null;
+  }).filter(Boolean).join(', ')).filter(Boolean).join(', ');
+  const numerosEnsaioPorTalhao = [];
+  grupos.forEach(g=>g.codes.forEach(t=>{
+    const ens = ensDe(t,g.pid);
     const num = ens ? ensaiosEmCampo(ens).map(p=>p.numeroEnsaio).filter(Boolean).join(' + ') : '';
-    return {talhao: t, numero: num};
-  }).filter(x=>x.numero);
+    if(num) numerosEnsaioPorTalhao.push({talhao:t, numero:num});
+  }));
   const numerosEnsaioUnicos = [...new Set(numerosEnsaioPorTalhao.map(x=>x.numero))];
   let numeroEnsaioTxt = '';
   if(numerosEnsaioUnicos.length===1) numeroEnsaioTxt = numerosEnsaioUnicos[0];
-  /* v2.14.0 — a pedido do Flávio: com muitos talhões de ensaios diferentes a ficha ficava enorme
-     (um "talhão: ensaio" pra cada quadra). Agora só mostra o número quando é um ensaio só; com
-     vários, mostra só quantos são — os talhões já aparecem no mapa / na linha de talhões. */
   else if(numerosEnsaioUnicos.length>1) numeroEnsaioTxt = `${numerosEnsaioUnicos.length} ensaios diferentes`;
   const caldaInfo = app.volumeCalda ? {volume:app.volumeCalda, capacidade:app.capacidadeTanque, tanques:app.tanques, ultimaCarga:app.ultimaCarga} : null;
   const prodHtml = (app.produtos||[]).map(p=>{
