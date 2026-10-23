@@ -1370,7 +1370,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <!-- v2.9.0 — a pedido do Flávio: selecionar/filtrar por cultura E modalidade (ex: tudo de Soja >
            Purificação + Preliminar I), e aí marcar só as quadras que quer aplicar. Vale pro pivô aberto. -->
       <div class="filtro-cultmod" id="filtroCultModBox">
-        <div class="filtro-cultmod-titulo">🎯 Selecionar por cultura e modalidade <span class="muted">· vale pros dois pivôs, pode marcar Soja e Milho</span></div>
+        <div class="filtro-cultmod-titulo">🎯 Selecionar por cultura e modalidade <span class="muted">· só do pivô aberto (cada pivô tem o seu)</span></div>
         <div class="filtro-cultmod-passo">1 · Cultura <span class="muted" style="font-weight:600;">(pode marcar mais de uma)</span></div>
         <div class="filtro-cultmod-chips" id="filtroCultChips"></div>
         <div id="filtroModWrap" style="display:none;">
@@ -1920,7 +1920,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.21.0';
+const APP_BUILD_ID = 'v2.21.1';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -5812,37 +5812,31 @@ function selecionarPorCultura(cultura){
    Cultura escolhida → aparecem só as modalidades dela (com a quantidade de quadras no pivô aberto).
    Marcando uma ou mais modalidades (ou nenhuma = todas), o mapa esmaece o que está fora, e dá pra
    "Selecionar todos" do filtro de uma vez ou tocar só nas quadras desejadas. */
-/* v2.21.0 — a pedido do Flávio: o filtro agora vale pros DOIS pivôs de uma vez (conta e seleciona o Pivô 3 e o
-   Pivô 4 juntos) e dá pra marcar mais de uma cultura (Soja e Milho) cada uma com suas modalidades.
-   filtroCultMod = {culturas:['SOJA','MILHO'], mods:['SOJA|VCU', ...]} — sem modalidade marcada numa cultura = todas dela. */
-let filtroCultMod = {culturas:[], mods:[]};
+/* v2.21.1 — o filtro/seleção por cultura e modalidade é INDEPENDENTE POR PIVÔ: cada pivô guarda o seu próprio
+   filtro, conta só as quadras dele e o "Selecionar todos" só marca as quadras do pivô aberto. Dá pra marcar mais
+   de uma cultura (Soja e Milho), cada uma com suas modalidades.
+   filtro = {culturas:['SOJA','MILHO'], mods:['SOJA|VCU', ...]} — sem modalidade marcada numa cultura = todas dela. */
+const FILTROS_CULTMOD_POR_PIVO = {};
+function fcm(){ return FILTROS_CULTMOD_POR_PIVO[pivoAtivoId] || (FILTROS_CULTMOD_POR_PIVO[pivoAtivoId] = {culturas:[], mods:[]}); }
 let filtroCultModEsmaecer = true;
-function filtroCultModAtivo(){ return filtroCultMod.culturas.length>0; }
+function filtroCultModAtivo(){ return fcm().culturas.length>0; }
 function filtroCultModBate(e){
   if(!e || e.reservado) return false;
   /* quadra com mais de um ensaio em campo entra no filtro se QUALQUER um deles bate */
   return ensaiosEmCampo(e).some(p=>{
     const c = (p.cultura||'').toUpperCase();
-    if(!filtroCultMod.culturas.includes(c)) return false;
-    const modsC = filtroCultMod.mods.filter(m=>m.startsWith(c+'|'));
+    if(!fcm().culturas.includes(c)) return false;
+    const modsC = fcm().mods.filter(m=>m.startsWith(c+'|'));
     if(!modsC.length) return true;
     return modsC.includes(c+'|'+(p.modalidade||''));
   });
 }
 function filtroCultModFora(e){ return filtroCultModAtivo() && filtroCultModEsmaecer && !filtroCultModBate(e); }
-function filtroCultModIdsPivos(){ return PIVOS.map(p=>p.id); }
 function filtroCultModTalhoesDoPivo(){
-  const ids = filtroCultModIdsPivos();
-  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && !e.reservado && ids.includes(e.pivo||'CRISTALINA'));
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && !e.reservado && (e.pivo||'CRISTALINA')===pivoAtivoId);
 }
 function filtroCultModNReservadasDoPivo(){
-  const ids = filtroCultModIdsPivos();
-  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && e.reservado && ids.includes(e.pivo||'CRISTALINA')).length;
-}
-function filtroCultModResumoPorPivo(lista){
-  const o = {};
-  lista.forEach(e=>{ const k = e.pivo||'CRISTALINA'; o[k]=(o[k]||0)+1; });
-  return PIVOS.filter(p=>o[p.id]).map(p=>`${p.nome}: ${o[p.id]}`).join(' · ');
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && e.reservado && (e.pivo||'CRISTALINA')===pivoAtivoId).length;
 }
 function renderFiltroCultMod(){
   const chipsC = document.getElementById('filtroCultChips');
@@ -5850,12 +5844,12 @@ function renderFiltroCultMod(){
   const todos = filtroCultModTalhoesDoPivo();
   const cont = {};
   todos.forEach(e=>{ new Set(ensaiosEmCampo(e).map(p=>(p.cultura||'').toUpperCase()).filter(Boolean)).forEach(c=>{ cont[c]=(cont[c]||0)+1; }); });
-  filtroCultMod.culturas = filtroCultMod.culturas.filter(c=>cont[c]);
-  filtroCultMod.mods = filtroCultMod.mods.filter(m=>filtroCultMod.culturas.includes(m.split('|')[0]));
+  fcm().culturas = fcm().culturas.filter(c=>cont[c]);
+  fcm().mods = fcm().mods.filter(m=>fcm().culturas.includes(m.split('|')[0]));
   const emoji = {MILHO:'🌽 ', SOJA:'🌱 '};
   chipsC.innerHTML = CULTURAS_PERMITIDAS.map(c=>{
     const n = cont[c]||0;
-    return `<button type="button" class="fcm-chip${filtroCultMod.culturas.includes(c)?' on':''}" ${n?'':'disabled'} onclick="filtroCultModSetCultura(this.dataset.c)" data-c="${escapeHtml(c)}">${emoji[c]||''}${escapeHtml(tituloCultura(c))} <small>${n}</small></button>`;
+    return `<button type="button" class="fcm-chip${fcm().culturas.includes(c)?' on':''}" ${n?'':'disabled'} onclick="filtroCultModSetCultura(this.dataset.c)" data-c="${escapeHtml(c)}">${emoji[c]||''}${escapeHtml(tituloCultura(c))} <small>${n}</small></button>`;
   }).join('');
   const wrapM = document.getElementById('filtroModWrap');
   const acoes = document.getElementById('filtroCultModAcoes');
@@ -5866,7 +5860,7 @@ function renderFiltroCultMod(){
   esm.style.display = ativo? '' : 'none';
   if(!ativo) return;
   document.getElementById('filtroModTitulo').innerHTML = `2 · Modalidades <span class="muted" style="font-weight:600;">(marque uma ou mais — sem marcar nenhuma de uma cultura = todas dela)</span>`;
-  document.getElementById('filtroModChips').innerHTML = filtroCultMod.culturas.map(c=>{
+  document.getElementById('filtroModChips').innerHTML = fcm().culturas.map(c=>{
     const daCultura = todos.filter(e=>ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===c));
     const contM = {};
     daCultura.forEach(e=>{ new Set(ensaiosEmCampo(e).filter(p=>(p.cultura||'').toUpperCase()===c).map(p=>p.modalidade||'')).forEach(m=>{ contM[m]=(contM[m]||0)+1; }); });
@@ -5875,7 +5869,7 @@ function renderFiltroCultMod(){
     if(contM['']) ordem.push('');
     const chips = ordem.map(m=>{
       const key = c+'|'+m;
-      const on = filtroCultMod.mods.includes(key);
+      const on = fcm().mods.includes(key);
       return `<button type="button" class="fcm-chip${on?' on':''}" onclick="filtroCultModToggleMod(this.dataset.m)" data-m="${escapeHtml(key)}">${m? escapeHtml(m) : 'Sem modalidade'} <small>${contM[m]}</small></button>`;
     }).join('');
     return `<div class="fcm-grupo-cultura"><div class="fcm-grupo-titulo">${emoji[c]||''}${escapeHtml(tituloCultura(c))}</div><div class="filtro-cultmod-chips">${chips}</div></div>`;
@@ -5883,21 +5877,21 @@ function renderFiltroCultMod(){
   const alvo = todos.filter(filtroCultModBate);
   document.getElementById('btnFiltroSelTodos').textContent = `☑ Selecionar todos (${alvo.length})`;
   const resumoEl = document.getElementById('filtroResumoPivos');
-  if(resumoEl){ resumoEl.textContent = alvo.length ? ('Entram: '+filtroCultModResumoPorPivo(alvo)) : ''; }
+  if(resumoEl){ resumoEl.textContent = alvo.length ? (`Só ${nomePivoPorId(pivoAtivoId)}: ${alvo.length} quadra(s) neste filtro — o outro pivô você escolhe na aba dele.`) : ''; }
   const nRes = filtroCultModNReservadasDoPivo();
   const notaRes = document.getElementById('filtroReservaNota');
   if(notaRes){ notaRes.style.display = nRes? '' : 'none'; notaRes.textContent = `🔒 ${nRes} quadra${nRes===1?'':'s'} reservada${nRes===1?'':'s'} não entra${nRes===1?'':'m'} no filtro (dá pra tocar nela${nRes===1?'':'s'} na mão).`; }
   document.getElementById('filtroEsmaecer').checked = filtroCultModEsmaecer;
 }
 function filtroCultModSetCultura(c){
-  const i = filtroCultMod.culturas.indexOf(c);
-  if(i>=0){ filtroCultMod.culturas.splice(i,1); filtroCultMod.mods = filtroCultMod.mods.filter(m=>!m.startsWith(c+'|')); }
-  else filtroCultMod.culturas.push(c);
+  const i = fcm().culturas.indexOf(c);
+  if(i>=0){ fcm().culturas.splice(i,1); fcm().mods = fcm().mods.filter(m=>!m.startsWith(c+'|')); }
+  else fcm().culturas.push(c);
   refreshTalhaoUI();
 }
 function filtroCultModToggleMod(m){
-  const i = filtroCultMod.mods.indexOf(m);
-  if(i>=0) filtroCultMod.mods.splice(i,1); else filtroCultMod.mods.push(m);
+  const i = fcm().mods.indexOf(m);
+  if(i>=0) fcm().mods.splice(i,1); else fcm().mods.push(m);
   refreshTalhaoUI();
 }
 function filtroCultModEsmaecerChange(v){ filtroCultModEsmaecer = !!v; refreshTalhaoUI(); }
@@ -5909,13 +5903,13 @@ function filtroCultModSelecionarTodos(){
   /* se a Cultura do formulário ainda está em branco, preenche sozinha com a(s) cultura(s) do filtro */
   const fc = document.getElementById('fCultura');
   if(fc && !fc.value){
-    const cs = filtroCultMod.culturas;
+    const cs = fcm().culturas;
     const v = cs.length>1 ? (cs.includes('SOJA') && cs.includes('MILHO') && cs.length===2 ? CULTURA_SOJA_MILHO : '') : (cs[0]||'');
     if(v && Array.prototype.some.call(fc.options, o=>o.value===v)) fc.value = v;
   }
   recomputeAreaFromSelection();
   refreshTalhaoUI();
-  toast(`${alvo.length} talhão(ões) selecionado(s) — ${filtroCultModResumoPorPivo(alvo)}`);
+  toast(`${alvo.length} quadra(s) do ${nomePivoPorId(pivoAtivoId)} selecionada(s)`);
 }
 
 function setTalhaoSelected(id, selected, recompute){
@@ -5942,8 +5936,7 @@ function nomePivoPorId(pid){
 }
 function ensaiosAlvoDoPivo(pid){
   return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pid
-    && culturaAppAceita(e)
-    && (!filtroCultModAtivo() || filtroCultModBate(e)));
+    && culturaAppAceita(e));
 }
 function renderPivoSelChips(){
   const box = document.getElementById('pivoSelChips');
@@ -5955,7 +5948,7 @@ function renderPivoSelChips(){
     const cls = !sel ? '' : (sel===alvo.length ? ' todos' : ' parcial');
     return `<button type="button" class="pivo-sel-chip${cls}" onclick="toggleSelecionarPivoInteiro('${p.id}')">${p.icone? p.icone+' ':''}${escapeHtml(p.nome)} · ${sel}/${alvo.length}</button>`;
   }).join('');
-  box.innerHTML = `<span class="psc-label">Aplicar em:</span>${btns}<span class="psc-dica">toque para marcar/desmarcar o pivô inteiro — ou escolha quadra por quadra em cada aba</span>`;
+  box.innerHTML = `<span class="psc-label">Aplicar em:</span>${btns}<span class="psc-dica">toque para marcar/desmarcar o pivô inteiro — ou escolha por cultura/modalidade e quadra por quadra em cada aba (cada pivô é independente)</span>`;
 }
 function toggleSelecionarPivoInteiro(pid){
   const alvo = ensaiosAlvoDoPivo(pid);
@@ -5976,16 +5969,16 @@ function updateSelSummary(){
     return `${escapeHtml(x.talhao||'')} <span class="sel-summary-cultura">(${escapeHtml(info)})</span>`;
   };
   const pids = [...new Set(items.map(x=>x.pivo||'CRISTALINA'))];
-  if(pids.length<2){
-    box.innerHTML = `${items.length} talhão(ões) selecionado(s) · ${fmtNum(total)} ha total<br>${items.slice().sort(cmp).map(det).join(', ')}`;
-    return;
-  }
+  const nomes = pids.map(nomePivoPorId);
+  const cab = pids.length>1
+    ? `<b>⚠ Esta aplicação será em ${pids.length} pivôs: ${nomes.map(escapeHtml).join(' + ')}</b> · ${items.length} quadras · ${fmtNum(total)} ha no total`
+    : `${items.length} quadra(s) em ${escapeHtml(nomes[0])} · ${fmtNum(total)} ha total`;
   const linhas = pids.map(pid=>{
     const g = items.filter(x=>(x.pivo||'CRISTALINA')===pid);
     const ha = g.reduce((s,x)=>s+(x.area||0),0);
-    return `<b>${escapeHtml(nomePivoPorId(pid))}</b>: ${g.length} talhão(ões) · ${fmtNum(ha)} ha<br>${g.slice().sort(cmp).map(det).join(', ')}`;
-  }).join('<br>');
-  box.innerHTML = `${items.length} talhão(ões) em ${pids.length} pivôs · ${fmtNum(total)} ha total<br>${linhas}`;
+    return `<b>${escapeHtml(nomePivoPorId(pid))}</b> — ${g.length} quadra(s) selecionada(s) · ${fmtNum(ha)} ha<br>${g.slice().sort(cmp).map(det).join(', ')}`;
+  }).join('<br><br>');
+  box.innerHTML = `${cab}<br><br>${linhas}`;
 }
 
 function toggleEnsaio(id, checked){
@@ -7296,7 +7289,11 @@ function buildReceiptBodyHTML(app){
     }
   }
 
+  const avisoPivos = multi
+    ? `<div style="background:#fff3e8;border:1.5px solid #ea580c;border-radius:10px;padding:8px 10px;margin:0 0 8px;font-size:13px;font-weight:800;color:#c2410c;">Aplicação em ${grupos.length} pivôs: ${grupos.map(g=>`${escapeHtml(g.obj.nome)} (${g.codes.length} quadra${g.codes.length===1?'':'s'} · ${fmtNum(g.ha)} ha)`).join(' + ')}</div>`
+    : '';
   return `
+    ${avisoPivos}
     <div class="r-row"><span class="r-label">Nº de série</span><span class="r-val">#${app.serie}</span></div>
     <div class="r-row"><span class="r-label">Data da aplicação</span><span class="r-val">${fmtDateBR(app.dataAplicacao)}</span></div>
     <div class="r-row"><span class="r-label">Cultura</span><span class="r-val">${escapeHtml(app.cultura||'–')}</span></div>
