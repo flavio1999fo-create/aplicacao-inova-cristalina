@@ -856,6 +856,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .pivo-sel-chip{border:1.5px solid #e6dccd;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;color:#5a4636;cursor:pointer;}
   .pivo-sel-chip.parcial{border-color:#ea580c;background:#fff3e8;color:#c2410c;}
   .pivo-sel-chip.todos{border-color:#c2410c;background:#ea580c;color:#fff;}
+  .fcm-grupo-cultura{margin:6px 0 4px;}
+  .fcm-grupo-titulo{font-size:12px;font-weight:800;color:#5a4636;margin:4px 0 3px;}
   .leque-nota{font-size:9px;color:#c2410c;font-weight:700;width:150px;text-align:center;margin-top:2px;}
   .quadra-tile.tem-cultura{box-shadow:inset 0 -3px 0 #2f9e44;}
   .quadra-tile.sel.tem-cultura{box-shadow:inset 0 -3px 0 #dff5e1;}
@@ -1368,8 +1370,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <!-- v2.9.0 — a pedido do Flávio: selecionar/filtrar por cultura E modalidade (ex: tudo de Soja >
            Purificação + Preliminar I), e aí marcar só as quadras que quer aplicar. Vale pro pivô aberto. -->
       <div class="filtro-cultmod" id="filtroCultModBox">
-        <div class="filtro-cultmod-titulo">🎯 Selecionar por cultura e modalidade <span class="muted">· só do pivô aberto</span></div>
-        <div class="filtro-cultmod-passo">1 · Cultura</div>
+        <div class="filtro-cultmod-titulo">🎯 Selecionar por cultura e modalidade <span class="muted">· vale pros dois pivôs, pode marcar Soja e Milho</span></div>
+        <div class="filtro-cultmod-passo">1 · Cultura <span class="muted" style="font-weight:600;">(pode marcar mais de uma)</span></div>
         <div class="filtro-cultmod-chips" id="filtroCultChips"></div>
         <div id="filtroModWrap" style="display:none;">
           <div class="filtro-cultmod-passo" id="filtroModTitulo">2 · Modalidades</div>
@@ -1379,6 +1381,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
           <button class="btn-sm" id="btnFiltroSelTodos" onclick="filtroCultModSelecionarTodos()">☑ Selecionar todos</button>
           <button class="btn-ghost btn-sm" onclick="filtroCultModLimpar()">Limpar filtro</button>
         </div>
+        <div class="muted" id="filtroResumoPivos" style="font-size:12px;margin-top:4px;"></div>
         <div class="muted" id="filtroReservaNota" style="display:none;font-size:12px;margin-top:6px;"></div>
         <label class="filtro-cultmod-esmaecer" id="filtroEsmaecerLbl" style="display:none;"><input type="checkbox" id="filtroEsmaecer" checked onchange="filtroCultModEsmaecerChange(this.checked)"> Esmaecer no mapa o que não é desse filtro (pra tocar só nas quadras que quero)</label>
       </div>
@@ -1917,7 +1920,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.20.1';
+const APP_BUILD_ID = 'v2.21.0';
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -3721,6 +3724,12 @@ function renderDashboard(){
   apps.forEach(a=>{
     const cultura = (a.cultura||'').trim();
     if(!cultura) return;
+    if(cultura===CULTURA_SOJA_MILHO){
+      /* aplicação conjunta: reparte a área entre Soja e Milho na proporção das quadras selecionadas */
+      const por = {}; let tot = 0;
+      (a.ensaiosSel||[]).forEach(x=>{ const c=(x.cultura||'').toUpperCase(); if(!c) return; const ha=parseFloat(x.area)||0; por[c]=(por[c]||0)+ha; tot+=ha; });
+      if(tot>0){ Object.keys(por).forEach(c=>{ areaPorCultura[c] = (areaPorCultura[c]||0) + (Number(a.area)||0)*por[c]/tot; }); return; }
+    }
     areaPorCultura[cultura] = (areaPorCultura[cultura]||0) + (Number(a.area)||0);
   });
   const topCulturas = Object.entries(areaPorCultura).sort((a,b)=>b[1]-a[1]).slice(0,8);
@@ -4220,6 +4229,17 @@ function addProduct(){
 }
 
 /* ====================== NOVA APLICAÇÃO ====================== */
+const CULTURA_SOJA_MILHO = 'SOJA + MILHO';
+function culturasDoFormulario(){
+  /* v2.21.0 — a mesma aplicação pode valer pra Soja e Milho juntas (além de cada uma separada) */
+  return (DATA.lists.culturas||[]).concat([CULTURA_SOJA_MILHO]);
+}
+function culturaAppAceita(e){
+  const c = (document.getElementById('fCultura')||{}).value || '';
+  if(!c || !e || !e.cultura) return true;
+  if(c===CULTURA_SOJA_MILHO) return e.cultura==='SOJA' || e.cultura==='MILHO';
+  return e.cultura===c;
+}
 function fillSelect(sel, arr, {value,label}={}){
   sel.innerHTML = '<option value="">Selecione...</option>' + arr.map(item=>{
     const v = value? value(item): item;
@@ -4230,7 +4250,7 @@ function fillSelect(sel, arr, {value,label}={}){
 
 function initFormLists(){
   document.getElementById('fData').value = todayISO();
-  fillSelect(document.getElementById('fCultura'), DATA.lists.culturas||[]);
+  fillSelect(document.getElementById('fCultura'), culturasDoFormulario());
   fillSelect(document.getElementById('fOperador'), DATA.lists.operadores||[]);
   fillSelect(document.getElementById('fRecomendacao'), DATA.lists.recomendacoes||[]);
   fillSelect(document.getElementById('fEquipamento'), DATA.lists.equipamentos||[], {
@@ -4274,7 +4294,7 @@ function refreshFormListsPreservingSelection(){
     vazaoCustom: fVazaoCustom ? fVazaoCustom.value : ''
   };
 
-  fillSelect(fCultura, DATA.lists.culturas||[]);
+  fillSelect(fCultura, culturasDoFormulario());
   fillSelect(fOperador, DATA.lists.operadores||[]);
   fillSelect(fRecomendacao, DATA.lists.recomendacoes||[]);
   fillSelect(fEquipamento, DATA.lists.equipamentos||[], {
@@ -4385,8 +4405,7 @@ let selectedEnsaios = {}; // id -> {ensaio,pivo,talhao,area}
 let talhaoView = 'pivo';
 
 function activosTalhoes(){
-  const cultura = document.getElementById('fCultura').value;
-  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pivoAtivoId && (!cultura || !e.cultura || e.cultura===cultura));
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pivoAtivoId && culturaAppAceita(e));
 }
 
 /* ---- Cultura/modalidade por talhão (aba "Talhões") ---- */
@@ -5793,24 +5812,37 @@ function selecionarPorCultura(cultura){
    Cultura escolhida → aparecem só as modalidades dela (com a quantidade de quadras no pivô aberto).
    Marcando uma ou mais modalidades (ou nenhuma = todas), o mapa esmaece o que está fora, e dá pra
    "Selecionar todos" do filtro de uma vez ou tocar só nas quadras desejadas. */
-let filtroCultMod = {cultura:'', mods:[]};
+/* v2.21.0 — a pedido do Flávio: o filtro agora vale pros DOIS pivôs de uma vez (conta e seleciona o Pivô 3 e o
+   Pivô 4 juntos) e dá pra marcar mais de uma cultura (Soja e Milho) cada uma com suas modalidades.
+   filtroCultMod = {culturas:['SOJA','MILHO'], mods:['SOJA|VCU', ...]} — sem modalidade marcada numa cultura = todas dela. */
+let filtroCultMod = {culturas:[], mods:[]};
 let filtroCultModEsmaecer = true;
-function filtroCultModAtivo(){ return !!filtroCultMod.cultura; }
+function filtroCultModAtivo(){ return filtroCultMod.culturas.length>0; }
 function filtroCultModBate(e){
   if(!e || e.reservado) return false;
-  /* v2.13.0 — quadra com mais de um ensaio em campo entra no filtro se QUALQUER um deles bate */
+  /* quadra com mais de um ensaio em campo entra no filtro se QUALQUER um deles bate */
   return ensaiosEmCampo(e).some(p=>{
-    if((p.cultura||'').toUpperCase()!==filtroCultMod.cultura) return false;
-    if(!filtroCultMod.mods.length) return true;
-    return filtroCultMod.mods.includes(p.modalidade||'');
+    const c = (p.cultura||'').toUpperCase();
+    if(!filtroCultMod.culturas.includes(c)) return false;
+    const modsC = filtroCultMod.mods.filter(m=>m.startsWith(c+'|'));
+    if(!modsC.length) return true;
+    return modsC.includes(c+'|'+(p.modalidade||''));
   });
 }
 function filtroCultModFora(e){ return filtroCultModAtivo() && filtroCultModEsmaecer && !filtroCultModBate(e); }
+function filtroCultModIdsPivos(){ return PIVOS.map(p=>p.id); }
 function filtroCultModTalhoesDoPivo(){
-  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && !e.reservado && (e.pivo||'CRISTALINA')===pivoAtivoId);
+  const ids = filtroCultModIdsPivos();
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && !e.reservado && ids.includes(e.pivo||'CRISTALINA'));
 }
 function filtroCultModNReservadasDoPivo(){
-  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && e.reservado && (e.pivo||'CRISTALINA')===pivoAtivoId).length;
+  const ids = filtroCultModIdsPivos();
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && e.reservado && ids.includes(e.pivo||'CRISTALINA')).length;
+}
+function filtroCultModResumoPorPivo(lista){
+  const o = {};
+  lista.forEach(e=>{ const k = e.pivo||'CRISTALINA'; o[k]=(o[k]||0)+1; });
+  return PIVOS.filter(p=>o[p.id]).map(p=>`${p.nome}: ${o[p.id]}`).join(' · ');
 }
 function renderFiltroCultMod(){
   const chipsC = document.getElementById('filtroCultChips');
@@ -5818,11 +5850,12 @@ function renderFiltroCultMod(){
   const todos = filtroCultModTalhoesDoPivo();
   const cont = {};
   todos.forEach(e=>{ new Set(ensaiosEmCampo(e).map(p=>(p.cultura||'').toUpperCase()).filter(Boolean)).forEach(c=>{ cont[c]=(cont[c]||0)+1; }); });
-  if(filtroCultMod.cultura && !cont[filtroCultMod.cultura]) filtroCultMod = {cultura:'', mods:[]};
+  filtroCultMod.culturas = filtroCultMod.culturas.filter(c=>cont[c]);
+  filtroCultMod.mods = filtroCultMod.mods.filter(m=>filtroCultMod.culturas.includes(m.split('|')[0]));
   const emoji = {MILHO:'🌽 ', SOJA:'🌱 '};
   chipsC.innerHTML = CULTURAS_PERMITIDAS.map(c=>{
     const n = cont[c]||0;
-    return `<button type="button" class="fcm-chip${filtroCultMod.cultura===c?' on':''}" ${n?'':'disabled'} onclick="filtroCultModSetCultura(this.dataset.c)" data-c="${escapeHtml(c)}">${emoji[c]||''}${escapeHtml(tituloCultura(c))} <small>${n}</small></button>`;
+    return `<button type="button" class="fcm-chip${filtroCultMod.culturas.includes(c)?' on':''}" ${n?'':'disabled'} onclick="filtroCultModSetCultura(this.dataset.c)" data-c="${escapeHtml(c)}">${emoji[c]||''}${escapeHtml(tituloCultura(c))} <small>${n}</small></button>`;
   }).join('');
   const wrapM = document.getElementById('filtroModWrap');
   const acoes = document.getElementById('filtroCultModAcoes');
@@ -5832,26 +5865,34 @@ function renderFiltroCultMod(){
   acoes.style.display = ativo? '' : 'none';
   esm.style.display = ativo? '' : 'none';
   if(!ativo) return;
-  const daCultura = todos.filter(e=>ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===filtroCultMod.cultura));
-  const contM = {};
-  daCultura.forEach(e=>{ new Set(ensaiosEmCampo(e).filter(p=>(p.cultura||'').toUpperCase()===filtroCultMod.cultura).map(p=>p.modalidade||'')).forEach(m=>{ contM[m]=(contM[m]||0)+1; }); });
-  const ordem = (MODALIDADES_POR_CULTURA[filtroCultMod.cultura]||[]).filter(m=>contM[m]);
-  Object.keys(contM).forEach(m=>{ if(m && !ordem.includes(m)) ordem.push(m); });
-  if(contM['']) ordem.push('');
-  document.getElementById('filtroModTitulo').innerHTML = `2 · Modalidades de ${escapeHtml(tituloCultura(filtroCultMod.cultura))} <span class="muted" style="font-weight:600;">(marque uma ou mais — sem marcar = todas)</span>`;
-  document.getElementById('filtroModChips').innerHTML = ordem.map(m=>{
-    const on = filtroCultMod.mods.includes(m);
-    return `<button type="button" class="fcm-chip${on?' on':''}" onclick="filtroCultModToggleMod(this.dataset.m)" data-m="${escapeHtml(m)}">${m? escapeHtml(m) : 'Sem modalidade'} <small>${contM[m]}</small></button>`;
+  document.getElementById('filtroModTitulo').innerHTML = `2 · Modalidades <span class="muted" style="font-weight:600;">(marque uma ou mais — sem marcar nenhuma de uma cultura = todas dela)</span>`;
+  document.getElementById('filtroModChips').innerHTML = filtroCultMod.culturas.map(c=>{
+    const daCultura = todos.filter(e=>ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===c));
+    const contM = {};
+    daCultura.forEach(e=>{ new Set(ensaiosEmCampo(e).filter(p=>(p.cultura||'').toUpperCase()===c).map(p=>p.modalidade||'')).forEach(m=>{ contM[m]=(contM[m]||0)+1; }); });
+    const ordem = (MODALIDADES_POR_CULTURA[c]||[]).filter(m=>contM[m]);
+    Object.keys(contM).forEach(m=>{ if(m && !ordem.includes(m)) ordem.push(m); });
+    if(contM['']) ordem.push('');
+    const chips = ordem.map(m=>{
+      const key = c+'|'+m;
+      const on = filtroCultMod.mods.includes(key);
+      return `<button type="button" class="fcm-chip${on?' on':''}" onclick="filtroCultModToggleMod(this.dataset.m)" data-m="${escapeHtml(key)}">${m? escapeHtml(m) : 'Sem modalidade'} <small>${contM[m]}</small></button>`;
+    }).join('');
+    return `<div class="fcm-grupo-cultura"><div class="fcm-grupo-titulo">${emoji[c]||''}${escapeHtml(tituloCultura(c))}</div><div class="filtro-cultmod-chips">${chips}</div></div>`;
   }).join('');
-  const n = daCultura.filter(filtroCultModBate).length;
-  document.getElementById('btnFiltroSelTodos').textContent = `☑ Selecionar todos (${n})`;
+  const alvo = todos.filter(filtroCultModBate);
+  document.getElementById('btnFiltroSelTodos').textContent = `☑ Selecionar todos (${alvo.length})`;
+  const resumoEl = document.getElementById('filtroResumoPivos');
+  if(resumoEl){ resumoEl.textContent = alvo.length ? ('Entram: '+filtroCultModResumoPorPivo(alvo)) : ''; }
   const nRes = filtroCultModNReservadasDoPivo();
   const notaRes = document.getElementById('filtroReservaNota');
-  if(notaRes){ notaRes.style.display = nRes? '' : 'none'; notaRes.textContent = `🔒 ${nRes} quadra${nRes===1?'':'s'} reservada${nRes===1?'':'s'} neste pivô não entra${nRes===1?'':'m'} no filtro (dá pra tocar nela${nRes===1?'':'s'} na mão).`; }
+  if(notaRes){ notaRes.style.display = nRes? '' : 'none'; notaRes.textContent = `🔒 ${nRes} quadra${nRes===1?'':'s'} reservada${nRes===1?'':'s'} não entra${nRes===1?'':'m'} no filtro (dá pra tocar nela${nRes===1?'':'s'} na mão).`; }
   document.getElementById('filtroEsmaecer').checked = filtroCultModEsmaecer;
 }
 function filtroCultModSetCultura(c){
-  filtroCultMod = (filtroCultMod.cultura===c) ? {cultura:'', mods:[]} : {cultura:c, mods:[]};
+  const i = filtroCultMod.culturas.indexOf(c);
+  if(i>=0){ filtroCultMod.culturas.splice(i,1); filtroCultMod.mods = filtroCultMod.mods.filter(m=>!m.startsWith(c+'|')); }
+  else filtroCultMod.culturas.push(c);
   refreshTalhaoUI();
 }
 function filtroCultModToggleMod(m){
@@ -5860,14 +5901,21 @@ function filtroCultModToggleMod(m){
   refreshTalhaoUI();
 }
 function filtroCultModEsmaecerChange(v){ filtroCultModEsmaecer = !!v; refreshTalhaoUI(); }
-function filtroCultModLimpar(){ filtroCultMod = {cultura:'', mods:[]}; refreshTalhaoUI(); }
+function filtroCultModLimpar(){ filtroCultMod = {culturas:[], mods:[]}; refreshTalhaoUI(); }
 function filtroCultModSelecionarTodos(){
   const alvo = filtroCultModTalhoesDoPivo().filter(filtroCultModBate);
   if(!alvo.length){ toast('Nenhum talhão nesse filtro'); return; }
   alvo.forEach(e=>setTalhaoSelected(e.id, true, false));
+  /* se a Cultura do formulário ainda está em branco, preenche sozinha com a(s) cultura(s) do filtro */
+  const fc = document.getElementById('fCultura');
+  if(fc && !fc.value){
+    const cs = filtroCultMod.culturas;
+    const v = cs.length>1 ? (cs.includes('SOJA') && cs.includes('MILHO') && cs.length===2 ? CULTURA_SOJA_MILHO : '') : (cs[0]||'');
+    if(v && Array.prototype.some.call(fc.options, o=>o.value===v)) fc.value = v;
+  }
   recomputeAreaFromSelection();
   refreshTalhaoUI();
-  toast(`${alvo.length} talhão(ões) selecionado(s)`);
+  toast(`${alvo.length} talhão(ões) selecionado(s) — ${filtroCultModResumoPorPivo(alvo)}`);
 }
 
 function setTalhaoSelected(id, selected, recompute){
@@ -5893,9 +5941,8 @@ function nomePivoPorId(pid){
   return p ? p.nome : pid;
 }
 function ensaiosAlvoDoPivo(pid){
-  const cultura = (document.getElementById('fCultura')||{}).value || '';
   return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pid
-    && (!cultura || !e.cultura || e.cultura===cultura)
+    && culturaAppAceita(e)
     && (!filtroCultModAtivo() || filtroCultModBate(e)));
 }
 function renderPivoSelChips(){
@@ -7196,6 +7243,8 @@ function buildReceiptBodyHTML(app){
       ${listaCodes}
     </div>`;
   }).join('');
+  const _porCult = {}; itensApp.forEach(x=>{ const c=(x.cultura||'').toUpperCase(); if(!c) return; _porCult[c]=(_porCult[c]||0)+(parseFloat(x.area)||0); });
+  const areaPorCulturaTxt = Object.keys(_porCult).length>1 ? Object.keys(_porCult).map(c=>`${tituloCultura(c)} ${fmtNum(_porCult[c])} ha`).join(' · ') : '';
   const talhoes = talhoesArr.join(', ') || '—';
   /* Com o mapa mostrando quais quadras foram aplicadas (contorno escuro) e a cultura de
      cada uma (cor de fundo), a lista de talhões em texto fica redundante. Então, quando o
@@ -7258,6 +7307,7 @@ function buildReceiptBodyHTML(app){
     ${numeroEnsaioTxt? `<div class="r-row"><span class="r-label">Número do ensaio</span><span class="r-val">${escapeHtml(numeroEnsaioTxt)}</span></div>` : ''}
     ${detalheTalhoes? `<div class="r-row"><span class="r-label">Cultura/ensaio por talhão</span><span class="r-val">${escapeHtml(detalheTalhoes)}</span></div>` : ''}
     <div class="r-row"><span class="r-label">Área aplicada</span><span class="r-val">${fmtNum(app.area)} ha</span></div>
+    ${areaPorCulturaTxt? `<div class="r-row"><span class="r-label">Área por cultura</span><span class="r-val">${escapeHtml(areaPorCulturaTxt)}</span></div>` : ''}
     <div class="r-row"><span class="r-label">Período de reentrada</span><span class="r-val">24 horas</span></div>
     ${caldaRows}
     ${mapHtml? `<h4>${multi? 'Mapas da aplicação (por pivô)' : 'Mapa da aplicação'}</h4>${mapHtml}<div style="text-align:center;font-size:10px;color:#8a7d70;margin-top:2px;">Contorno escuro = quadra aplicada nesta ficha · cor = cultura cadastrada</div>` : ''}
