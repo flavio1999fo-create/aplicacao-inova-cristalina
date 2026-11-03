@@ -1262,7 +1262,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <section id="tab-estoque" class="section active">
     <div class="card">
       <h2>Estoque de produtos</h2>
-      <input class="searchbar" id="estoqueSearch" placeholder="Buscar produto, classe ou ingrediente ativo...">
+      <input class="searchbar" id="estoqueSearch" name="busca_estoqueSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar produto, classe ou ingrediente ativo...">
       <!-- 11/09/2026 — a pedido do Flávio: abas/chips pra filtrar o estoque por armazém
            (Inova, Agrícola, ou os produtos sem armazém definido), depois que passou a
            existir mais de um armazém (ver importEstoqueERP/upsertArmazemSaldo). Gerado
@@ -1359,7 +1359,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <div class="sel-summary" id="selSummary">Nenhum talhão selecionado</div>
 
-      <input class="searchbar" id="mapaSearch" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoSearch()">
+      <input class="searchbar" id="mapaSearch" name="busca_mapaSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoSearch()">
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
         <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('MILHO')">🌽 Selecionar tudo de Milho</button>
@@ -1481,7 +1481,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="subtab-btn" data-viewcad="lista" onclick="switchTalhaoCadView('lista')">☰ Lista</button>
       </div>
 
-      <input class="searchbar" id="talhaoCadastroSearch" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoCadastroSearch()">
+      <input class="searchbar" id="talhaoCadastroSearch" name="busca_talhaoCadastroSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoCadastroSearch()">
 
       <div id="talhaoCadBulkPanel" style="display:none;"></div>
       <div id="talhaoCadEditor" style="display:none;"></div>
@@ -1509,7 +1509,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <section id="tab-historico" class="section">
     <div class="card">
       <h2>Histórico de aplicações</h2>
-      <input class="searchbar" id="histSearch" placeholder="Buscar por cultura, operador, produto...">
+      <input class="searchbar" id="histSearch" name="busca_histSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar por cultura, operador, produto...">
       <div id="histList"></div>
       <div class="empty" id="histEmpty" style="display:none;">Nenhuma aplicação registrada ainda.</div>
     </div>
@@ -1747,7 +1747,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         </div>
         <div class="field">
           <label>PIN</label>
-          <input type="password" inputmode="numeric" id="loginPin" placeholder="Digite seu PIN" onkeydown="if(event.key==='Enter'){event.preventDefault();submitLogin();}">
+          <input type="password" inputmode="numeric" id="loginPin" autocomplete="new-password" placeholder="Digite seu PIN" onkeydown="if(event.key==='Enter'){event.preventDefault();submitLogin();}">
         </div>
       </div>
       <div class="receipt-actions">
@@ -1920,7 +1920,29 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.21.1';
+const APP_BUILD_ID = 'v2.21.2';
+/* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
+   o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
+   busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
+function limparBuscasAutofill(){
+  let mudou = false;
+  ['mapaSearch','talhaoCadastroSearch','estoqueSearch','histSearch'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el && el.value && document.activeElement!==el){ el.value=''; mudou = true; }
+  });
+  if(mudou){
+    talhaoCadastroSearch = '';
+    try{ if(typeof refreshTalhaoCadUI==='function') refreshTalhaoCadUI(); }catch(e){}
+    try{ if(typeof onTalhaoSearch==='function') onTalhaoSearch(); }catch(e){}
+    try{ if(typeof renderEstoque==='function') renderEstoque(); }catch(e){}
+    try{ if(typeof renderHistory==='function') renderHistory(); }catch(e){}
+  }
+}
+[0,300,1000,2500,5000].forEach(t=>setTimeout(limparBuscasAutofill,t));
+window.addEventListener('load', limparBuscasAutofill);
+window.addEventListener('pageshow', limparBuscasAutofill);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) setTimeout(limparBuscasAutofill,200); });
+
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -4665,7 +4687,9 @@ let talhaoCadSelMode = false;
 let selectedTalhaoCad = {}; // id -> {talhao, area}
 
 function onTalhaoCadastroSearch(){
-  talhaoCadastroSearch = (document.getElementById('talhaoCadastroSearch').value||'').trim().toUpperCase();
+  const _el = document.getElementById('talhaoCadastroSearch');
+  if(_el && document.activeElement!==_el) _el.value = ''; // autofill do navegador: ignora
+  talhaoCadastroSearch = (_el.value||'').trim().toUpperCase();
   refreshTalhaoCadUI();
 }
 
@@ -5728,6 +5752,8 @@ function renderMapa(){
   updateSelSummary();
 }
 function onTalhaoSearch(){
+  const _el = document.getElementById('mapaSearch');
+  if(_el && document.activeElement!==_el) _el.value = ''; // autofill do navegador: ignora
   if(talhaoView==='pivo') renderPivo();
   else if(talhaoView==='mapa') renderMapa();
 }
