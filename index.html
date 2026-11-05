@@ -2010,7 +2010,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.23.1';
+const APP_BUILD_ID = 'v2.23.2';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -7475,6 +7475,16 @@ function buildReceiptMapSvgHTML(selectedCodes, pivoObj){
     const stroke = isSel ? ' stroke="#241a12" stroke-width="2.5"' : '';
     return `<path d="${pivoSvgPointsToPath(cell.pts,true)}" fill="${fill}"${stroke}/>`;
   }).join('');
+  /* v2.23.2 — número da quadra escrito em cima de cada quadra aplicada (antes a ficha do Pivô 4 não mostrava
+     nenhum código). Só as selecionadas ganham rótulo, com contorno claro pra ler em cima da cor. */
+  const rotulos = svgData.quadras.map(cell=>{
+    if(!selectedCodes.has(cell.code)) return '';
+    const ens = ensaioById('quadra_'+idPrefix+cell.code);
+    if(ens && ens.ativo===false) return '';
+    const pose = pivoSvgLabelPose(cell.pts);
+    const cx = pose.cx.toFixed(1), cy = pose.cy.toFixed(1);
+    return `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="800" fill="#241a12" stroke="#ffffff" stroke-width="7" stroke-linejoin="round" paint-order="stroke">${escapeHtml(cell.code)}</text>`;
+  }).join('');
   let legenda = '';
   if(temMilho || temSoja){
     const itens = [];
@@ -7482,7 +7492,7 @@ function buildReceiptMapSvgHTML(selectedCodes, pivoObj){
     if(temSoja) itens.push('<span style="display:inline-block;width:9px;height:9px;background:#ea580c;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>Soja');
     legenda = `<div style="margin-top:6px;font-size:9px;line-height:1.4;font-weight:700;color:#8a7d70;">${itens.join('&nbsp;&nbsp;&nbsp;')}</div>`;
   }
-  return `<div style="display:block;width:${W+20}px;background:linear-gradient(160deg,#fbf8f5,#f4ede4);padding:10px;border-radius:10px;font-size:0;line-height:0;text-align:center;"><svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${vb.minX} ${-(vb.minY+vb.h)} ${vb.w} ${vb.h}" style="display:block;margin:0 auto;">${ruas}${quads}</svg>${legenda}</div>`;
+  return `<div style="display:block;width:${W+20}px;background:linear-gradient(160deg,#fbf8f5,#f4ede4);padding:10px;border-radius:10px;font-size:0;line-height:0;text-align:center;"><svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${vb.minX} ${-(vb.minY+vb.h)} ${vb.w} ${vb.h}" style="display:block;margin:0 auto;">${ruas}${quads}${rotulos}</svg>${legenda}</div>`;
 }
 function buildReceiptMapPorPivo(selectedCodes, pivoObj){
   if(!pivoObj) return '';
