@@ -856,6 +856,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .pivo-sel-chip{border:1.5px solid #e6dccd;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;color:#5a4636;cursor:pointer;}
   .pivo-sel-chip.parcial{border-color:#ea580c;background:#fff3e8;color:#c2410c;}
   .pivo-sel-chip.todos{border-color:#c2410c;background:#ea580c;color:#fff;}
+  .fcm-grupo-cultura{margin:6px 0 4px;}
+  .fcm-grupo-titulo{font-size:12px;font-weight:800;color:#5a4636;margin:4px 0 3px;}
   .leque-nota{font-size:9px;color:#c2410c;font-weight:700;width:150px;text-align:center;margin-top:2px;}
   .quadra-tile.tem-cultura{box-shadow:inset 0 -3px 0 #2f9e44;}
   .quadra-tile.sel.tem-cultura{box-shadow:inset 0 -3px 0 #dff5e1;}
@@ -1119,6 +1121,70 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     #printArea, #printArea *{visibility:visible;}
     #printArea{display:block;position:absolute;top:0;left:0;width:100%;padding:16px;}
   }
+
+  /* ===== Estoque dinâmico v2.22.0 ===== */
+  .est-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:10px 0;}
+  .est-kpi{border:1.5px solid var(--border);background:var(--card);border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;display:flex;flex-direction:column;gap:2px;transition:transform .1s,box-shadow .1s;}
+  .est-kpi:hover{box-shadow:0 4px 12px rgba(35,22,10,.1);transform:translateY(-1px);}
+  .est-kpi b{font-size:22px;font-weight:800;letter-spacing:-.4px;line-height:1.1;}
+  .est-kpi span{font-size:12px;color:#7d6a58;font-weight:600;}
+  .est-kpi.on{outline:3px solid var(--orange);outline-offset:1px;}
+  .est-kpi.ok b{color:#2f9e44}.est-kpi.warn b{color:#b45309}.est-kpi.bad b{color:#c92a2a}.est-kpi.neutro b{color:var(--orange-dark)}
+  .est-filtros{display:flex;flex-direction:column;gap:6px;margin:6px 0 4px;}
+  .est-linha{display:flex;gap:8px;align-items:flex-start;}
+  .est-rot{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#7d6a58;min-width:58px;padding-top:7px;}
+  .est-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+  .est-chip{border:1.5px solid var(--border);background:var(--card);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;color:inherit;}
+  .est-chip small{opacity:.7;font-weight:700;margin-left:3px;}
+  .est-chip.on{background:var(--orange-dark);border-color:var(--orange-dark);color:#fff;}
+  .est-ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:2px;}
+  .est-ctrl label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#7d6a58;display:flex;flex-direction:column;gap:3px;}
+  .est-ctrl label{flex:1 1 130px;max-width:220px;}
+  .est-ctrl select{padding:7px 9px;font-size:13px;min-width:0;width:100%;}
+  .est-visao{display:flex;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;}
+  .est-visao button{border:none;background:var(--card);padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#2b1a0e;}
+  .est-visao button.on{background:var(--orange-dark);color:#fff;}
+  .est-graficos{margin:10px 0;border:1.5px solid var(--border);border-radius:12px;padding:8px 12px;}
+  .est-graficos summary{cursor:pointer;font-weight:800;color:var(--orange-dark);font-size:14px;}
+  .est-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:10px;}
+  .est-graf h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:#7d6a58;}
+  .est-donut{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .est-donut svg{flex:0 0 auto;}
+  .est-leg{display:flex;flex-direction:column;gap:5px;font-size:12.5px;}
+  .est-leg button{border:none;background:none;text-align:left;cursor:pointer;font:inherit;padding:2px 4px;border-radius:6px;display:flex;gap:6px;align-items:center;color:inherit;}
+  .est-leg button.on{background:var(--orange-light);font-weight:800;}
+  .est-leg i{width:11px;height:11px;border-radius:3px;display:inline-block;flex:0 0 auto;}
+  .est-hb{display:flex;flex-direction:column;gap:5px;}
+  .est-hb button{border:none;background:none;padding:0;cursor:pointer;font:inherit;color:inherit;text-align:left;display:grid;grid-template-columns:minmax(70px,38%) 1fr auto;gap:6px;align-items:center;font-size:12px;}
+  .est-hb button.on .lab{font-weight:800;color:var(--orange-dark);}
+  .est-hb .lab{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .est-hb .trk{height:12px;background:#f1e8da;border-radius:6px;overflow:hidden;}
+  .est-hb .fil{height:100%;background:linear-gradient(90deg,#fb923c,var(--orange-dark));border-radius:6px;}
+  .est-hb .val{font-weight:800;font-size:12px;white-space:nowrap;}
+  .est-resumo{margin:6px 0;font-size:12.5px;}
+  .est-grupo{margin:12px 0 6px;padding:7px 10px;background:var(--orange-light);border-radius:10px;font-weight:800;color:var(--orange-dark);font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+  .est-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;}
+  .est-card{border:1.5px solid var(--border);border-radius:14px;padding:12px;background:var(--card);display:flex;flex-direction:column;gap:6px;}
+  .est-card.low{border-color:#f59e0b;background:#fffaf0;}.est-card.neg{border-color:#e03131;background:#fff5f5;}
+  .est-card .nm{font-weight:800;font-size:14px;line-height:1.25;}
+  .est-card .sub{font-size:12px;color:#7d6a58;}
+  .est-card .big{font-size:24px;font-weight:800;letter-spacing:-.4px;}
+  .est-card .big small{font-size:13px;font-weight:700;color:#7d6a58;}
+  .est-arm{display:flex;flex-direction:column;gap:4px;margin-top:2px;}
+  .est-arm .row1{display:grid;grid-template-columns:60px 1fr auto;gap:6px;align-items:center;font-size:12px;}
+  .est-arm .trk{height:8px;background:#f1e8da;border-radius:5px;overflow:hidden;}
+  .est-arm .fil{height:100%;border-radius:5px;}
+  .est-acoes{display:flex;gap:6px;margin-top:2px;}
+  .est-st{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;}
+  .est-st.ok{background:#e6f6ea;color:#237a35}.est-st.low{background:#fff1d6;color:#9a5b00}.est-st.zero{background:#eceae6;color:#555}.est-st.neg{background:#ffe3e3;color:#c92a2a}
+  .est-tabwrap{overflow:auto;max-height:70vh;border:1.5px solid var(--border);border-radius:12px;}
+  .est-tab{width:100%;border-collapse:collapse;font-size:13px;}
+  .est-tab th{position:sticky;top:0;background:#fff3e9;text-align:left;padding:8px 10px;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--orange-dark);white-space:nowrap;z-index:1;}
+  .est-tab td{padding:7px 10px;border-top:1px solid #f0e8dc;vertical-align:middle;}
+  .est-tab td.n,.est-tab th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .est-tab tr.low td{background:#fffaf0}.est-tab tr.neg td{background:#fff5f5}
+  .est-tab td.dim{color:#b9ad9f}
+  .est-tab .gr td{background:var(--orange-light);font-weight:800;color:var(--orange-dark);cursor:pointer;}
 </style>
 </head>
 <body>
@@ -1260,7 +1326,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <section id="tab-estoque" class="section active">
     <div class="card">
       <h2>Estoque de produtos</h2>
-      <input class="searchbar" id="estoqueSearch" placeholder="Buscar produto, classe ou ingrediente ativo...">
+      <input class="searchbar" id="estoqueSearch" name="busca_estoqueSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar produto, classe ou ingrediente ativo...">
       <!-- 11/09/2026 — a pedido do Flávio: abas/chips pra filtrar o estoque por armazém
            (Inova, Agrícola, ou os produtos sem armazém definido), depois que passou a
            existir mais de um armazém (ver importEstoqueERP/upsertArmazemSaldo). Gerado
@@ -1271,12 +1337,38 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
            que ainda estão sem ingrediente ativo cadastrado (geralmente os que entraram
            sozinhos pela importação da planilha do ERP — ver importEstoqueERP). -->
       <button type="button" id="btnFiltroSemIa" class="btn-ghost btn-sm" style="margin-top:6px;" onclick="toggleFiltroSemIa()"></button>
-      <div style="max-height:60vh;overflow:auto;">
-        <table>
-          <thead><tr><th>Produto</th><th>Saldo</th><th>Mín.</th><th></th></tr></thead>
-          <tbody id="estoqueBody"></tbody>
-        </table>
+      <!-- v2.22.0 — Estoque dinâmico (pedido do Flávio em 05/11/2026): resumo clicável com alertas,
+           gráficos que acompanham os filtros, filtros combinados, ordenar/agrupar e visão em
+           cartões (celular) ou tabela com saldo por armazém (computador). -->
+      <div id="estKpis" class="est-kpis"></div>
+      <div class="est-filtros">
+        <div class="est-linha"><span class="est-rot">Situação</span><div id="estSitChips" class="est-chips"></div></div>
+        <div class="est-linha"><span class="est-rot">Classe</span><div id="estClasseChips" class="est-chips"></div></div>
+        <div class="est-ctrl">
+          <label>Ordenar <select id="estOrdem" onchange="setEstoqueOpc('ordem',this.value)">
+            <option value="nome">Nome (A–Z)</option>
+            <option value="saldo_desc">Maior saldo</option>
+            <option value="saldo_asc">Menor saldo</option>
+            <option value="critico">Mais críticos primeiro</option>
+          </select></label>
+          <label>Agrupar <select id="estAgrupar" onchange="setEstoqueOpc('agrupar',this.value)">
+            <option value="">Sem grupos</option>
+            <option value="classe">Por classe</option>
+            <option value="armazem">Por armazém</option>
+          </select></label>
+          <div class="est-visao" id="estVisao">
+            <button type="button" data-v="cartoes" onclick="setEstoqueOpc('visao','cartoes')">▦ Cartões</button>
+            <button type="button" data-v="tabela" onclick="setEstoqueOpc('visao','tabela')">☰ Tabela</button>
+          </div>
+          <button type="button" class="btn-ghost btn-sm" id="estLimpar" onclick="limparFiltrosEstoque()">✕ Limpar filtros</button>
+        </div>
       </div>
+      <details class="est-graficos" id="estGraficos" open>
+        <summary>📊 Gráficos <span class="muted" id="estGrafInfo"></span></summary>
+        <div class="est-grid" id="estGrid"></div>
+      </details>
+      <div class="est-resumo muted" id="estResumo"></div>
+      <div id="estLista"></div>
       <div class="empty" id="estoqueEmpty" style="display:none;">Nenhum produto encontrado.</div>
       <div id="produtoEditor" style="display:none; margin-top:12px;"></div>
     </div>
@@ -1357,7 +1449,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <div class="sel-summary" id="selSummary">Nenhum talhão selecionado</div>
 
-      <input class="searchbar" id="mapaSearch" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoSearch()">
+      <input class="searchbar" id="mapaSearch" name="busca_mapaSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoSearch()">
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
         <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('MILHO')">🌽 Selecionar tudo de Milho</button>
@@ -1368,8 +1460,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <!-- v2.9.0 — a pedido do Flávio: selecionar/filtrar por cultura E modalidade (ex: tudo de Soja >
            Purificação + Preliminar I), e aí marcar só as quadras que quer aplicar. Vale pro pivô aberto. -->
       <div class="filtro-cultmod" id="filtroCultModBox">
-        <div class="filtro-cultmod-titulo">🎯 Selecionar por cultura e modalidade <span class="muted">· só do pivô aberto</span></div>
-        <div class="filtro-cultmod-passo">1 · Cultura</div>
+        <div class="filtro-cultmod-titulo">🎯 Selecionar por cultura e modalidade <span class="muted">· só do pivô aberto (cada pivô tem o seu)</span></div>
+        <div class="filtro-cultmod-passo">1 · Cultura <span class="muted" style="font-weight:600;">(pode marcar mais de uma)</span></div>
         <div class="filtro-cultmod-chips" id="filtroCultChips"></div>
         <div id="filtroModWrap" style="display:none;">
           <div class="filtro-cultmod-passo" id="filtroModTitulo">2 · Modalidades</div>
@@ -1379,6 +1471,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
           <button class="btn-sm" id="btnFiltroSelTodos" onclick="filtroCultModSelecionarTodos()">☑ Selecionar todos</button>
           <button class="btn-ghost btn-sm" onclick="filtroCultModLimpar()">Limpar filtro</button>
         </div>
+        <div class="muted" id="filtroResumoPivos" style="font-size:12px;margin-top:4px;"></div>
         <div class="muted" id="filtroReservaNota" style="display:none;font-size:12px;margin-top:6px;"></div>
         <label class="filtro-cultmod-esmaecer" id="filtroEsmaecerLbl" style="display:none;"><input type="checkbox" id="filtroEsmaecer" checked onchange="filtroCultModEsmaecerChange(this.checked)"> Esmaecer no mapa o que não é desse filtro (pra tocar só nas quadras que quero)</label>
       </div>
@@ -1478,7 +1571,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="subtab-btn" data-viewcad="lista" onclick="switchTalhaoCadView('lista')">☰ Lista</button>
       </div>
 
-      <input class="searchbar" id="talhaoCadastroSearch" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoCadastroSearch()">
+      <input class="searchbar" id="talhaoCadastroSearch" name="busca_talhaoCadastroSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoCadastroSearch()">
 
       <div id="talhaoCadBulkPanel" style="display:none;"></div>
       <div id="talhaoCadEditor" style="display:none;"></div>
@@ -1506,7 +1599,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <section id="tab-historico" class="section">
     <div class="card">
       <h2>Histórico de aplicações</h2>
-      <input class="searchbar" id="histSearch" placeholder="Buscar por cultura, operador, produto...">
+      <input class="searchbar" id="histSearch" name="busca_histSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar por cultura, operador, produto...">
       <div id="histList"></div>
       <div class="empty" id="histEmpty" style="display:none;">Nenhuma aplicação registrada ainda.</div>
     </div>
@@ -1744,7 +1837,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         </div>
         <div class="field">
           <label>PIN</label>
-          <input type="password" inputmode="numeric" id="loginPin" placeholder="Digite seu PIN" onkeydown="if(event.key==='Enter'){event.preventDefault();submitLogin();}">
+          <input type="password" inputmode="numeric" id="loginPin" autocomplete="new-password" placeholder="Digite seu PIN" onkeydown="if(event.key==='Enter'){event.preventDefault();submitLogin();}">
         </div>
       </div>
       <div class="receipt-actions">
@@ -1917,7 +2010,29 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.20.0';
+const APP_BUILD_ID = 'v2.22.0';
+/* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
+   o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
+   busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
+function limparBuscasAutofill(){
+  let mudou = false;
+  ['mapaSearch','talhaoCadastroSearch','estoqueSearch','histSearch'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el && el.value && document.activeElement!==el){ el.value=''; mudou = true; }
+  });
+  if(mudou){
+    talhaoCadastroSearch = '';
+    try{ if(typeof refreshTalhaoCadUI==='function') refreshTalhaoCadUI(); }catch(e){}
+    try{ if(typeof onTalhaoSearch==='function') onTalhaoSearch(); }catch(e){}
+    try{ if(typeof renderEstoque==='function') renderEstoque(); }catch(e){}
+    try{ if(typeof renderHistory==='function') renderHistory(); }catch(e){}
+  }
+}
+[0,300,1000,2500,5000].forEach(t=>setTimeout(limparBuscasAutofill,t));
+window.addEventListener('load', limparBuscasAutofill);
+window.addEventListener('pageshow', limparBuscasAutofill);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) setTimeout(limparBuscasAutofill,200); });
+
 function loadEstacaoAtivaId(){
   try{
     const raw = localStorage.getItem(ESTACAO_ATIVA_KEY);
@@ -3721,6 +3836,12 @@ function renderDashboard(){
   apps.forEach(a=>{
     const cultura = (a.cultura||'').trim();
     if(!cultura) return;
+    if(cultura===CULTURA_SOJA_MILHO){
+      /* aplicação conjunta: reparte a área entre Soja e Milho na proporção das quadras selecionadas */
+      const por = {}; let tot = 0;
+      (a.ensaiosSel||[]).forEach(x=>{ const c=(x.cultura||'').toUpperCase(); if(!c) return; const ha=parseFloat(x.area)||0; por[c]=(por[c]||0)+ha; tot+=ha; });
+      if(tot>0){ Object.keys(por).forEach(c=>{ areaPorCultura[c] = (areaPorCultura[c]||0) + (Number(a.area)||0)*por[c]/tot; }); return; }
+    }
     areaPorCultura[cultura] = (areaPorCultura[cultura]||0) + (Number(a.area)||0);
   });
   const topCulturas = Object.entries(areaPorCultura).sort((a,b)=>b[1]-a[1]).slice(0,8);
@@ -3917,57 +4038,225 @@ function renderArmazemFiltroChips(){
   }
   host.innerHTML = chips.join('');
 }
-function renderEstoque(){
-  const q = (document.getElementById('estoqueSearch').value||'').toLowerCase().trim();
-  const body = document.getElementById('estoqueBody');
-  body.innerHTML='';
-  renderArmazemFiltroChips();
-  const semIaTotal = DATA.products.filter(p=>!p.ia).length;
-  const btnFiltro = document.getElementById('btnFiltroSemIa');
-  if(btnFiltro){
-    btnFiltro.textContent = estoqueFiltroSemIa
-      ? `✕ Mostrando só sem ingrediente ativo (${semIaTotal})`
-      : `⚠ Só sem ingrediente ativo (${semIaTotal})`;
-    btnFiltro.classList.toggle('btn-primary', estoqueFiltroSemIa);
-    btnFiltro.style.display = semIaTotal? 'inline-block':'none';
-  }
-  const list = DATA.products
-    .filter(p=>!q || (p.nome||'').toLowerCase().includes(q) || (p.classe||'').toLowerCase().includes(q) || (p.ia||'').toLowerCase().includes(q))
-    .filter(p=>!estoqueFiltroSemIa || !p.ia)
-    .filter(p=>{
-      if(estoqueFiltroArmazem===null) return true;
-      if(estoqueFiltroArmazem==='__SEM_ARMAZEM__') return !armazensDoProduto(p).length;
-      return armazensDoProduto(p).some(e=>e.armazem===estoqueFiltroArmazem);
-    })
-    .sort((a,b)=> {
-      const temSaldoA = Number(a.saldo)>0 ? 1 : 0;
-      const temSaldoB = Number(b.saldo)>0 ? 1 : 0;
-      if(temSaldoA !== temSaldoB) return temSaldoB - temSaldoA; // quem tem saldo vem primeiro
-      return (a.nome||'').localeCompare(b.nome||'');
-    });
-  document.getElementById('estoqueEmpty').style.display = list.length? 'none':'block';
-  list.forEach(p=>{
-    const low = Number(p.estoqueMinimo)>0 && Number(p.saldo) <= Number(p.estoqueMinimo);
-    const semIa = !p.ia;
-    const tr = document.createElement('tr');
-    if(low) tr.classList.add('low');
-    tr.innerHTML = `
-      <td>
-        <div><b>${escapeHtml(p.nome)}</b></div>
-        <div class="muted">${escapeHtml(p.classe||'')}${p.ia? ' · '+escapeHtml(p.ia):''}</div>
-        ${semIa? '<div class="badge semia">sem ingrediente ativo</div>' : ''}
-      </td>
-      <td>${fmtNum(p.saldo)} ${escapeHtml(p.unidadeEstoque||'')}${low?'<div class="badge low">baixo</div>':''}${armazemBadgesHtml(p)}</td>
-      <td>${fmtNum(p.estoqueMinimo)}</td>
-      <td>
-        <button class="btn-ghost btn-sm" onclick="editSaldo('${p.nome.replace(/'/g,"\\'")}')">Ajustar</button>
-        <button class="btn-ghost btn-sm" onclick="abrirProdutoEditor('${p.nome.replace(/'/g,"\\'")}')">✎ Editar</button>
-      </td>
-    `;
-    body.appendChild(tr);
+/* ---------- v2.22.0 — Estoque dinâmico ---------- */
+let estoqueSit = null;          // null | 'com' | 'baixo' | 'zero' | 'semia'
+let estoqueClasse = null;       // classe normalizada ou null
+let estoqueOrdem = 'nome';
+let estoqueAgrupar = '';
+let estoqueVisao = 'auto';      // 'auto' (cartões no celular, tabela no computador) | 'cartoes' | 'tabela'
+const estoqueGruposFechados = new Set();
+try{
+  const o = JSON.parse(localStorage.getItem('estoqueOpcV1')||'{}');
+  if(o.ordem) estoqueOrdem=o.ordem; if(typeof o.agrupar==='string') estoqueAgrupar=o.agrupar; if(o.visao) estoqueVisao=o.visao;
+}catch(e){}
+function salvaEstoqueOpc(){ try{ localStorage.setItem('estoqueOpcV1', JSON.stringify({ordem:estoqueOrdem,agrupar:estoqueAgrupar,visao:estoqueVisao})); }catch(e){} }
+function setEstoqueOpc(k,v){
+  if(k==='ordem') estoqueOrdem=v; else if(k==='agrupar') estoqueAgrupar=v; else if(k==='visao') estoqueVisao=v;
+  salvaEstoqueOpc(); renderEstoque();
+}
+function limparFiltrosEstoque(){
+  estoqueSit=null; estoqueClasse=null; estoqueFiltroArmazem=null; estoqueFiltroSemIa=false;
+  const b=document.getElementById('estoqueSearch'); if(b) b.value='';
+  renderEstoque();
+}
+function setEstoqueSit(v){
+  estoqueSit = (estoqueSit===v)? null : v;
+  estoqueFiltroSemIa = (estoqueSit==='semia');
+  renderEstoque();
+}
+function setEstoqueClasse(v){ estoqueClasse = (estoqueClasse===v)? null : v; renderEstoque(); }
+function toggleGrupoEstoque(g){ if(estoqueGruposFechados.has(g)) estoqueGruposFechados.delete(g); else estoqueGruposFechados.add(g); renderEstoque(); }
+
+function classeCanon(c){
+  const t=(c||'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().trim();
+  if(!t) return 'Sem classe';
+  if(t.startsWith('HERBICIDA')) return 'Herbicidas';
+  if(t.startsWith('FUNGICIDA')) return 'Fungicidas';
+  if(t.startsWith('INSETICIDA')) return 'Inseticidas';
+  if(t.startsWith('ADJUVANTE')) return 'Adjuvantes';
+  if(t.startsWith('BIOLOGIC')) return 'Biológicos';
+  if(t.startsWith('CORRETIV')) return 'Corretivos de solo';
+  if(t.includes('FOLIAR')) return 'Foliares';
+  if(t.startsWith('FERTILIZANTE')) return 'Fertilizantes';
+  return t.charAt(0)+t.slice(1).toLowerCase();
+}
+function armLabelCurto(a){
+  const junto=(a.cod+' '+(a.desc||'')).toUpperCase();
+  if(/\bINOVA\b/.test(junto)) return 'Inova ('+a.cod+')';
+  if(/AGRICOLA|AGRÍCOLA/.test(junto)) return 'Agrícola';
+  return a.desc? a.desc.replace(/^Armazém\s*/i,'') : a.cod;
+}
+function saldoNoArmazem(p,cod){
+  const e=(p.estoquePorArmazem||[]).find(x=>x.armazem===cod);
+  return e? (Number(e.saldo)||0) : null;
+}
+function situacaoProduto(p){
+  const s=Number(p.saldo)||0, m=Number(p.estoqueMinimo)||0;
+  if(s<0) return 'neg';
+  if(s===0) return 'zero';
+  if(m>0 && s<=m) return 'low';
+  return 'ok';
+}
+const ST_TXT={ok:'em estoque',low:'baixo',zero:'zerado',neg:'negativo'};
+function filtraEstoqueBase(opts){
+  opts=opts||{};
+  const q=(document.getElementById('estoqueSearch').value||'').toLowerCase().trim();
+  return DATA.products.filter(p=>{
+    if(q && !((p.nome||'').toLowerCase().includes(q) || (p.classe||'').toLowerCase().includes(q) || (p.ia||'').toLowerCase().includes(q))) return false;
+    if(!opts.semArmazem && estoqueFiltroArmazem!==null){
+      if(estoqueFiltroArmazem==='__SEM_ARMAZEM__'){ if(armazensDoProduto(p).length) return false; }
+      else if(!armazensDoProduto(p).some(e=>e.armazem===estoqueFiltroArmazem)) return false;
+    }
+    if(!opts.semSit && estoqueSit){
+      const st=situacaoProduto(p);
+      if(estoqueSit==='com' && !(Number(p.saldo)>0)) return false;
+      if(estoqueSit==='baixo' && st!=='low') return false;
+      if(estoqueSit==='zero' && !(st==='zero'||st==='neg')) return false;
+      if(estoqueSit==='semia' && p.ia) return false;
+    }
+    if(!opts.semClasse && estoqueClasse && classeCanon(p.classe)!==estoqueClasse) return false;
+    return true;
   });
+}
+function visaoEstoqueEfetiva(){
+  if(estoqueVisao==='cartoes'||estoqueVisao==='tabela') return estoqueVisao;
+  return (window.innerWidth>=900)? 'tabela':'cartoes';
+}
+const COR_GRAF=['#ea580c','#2563eb','#2f9e44','#9333ea','#b45309','#0891b2','#c92a2a','#64748b'];
+function svgDonut(fatias){
+  const tot=fatias.reduce((s,f)=>s+f.v,0)||1, R=38, C=2*Math.PI*R; let off=0;
+  const arcs=fatias.map(f=>{ const len=C*f.v/tot; const el=`<circle r="${R}" cx="50" cy="50" fill="none" stroke="${f.cor}" stroke-width="18" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 50 50)"/>`; off+=len; return el; }).join('');
+  return `<svg viewBox="0 0 100 100" width="110" height="110" role="img" aria-label="Produtos com saldo por armazém">${arcs}<text x="50" y="48" text-anchor="middle" font-size="17" font-weight="800" fill="#2b1a0e">${fatias.reduce((s,f)=>s+f.v,0)}</text><text x="50" y="62" text-anchor="middle" font-size="8" fill="#7d6a58">produtos</text></svg>`;
+}
+function hbarsHtml(itens, max, onclickFn){
+  return `<div class="est-hb">`+itens.map(it=>`<button type="button" class="${it.on?'on':''}" ${onclickFn? `onclick="${onclickFn}(this.dataset.k)" data-k="${escapeHtml(it.k)}"`:''} title="${escapeHtml(it.tip||it.lab)}"><span class="lab">${escapeHtml(it.lab)}</span><span class="trk"><span class="fil" style="display:block;width:${Math.max(2,Math.round(100*Math.abs(it.v)/(max||1)))}%${it.v<0?';background:#e03131':''}"></span></span><span class="val">${escapeHtml(it.txt)}</span></button>`).join('')+`</div>`;
+}
+function renderEstoqueGraficos(listaFiltrada){
+  const grid=document.getElementById('estGrid'); if(!grid) return;
+  // 1) donut: produtos com saldo por armazém (todos os produtos)
+  const arms=getArmazensDisponiveis();
+  const fat=arms.map((a,i)=>({cod:a.cod,lab:armLabelCurto(a),v:DATA.products.filter(p=>(saldoNoArmazem(p,a.cod)||0)>0).length,cor:COR_GRAF[i%COR_GRAF.length]})).filter(f=>f.v>0);
+  const donut = fat.length? `<div class="est-donut">${svgDonut(fat)}<div class="est-leg">${fat.map(f=>`<button type="button" class="${estoqueFiltroArmazem===f.cod?'on':''}" onclick="setFiltroArmazem(this.dataset.k)" data-k="${escapeHtml(f.cod)}"><i style="background:${f.cor}"></i>${escapeHtml(f.lab)} <b>${f.v}</b></button>`).join('')}</div></div>` : '<div class="muted">Sem dados</div>';
+  // 2) classes (acompanha busca/armazém/situação, para poder trocar de classe)
+  const baseC=filtraEstoqueBase({semClasse:true}); const cont={};
+  baseC.forEach(p=>{ const c=classeCanon(p.classe); cont[c]=(cont[c]||0)+1; });
+  const cls=Object.entries(cont).sort((a,b)=>b[1]-a[1]); const maxC=cls.length?cls[0][1]:1;
+  const barrasC=hbarsHtml(cls.map(([c,n])=>({k:c,lab:c,v:n,txt:String(n),on:estoqueClasse===c})),maxC,'setEstoqueClasse');
+  // 3) maiores saldos (da lista filtrada)
+  const top=listaFiltrada.filter(p=>Number(p.saldo)>0).sort((a,b)=>(Number(b.saldo)||0)-(Number(a.saldo)||0)).slice(0,8);
+  const maxT=top.length? Number(top[0].saldo):1;
+  const barrasT=top.length? hbarsHtml(top.map(p=>({k:p.nome,lab:p.nome,v:Number(p.saldo),txt:fmtNum(p.saldo)+' '+(p.unidadeEstoque||''),tip:p.nome})),maxT,null) : '<div class="muted">Nenhum produto com saldo neste filtro.</div>';
+  // 4) atenção: negativos e abaixo do mínimo
+  const crit=listaFiltrada.filter(p=>{const st=situacaoProduto(p);return st==='neg'||st==='low';}).sort((a,b)=>(Number(a.saldo)||0)-(Number(b.saldo)||0)).slice(0,8);
+  const maxA=Math.max(1,...crit.map(p=>Math.abs(Number(p.saldo)||0)));
+  const barrasA=crit.length? hbarsHtml(crit.map(p=>({k:p.nome,lab:p.nome,v:Number(p.saldo)||0,txt:fmtNum(p.saldo)+' '+(p.unidadeEstoque||'')+(situacaoProduto(p)==='low'?' ⚠':''),tip:p.nome})),maxA,null) : '<div class="muted">Nada negativo ou abaixo do mínimo neste filtro 👍</div>';
+  grid.innerHTML=`<div class="est-graf"><h4>Produtos com saldo por armazém</h4>${donut}</div>
+    <div class="est-graf"><h4>Produtos por classe</h4>${barrasC}</div>
+    <div class="est-graf"><h4>Maiores saldos (filtro atual)</h4>${barrasT}</div>
+    <div class="est-graf"><h4>Atenção: negativos e abaixo do mínimo</h4>${barrasA}</div>`;
+  const info=document.getElementById('estGrafInfo'); if(info) info.textContent='— acompanham os filtros';
+}
+function renderEstoqueKpis(){
+  const P=DATA.products;
+  const n={tot:P.length,com:0,low:0,zero:0,semia:0};
+  P.forEach(p=>{ const st=situacaoProduto(p); if(Number(p.saldo)>0) n.com++; if(st==='low') n.low++; if(st==='zero'||st==='neg') n.zero++; if(!p.ia) n.semia++; });
+  window.__estCont=n;
+  const k=(id,cls,num,txt)=>`<button type="button" class="est-kpi ${cls} ${(id&&estoqueSit===id)?'on':''}" onclick="${id? `setEstoqueSit('${id}')`:'limparFiltrosEstoque()'}"><b>${num}</b><span>${txt}</span></button>`;
+  document.getElementById('estKpis').innerHTML=k(null,'neutro',n.tot,'produtos (todos)')+k('com','ok',n.com,'com saldo')+k('baixo','warn',n.low,'abaixo do mínimo')+k('zero','bad',n.zero,'zerados / negativos')+(n.semia? k('semia','warn',n.semia,'sem ing. ativo'):'');
+}
+function renderEstoqueChips(){
+  const n=window.__estCont||{};
+  const sit=[['com','Com saldo',n.com],['baixo','Baixo',n.low],['zero','Zerado / negativo',n.zero]];
+  if(n.semia) sit.push(['semia','Sem ing. ativo',n.semia]);
+  document.getElementById('estSitChips').innerHTML=sit.map(([id,l,c])=>`<button type="button" class="est-chip ${estoqueSit===id?'on':''}" onclick="setEstoqueSit('${id}')">${l}<small>${c}</small></button>`).join('');
+  const base=filtraEstoqueBase({semClasse:true}); const cont={};
+  DATA.products.forEach(p=>{ const c=classeCanon(p.classe); cont[c]=cont[c]||0; });
+  base.forEach(p=>{ cont[classeCanon(p.classe)]++; });
+  document.getElementById('estClasseChips').innerHTML=Object.entries(cont).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([c,q])=>`<button type="button" class="est-chip ${estoqueClasse===c?'on':''}" onclick="setEstoqueClasse(this.dataset.k)" data-k="${escapeHtml(c)}">${escapeHtml(c)}<small>${q}</small></button>`).join('');
+}
+function ordenaEstoque(list){
+  const refSaldo=p=> (estoqueFiltroArmazem && estoqueFiltroArmazem!=='__SEM_ARMAZEM__')? (saldoNoArmazem(p,estoqueFiltroArmazem)||0) : (Number(p.saldo)||0);
+  const peso={neg:0,low:1,zero:2,ok:3};
+  const nome=(a,b)=>(a.nome||'').localeCompare(b.nome||'','pt',{numeric:true});
+  return list.slice().sort((a,b)=>{
+    if(estoqueOrdem==='saldo_desc') return refSaldo(b)-refSaldo(a)||nome(a,b);
+    if(estoqueOrdem==='saldo_asc') return refSaldo(a)-refSaldo(b)||nome(a,b);
+    if(estoqueOrdem==='critico') return peso[situacaoProduto(a)]-peso[situacaoProduto(b)]||refSaldo(a)-refSaldo(b)||nome(a,b);
+    return nome(a,b);
+  });
+}
+function gruposEstoque(list){
+  if(!estoqueAgrupar) return [{g:null,itens:list}];
+  const mapa=new Map();
+  const add=(g,p)=>{ if(!mapa.has(g)) mapa.set(g,[]); mapa.get(g).push(p); };
+  list.forEach(p=>{
+    if(estoqueAgrupar==='classe') add(classeCanon(p.classe),p);
+    else { const a=armazensDoProduto(p); if(!a.length) add('Sem armazém',p); else a.forEach(e=>add(armLabelCurto({cod:e.armazem,desc:e.armazemDesc}),p)); }
+  });
+  return Array.from(mapa.entries()).sort((a,b)=>a[0].localeCompare(b[0])).map(([g,itens])=>({g,itens}));
+}
+function cartaoEstoqueHtml(p){
+  const st=situacaoProduto(p), un=escapeHtml(p.unidadeEstoque||'');
+  const arms=armazensDoProduto(p).filter(e=>e.saldo!==undefined);
+  const maxA=Math.max(1,...arms.map(e=>Math.abs(Number(e.saldo)||0)));
+  const armHtml=arms.length? `<div class="est-arm">${arms.map((e,i)=>`<div class="row1"><span>${escapeHtml(armLabelCurto({cod:e.armazem,desc:e.armazemDesc}))}</span><span class="trk"><span class="fil" style="display:block;width:${Math.max(2,Math.round(100*Math.abs(Number(e.saldo)||0)/maxA))}%;background:${(Number(e.saldo)||0)<0?'#e03131':COR_GRAF[i%COR_GRAF.length]}"></span></span><b>${fmtNum(e.saldo)}</b></div>`).join('')}</div>`:'';
+  const m=Number(p.estoqueMinimo)||0;
+  return `<div class="est-card ${st==='low'?'low':''} ${st==='neg'?'neg':''}">
+    <div class="nm">${escapeHtml(p.nome)}</div>
+    <div class="sub">${escapeHtml(classeCanon(p.classe))}${p.ia? ' · '+escapeHtml(p.ia):''}</div>
+    <div><span class="big">${fmtNum(p.saldo)} <small>${un}</small></span> <span class="est-st ${st}">${ST_TXT[st]}</span>${m>0? ` <span class="muted" style="font-size:11px">mín. ${fmtNum(m)}</span>`:''}</div>
+    ${armHtml}
+    <div class="est-acoes"><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="editSaldo(this.dataset.n)">Ajustar</button><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="abrirProdutoEditor(this.dataset.n)">✎ Editar</button></div>
+  </div>`;
+}
+function tabelaEstoqueHtml(grupos){
+  const arms=getArmazensDisponiveis();
+  const cols=arms.length+7;
+  const head=`<tr><th>Produto</th><th>Classe</th><th>Un.</th>${arms.map(a=>`<th class="n">${escapeHtml(armLabelCurto(a))}</th>`).join('')}<th class="n">Total</th><th class="n">Mín.</th><th>Situação</th><th></th></tr>`;
+  let linhas='';
+  grupos.forEach(gr=>{
+    if(gr.g!==null){
+      const fech=estoqueGruposFechados.has(gr.g);
+      linhas+=`<tr class="gr" data-k="${escapeHtml(gr.g)}" onclick="toggleGrupoEstoque(this.dataset.k)"><td colspan="${cols}">${fech?'▸':'▾'} ${escapeHtml(gr.g)} <span style="font-weight:600">(${gr.itens.length})</span></td></tr>`;
+      if(fech) return;
+    }
+    gr.itens.forEach(p=>{
+      const st=situacaoProduto(p);
+      linhas+=`<tr class="${st==='low'?'low':''} ${st==='neg'?'neg':''}"><td><b>${escapeHtml(p.nome)}</b>${p.ia?`<div class="muted" style="font-size:11px">${escapeHtml(p.ia)}</div>`:''}</td><td>${escapeHtml(classeCanon(p.classe))}</td><td>${escapeHtml(p.unidadeEstoque||'')}</td>${arms.map(a=>{const v=saldoNoArmazem(p,a.cod);return v===null?`<td class="n dim">–</td>`:`<td class="n" ${v<0?'style="color:#c92a2a;font-weight:800"':''}>${fmtNum(v)}</td>`;}).join('')}<td class="n"><b>${fmtNum(p.saldo)}</b></td><td class="n">${Number(p.estoqueMinimo)>0?fmtNum(p.estoqueMinimo):'–'}</td><td><span class="est-st ${st}">${ST_TXT[st]}</span></td><td style="white-space:nowrap"><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="editSaldo(this.dataset.n)">Ajustar</button> <button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="abrirProdutoEditor(this.dataset.n)">✎</button></td></tr>`;
+    });
+  });
+  return `<div class="est-tabwrap"><table class="est-tab"><thead>${head}</thead><tbody>${linhas}</tbody></table></div>`;
+}
+function renderEstoque(){
+  renderArmazemFiltroChips();
+  renderEstoqueKpis();
+  renderEstoqueChips();
+  const btnFiltro=document.getElementById('btnFiltroSemIa'); if(btnFiltro) btnFiltro.style.display='none';
+  document.getElementById('estOrdem').value=estoqueOrdem;
+  document.getElementById('estAgrupar').value=estoqueAgrupar;
+  const visao=visaoEstoqueEfetiva();
+  document.querySelectorAll('#estVisao button').forEach(b=>b.classList.toggle('on',b.dataset.v===visao));
+  const q=(document.getElementById('estoqueSearch').value||'').trim();
+  const filtrando = !!(q||estoqueSit||estoqueClasse||estoqueFiltroArmazem!==null);
+  document.getElementById('estLimpar').style.display = filtrando? '':'none';
+  const list=ordenaEstoque(filtraEstoqueBase());
+  renderEstoqueGraficos(list);
+  const un=new Set(list.map(p=>p.unidadeEstoque||'').filter(Boolean));
+  document.getElementById('estResumo').textContent = `${list.length} de ${DATA.products.length} produto(s)` + (filtrando? ' — filtros ativos':'');
+  document.getElementById('estoqueEmpty').style.display = list.length? 'none':'block';
+  const host=document.getElementById('estLista');
+  if(!list.length){ host.innerHTML=''; renderStats(); return; }
+  const grupos=gruposEstoque(list);
+  if(visao==='tabela') host.innerHTML=tabelaEstoqueHtml(grupos);
+  else host.innerHTML=grupos.map(gr=>{
+    const cab = gr.g!==null? `<div class="est-grupo" data-k="${escapeHtml(gr.g)}" onclick="toggleGrupoEstoque(this.dataset.k)"><span>${estoqueGruposFechados.has(gr.g)?'▸':'▾'} ${escapeHtml(gr.g)}</span><span>${gr.itens.length}</span></div>`:'';
+    if(gr.g!==null && estoqueGruposFechados.has(gr.g)) return cab;
+    return cab+`<div class="est-cards">${gr.itens.map(cartaoEstoqueHtml).join('')}</div>`;
+  }).join('');
   renderStats();
 }
+let _estResizeT=null;
+window.addEventListener('resize',()=>{ clearTimeout(_estResizeT); _estResizeT=setTimeout(()=>{ if(estoqueVisao==='auto' && document.getElementById('estLista')) renderEstoque(); },200); });
 document.getElementById('estoqueSearch').addEventListener('input', renderEstoque);
 
 function editSaldo(nome){
@@ -4220,6 +4509,17 @@ function addProduct(){
 }
 
 /* ====================== NOVA APLICAÇÃO ====================== */
+const CULTURA_SOJA_MILHO = 'SOJA + MILHO';
+function culturasDoFormulario(){
+  /* v2.21.0 — a mesma aplicação pode valer pra Soja e Milho juntas (além de cada uma separada) */
+  return (DATA.lists.culturas||[]).concat([CULTURA_SOJA_MILHO]);
+}
+function culturaAppAceita(e){
+  const c = (document.getElementById('fCultura')||{}).value || '';
+  if(!c || !e || !e.cultura) return true;
+  if(c===CULTURA_SOJA_MILHO) return e.cultura==='SOJA' || e.cultura==='MILHO';
+  return e.cultura===c;
+}
 function fillSelect(sel, arr, {value,label}={}){
   sel.innerHTML = '<option value="">Selecione...</option>' + arr.map(item=>{
     const v = value? value(item): item;
@@ -4230,7 +4530,7 @@ function fillSelect(sel, arr, {value,label}={}){
 
 function initFormLists(){
   document.getElementById('fData').value = todayISO();
-  fillSelect(document.getElementById('fCultura'), DATA.lists.culturas||[]);
+  fillSelect(document.getElementById('fCultura'), culturasDoFormulario());
   fillSelect(document.getElementById('fOperador'), DATA.lists.operadores||[]);
   fillSelect(document.getElementById('fRecomendacao'), DATA.lists.recomendacoes||[]);
   fillSelect(document.getElementById('fEquipamento'), DATA.lists.equipamentos||[], {
@@ -4274,7 +4574,7 @@ function refreshFormListsPreservingSelection(){
     vazaoCustom: fVazaoCustom ? fVazaoCustom.value : ''
   };
 
-  fillSelect(fCultura, DATA.lists.culturas||[]);
+  fillSelect(fCultura, culturasDoFormulario());
   fillSelect(fOperador, DATA.lists.operadores||[]);
   fillSelect(fRecomendacao, DATA.lists.recomendacoes||[]);
   fillSelect(fEquipamento, DATA.lists.equipamentos||[], {
@@ -4385,8 +4685,7 @@ let selectedEnsaios = {}; // id -> {ensaio,pivo,talhao,area}
 let talhaoView = 'pivo';
 
 function activosTalhoes(){
-  const cultura = document.getElementById('fCultura').value;
-  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pivoAtivoId && (!cultura || !e.cultura || e.cultura===cultura));
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pivoAtivoId && culturaAppAceita(e));
 }
 
 /* ---- Cultura/modalidade por talhão (aba "Talhões") ---- */
@@ -4646,7 +4945,9 @@ let talhaoCadSelMode = false;
 let selectedTalhaoCad = {}; // id -> {talhao, area}
 
 function onTalhaoCadastroSearch(){
-  talhaoCadastroSearch = (document.getElementById('talhaoCadastroSearch').value||'').trim().toUpperCase();
+  const _el = document.getElementById('talhaoCadastroSearch');
+  if(_el && document.activeElement!==_el) _el.value = ''; // autofill do navegador: ignora
+  talhaoCadastroSearch = (_el.value||'').trim().toUpperCase();
   refreshTalhaoCadUI();
 }
 
@@ -5709,6 +6010,8 @@ function renderMapa(){
   updateSelSummary();
 }
 function onTalhaoSearch(){
+  const _el = document.getElementById('mapaSearch');
+  if(_el && document.activeElement!==_el) _el.value = ''; // autofill do navegador: ignora
   if(talhaoView==='pivo') renderPivo();
   else if(talhaoView==='mapa') renderMapa();
 }
@@ -5793,16 +6096,23 @@ function selecionarPorCultura(cultura){
    Cultura escolhida → aparecem só as modalidades dela (com a quantidade de quadras no pivô aberto).
    Marcando uma ou mais modalidades (ou nenhuma = todas), o mapa esmaece o que está fora, e dá pra
    "Selecionar todos" do filtro de uma vez ou tocar só nas quadras desejadas. */
-let filtroCultMod = {cultura:'', mods:[]};
+/* v2.21.1 — o filtro/seleção por cultura e modalidade é INDEPENDENTE POR PIVÔ: cada pivô guarda o seu próprio
+   filtro, conta só as quadras dele e o "Selecionar todos" só marca as quadras do pivô aberto. Dá pra marcar mais
+   de uma cultura (Soja e Milho), cada uma com suas modalidades.
+   filtro = {culturas:['SOJA','MILHO'], mods:['SOJA|VCU', ...]} — sem modalidade marcada numa cultura = todas dela. */
+const FILTROS_CULTMOD_POR_PIVO = {};
+function fcm(){ return FILTROS_CULTMOD_POR_PIVO[pivoAtivoId] || (FILTROS_CULTMOD_POR_PIVO[pivoAtivoId] = {culturas:[], mods:[]}); }
 let filtroCultModEsmaecer = true;
-function filtroCultModAtivo(){ return !!filtroCultMod.cultura; }
+function filtroCultModAtivo(){ return fcm().culturas.length>0; }
 function filtroCultModBate(e){
   if(!e || e.reservado) return false;
-  /* v2.13.0 — quadra com mais de um ensaio em campo entra no filtro se QUALQUER um deles bate */
+  /* quadra com mais de um ensaio em campo entra no filtro se QUALQUER um deles bate */
   return ensaiosEmCampo(e).some(p=>{
-    if((p.cultura||'').toUpperCase()!==filtroCultMod.cultura) return false;
-    if(!filtroCultMod.mods.length) return true;
-    return filtroCultMod.mods.includes(p.modalidade||'');
+    const c = (p.cultura||'').toUpperCase();
+    if(!fcm().culturas.includes(c)) return false;
+    const modsC = fcm().mods.filter(m=>m.startsWith(c+'|'));
+    if(!modsC.length) return true;
+    return modsC.includes(c+'|'+(p.modalidade||''));
   });
 }
 function filtroCultModFora(e){ return filtroCultModAtivo() && filtroCultModEsmaecer && !filtroCultModBate(e); }
@@ -5818,11 +6128,12 @@ function renderFiltroCultMod(){
   const todos = filtroCultModTalhoesDoPivo();
   const cont = {};
   todos.forEach(e=>{ new Set(ensaiosEmCampo(e).map(p=>(p.cultura||'').toUpperCase()).filter(Boolean)).forEach(c=>{ cont[c]=(cont[c]||0)+1; }); });
-  if(filtroCultMod.cultura && !cont[filtroCultMod.cultura]) filtroCultMod = {cultura:'', mods:[]};
+  fcm().culturas = fcm().culturas.filter(c=>cont[c]);
+  fcm().mods = fcm().mods.filter(m=>fcm().culturas.includes(m.split('|')[0]));
   const emoji = {MILHO:'🌽 ', SOJA:'🌱 '};
   chipsC.innerHTML = CULTURAS_PERMITIDAS.map(c=>{
     const n = cont[c]||0;
-    return `<button type="button" class="fcm-chip${filtroCultMod.cultura===c?' on':''}" ${n?'':'disabled'} onclick="filtroCultModSetCultura(this.dataset.c)" data-c="${escapeHtml(c)}">${emoji[c]||''}${escapeHtml(tituloCultura(c))} <small>${n}</small></button>`;
+    return `<button type="button" class="fcm-chip${fcm().culturas.includes(c)?' on':''}" ${n?'':'disabled'} onclick="filtroCultModSetCultura(this.dataset.c)" data-c="${escapeHtml(c)}">${emoji[c]||''}${escapeHtml(tituloCultura(c))} <small>${n}</small></button>`;
   }).join('');
   const wrapM = document.getElementById('filtroModWrap');
   const acoes = document.getElementById('filtroCultModAcoes');
@@ -5832,42 +6143,57 @@ function renderFiltroCultMod(){
   acoes.style.display = ativo? '' : 'none';
   esm.style.display = ativo? '' : 'none';
   if(!ativo) return;
-  const daCultura = todos.filter(e=>ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===filtroCultMod.cultura));
-  const contM = {};
-  daCultura.forEach(e=>{ new Set(ensaiosEmCampo(e).filter(p=>(p.cultura||'').toUpperCase()===filtroCultMod.cultura).map(p=>p.modalidade||'')).forEach(m=>{ contM[m]=(contM[m]||0)+1; }); });
-  const ordem = (MODALIDADES_POR_CULTURA[filtroCultMod.cultura]||[]).filter(m=>contM[m]);
-  Object.keys(contM).forEach(m=>{ if(m && !ordem.includes(m)) ordem.push(m); });
-  if(contM['']) ordem.push('');
-  document.getElementById('filtroModTitulo').innerHTML = `2 · Modalidades de ${escapeHtml(tituloCultura(filtroCultMod.cultura))} <span class="muted" style="font-weight:600;">(marque uma ou mais — sem marcar = todas)</span>`;
-  document.getElementById('filtroModChips').innerHTML = ordem.map(m=>{
-    const on = filtroCultMod.mods.includes(m);
-    return `<button type="button" class="fcm-chip${on?' on':''}" onclick="filtroCultModToggleMod(this.dataset.m)" data-m="${escapeHtml(m)}">${m? escapeHtml(m) : 'Sem modalidade'} <small>${contM[m]}</small></button>`;
+  document.getElementById('filtroModTitulo').innerHTML = `2 · Modalidades <span class="muted" style="font-weight:600;">(marque uma ou mais — sem marcar nenhuma de uma cultura = todas dela)</span>`;
+  document.getElementById('filtroModChips').innerHTML = fcm().culturas.map(c=>{
+    const daCultura = todos.filter(e=>ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===c));
+    const contM = {};
+    daCultura.forEach(e=>{ new Set(ensaiosEmCampo(e).filter(p=>(p.cultura||'').toUpperCase()===c).map(p=>p.modalidade||'')).forEach(m=>{ contM[m]=(contM[m]||0)+1; }); });
+    const ordem = (MODALIDADES_POR_CULTURA[c]||[]).filter(m=>contM[m]);
+    Object.keys(contM).forEach(m=>{ if(m && !ordem.includes(m)) ordem.push(m); });
+    if(contM['']) ordem.push('');
+    const chips = ordem.map(m=>{
+      const key = c+'|'+m;
+      const on = fcm().mods.includes(key);
+      return `<button type="button" class="fcm-chip${on?' on':''}" onclick="filtroCultModToggleMod(this.dataset.m)" data-m="${escapeHtml(key)}">${m? escapeHtml(m) : 'Sem modalidade'} <small>${contM[m]}</small></button>`;
+    }).join('');
+    return `<div class="fcm-grupo-cultura"><div class="fcm-grupo-titulo">${emoji[c]||''}${escapeHtml(tituloCultura(c))}</div><div class="filtro-cultmod-chips">${chips}</div></div>`;
   }).join('');
-  const n = daCultura.filter(filtroCultModBate).length;
-  document.getElementById('btnFiltroSelTodos').textContent = `☑ Selecionar todos (${n})`;
+  const alvo = todos.filter(filtroCultModBate);
+  document.getElementById('btnFiltroSelTodos').textContent = `☑ Selecionar todos (${alvo.length})`;
+  const resumoEl = document.getElementById('filtroResumoPivos');
+  if(resumoEl){ resumoEl.textContent = alvo.length ? (`Só ${nomePivoPorId(pivoAtivoId)}: ${alvo.length} quadra(s) neste filtro — o outro pivô você escolhe na aba dele.`) : ''; }
   const nRes = filtroCultModNReservadasDoPivo();
   const notaRes = document.getElementById('filtroReservaNota');
-  if(notaRes){ notaRes.style.display = nRes? '' : 'none'; notaRes.textContent = `🔒 ${nRes} quadra${nRes===1?'':'s'} reservada${nRes===1?'':'s'} neste pivô não entra${nRes===1?'':'m'} no filtro (dá pra tocar nela${nRes===1?'':'s'} na mão).`; }
+  if(notaRes){ notaRes.style.display = nRes? '' : 'none'; notaRes.textContent = `🔒 ${nRes} quadra${nRes===1?'':'s'} reservada${nRes===1?'':'s'} não entra${nRes===1?'':'m'} no filtro (dá pra tocar nela${nRes===1?'':'s'} na mão).`; }
   document.getElementById('filtroEsmaecer').checked = filtroCultModEsmaecer;
 }
 function filtroCultModSetCultura(c){
-  filtroCultMod = (filtroCultMod.cultura===c) ? {cultura:'', mods:[]} : {cultura:c, mods:[]};
+  const i = fcm().culturas.indexOf(c);
+  if(i>=0){ fcm().culturas.splice(i,1); fcm().mods = fcm().mods.filter(m=>!m.startsWith(c+'|')); }
+  else fcm().culturas.push(c);
   refreshTalhaoUI();
 }
 function filtroCultModToggleMod(m){
-  const i = filtroCultMod.mods.indexOf(m);
-  if(i>=0) filtroCultMod.mods.splice(i,1); else filtroCultMod.mods.push(m);
+  const i = fcm().mods.indexOf(m);
+  if(i>=0) fcm().mods.splice(i,1); else fcm().mods.push(m);
   refreshTalhaoUI();
 }
 function filtroCultModEsmaecerChange(v){ filtroCultModEsmaecer = !!v; refreshTalhaoUI(); }
-function filtroCultModLimpar(){ filtroCultMod = {cultura:'', mods:[]}; refreshTalhaoUI(); }
+function filtroCultModLimpar(){ filtroCultMod = {culturas:[], mods:[]}; refreshTalhaoUI(); }
 function filtroCultModSelecionarTodos(){
   const alvo = filtroCultModTalhoesDoPivo().filter(filtroCultModBate);
   if(!alvo.length){ toast('Nenhum talhão nesse filtro'); return; }
   alvo.forEach(e=>setTalhaoSelected(e.id, true, false));
+  /* se a Cultura do formulário ainda está em branco, preenche sozinha com a(s) cultura(s) do filtro */
+  const fc = document.getElementById('fCultura');
+  if(fc && !fc.value){
+    const cs = fcm().culturas;
+    const v = cs.length>1 ? (cs.includes('SOJA') && cs.includes('MILHO') && cs.length===2 ? CULTURA_SOJA_MILHO : '') : (cs[0]||'');
+    if(v && Array.prototype.some.call(fc.options, o=>o.value===v)) fc.value = v;
+  }
   recomputeAreaFromSelection();
   refreshTalhaoUI();
-  toast(`${alvo.length} talhão(ões) selecionado(s)`);
+  toast(`${alvo.length} quadra(s) do ${nomePivoPorId(pivoAtivoId)} selecionada(s)`);
 }
 
 function setTalhaoSelected(id, selected, recompute){
@@ -5893,10 +6219,8 @@ function nomePivoPorId(pid){
   return p ? p.nome : pid;
 }
 function ensaiosAlvoDoPivo(pid){
-  const cultura = (document.getElementById('fCultura')||{}).value || '';
   return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pid
-    && (!cultura || !e.cultura || e.cultura===cultura)
-    && (!filtroCultModAtivo() || filtroCultModBate(e)));
+    && culturaAppAceita(e));
 }
 function renderPivoSelChips(){
   const box = document.getElementById('pivoSelChips');
@@ -5908,7 +6232,7 @@ function renderPivoSelChips(){
     const cls = !sel ? '' : (sel===alvo.length ? ' todos' : ' parcial');
     return `<button type="button" class="pivo-sel-chip${cls}" onclick="toggleSelecionarPivoInteiro('${p.id}')">${p.icone? p.icone+' ':''}${escapeHtml(p.nome)} · ${sel}/${alvo.length}</button>`;
   }).join('');
-  box.innerHTML = `<span class="psc-label">Aplicar em:</span>${btns}<span class="psc-dica">toque para marcar/desmarcar o pivô inteiro — ou escolha quadra por quadra em cada aba</span>`;
+  box.innerHTML = `<span class="psc-label">Aplicar em:</span>${btns}<span class="psc-dica">toque para marcar/desmarcar o pivô inteiro — ou escolha por cultura/modalidade e quadra por quadra em cada aba (cada pivô é independente)</span>`;
 }
 function toggleSelecionarPivoInteiro(pid){
   const alvo = ensaiosAlvoDoPivo(pid);
@@ -5929,16 +6253,16 @@ function updateSelSummary(){
     return `${escapeHtml(x.talhao||'')} <span class="sel-summary-cultura">(${escapeHtml(info)})</span>`;
   };
   const pids = [...new Set(items.map(x=>x.pivo||'CRISTALINA'))];
-  if(pids.length<2){
-    box.innerHTML = `${items.length} talhão(ões) selecionado(s) · ${fmtNum(total)} ha total<br>${items.slice().sort(cmp).map(det).join(', ')}`;
-    return;
-  }
+  const nomes = pids.map(nomePivoPorId);
+  const cab = pids.length>1
+    ? `<b>⚠ Esta aplicação será em ${pids.length} pivôs: ${nomes.map(escapeHtml).join(' + ')}</b> · ${items.length} quadras · ${fmtNum(total)} ha no total`
+    : `${items.length} quadra(s) em ${escapeHtml(nomes[0])} · ${fmtNum(total)} ha total`;
   const linhas = pids.map(pid=>{
     const g = items.filter(x=>(x.pivo||'CRISTALINA')===pid);
     const ha = g.reduce((s,x)=>s+(x.area||0),0);
-    return `<b>${escapeHtml(nomePivoPorId(pid))}</b>: ${g.length} talhão(ões) · ${fmtNum(ha)} ha<br>${g.slice().sort(cmp).map(det).join(', ')}`;
-  }).join('<br>');
-  box.innerHTML = `${items.length} talhão(ões) em ${pids.length} pivôs · ${fmtNum(total)} ha total<br>${linhas}`;
+    return `<b>${escapeHtml(nomePivoPorId(pid))}</b> — ${g.length} quadra(s) selecionada(s) · ${fmtNum(ha)} ha<br>${g.slice().sort(cmp).map(det).join(', ')}`;
+  }).join('<br><br>');
+  box.innerHTML = `${cab}<br><br>${linhas}`;
 }
 
 function toggleEnsaio(id, checked){
@@ -7126,6 +7450,42 @@ function buildReceiptMapHTML(selectedCodes, pivoObj){
   return `<div style="display:block;width:${outerW}px;background:linear-gradient(160deg,#fbf8f5,#f4ede4);padding:10px;border-radius:10px;font-size:0;line-height:0;text-align:center;">${blocks}${legenda}</div>`;
 }
 
+/* v2.20.1 — mapa do Pivô 4 na ficha (SVG), igual ao mapa em grade do Pivô 3: quadra aplicada com contorno
+   escuro e cor da cultura/modalidade; as demais ficam neutras. */
+function buildReceiptMapSvgHTML(selectedCodes, pivoObj){
+  const svgData = pivoObj && pivoObj.svg;
+  if(!svgData || !svgData.quadras) return '';
+  const idPrefix = pivoObj.idPrefix||'';
+  const vb = svgData.viewBox;
+  const W = 330, H = Math.round(W*vb.h/vb.w);
+  let temMilho = false, temSoja = false;
+  const ruas = (svgData.ruas||[]).map(r=>`<path d="${pivoSvgPointsToPath(r.pts,true)}" fill="#efe8dc" stroke="none"/>`).join('');
+  const quads = svgData.quadras.map(cell=>{
+    const ens = ensaioById('quadra_'+idPrefix+cell.code);
+    if(ens && ens.ativo===false) return '';
+    const isSel = selectedCodes.has(cell.code);
+    const cultura = (ens && ens.cultura) || '';
+    const modalidade = (ens && ens.modalidade) || '';
+    if(isSel){ if(cultura==='MILHO') temMilho = true; if(cultura==='SOJA') temSoja = true; }
+    const fill = isSel ? receiptCulturaBg(cultura, modalidade) : '#e6ddd0';
+    const stroke = isSel ? ' stroke="#241a12" stroke-width="2.5"' : '';
+    return `<path d="${pivoSvgPointsToPath(cell.pts,true)}" fill="${fill}"${stroke}/>`;
+  }).join('');
+  let legenda = '';
+  if(temMilho || temSoja){
+    const itens = [];
+    if(temMilho) itens.push('<span style="display:inline-block;width:9px;height:9px;background:#2f9e44;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>Milho');
+    if(temSoja) itens.push('<span style="display:inline-block;width:9px;height:9px;background:#ea580c;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>Soja');
+    legenda = `<div style="margin-top:6px;font-size:9px;line-height:1.4;font-weight:700;color:#8a7d70;">${itens.join('&nbsp;&nbsp;&nbsp;')}</div>`;
+  }
+  return `<div style="display:block;width:${W+20}px;background:linear-gradient(160deg,#fbf8f5,#f4ede4);padding:10px;border-radius:10px;font-size:0;line-height:0;text-align:center;"><svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${vb.minX} ${-(vb.minY+vb.h)} ${vb.w} ${vb.h}" style="display:block;margin:0 auto;">${ruas}${quads}</svg>${legenda}</div>`;
+}
+function buildReceiptMapPorPivo(selectedCodes, pivoObj){
+  if(!pivoObj) return '';
+  if(pivoObj.tipo==='pivo_svg') return buildReceiptMapSvgHTML(selectedCodes, pivoObj);
+  if(pivoObj.grid) return buildReceiptMapHTML(selectedCodes, pivoObj);
+  return '';
+}
 function buildReceiptBodyHTML(app){
   /* v2.20.0 — uma aplicação pode cobrir mais de um pivô (Pivô 3 + Pivô 4). A ficha agora separa por
      pivô: um mapa por pivô (quando o croqui dele é em grade) e as listas/números de ensaio sempre
@@ -7136,25 +7496,41 @@ function buildReceiptBodyHTML(app){
   itensApp.forEach(x=>{
     const pid = x.pivo || 'CRISTALINA';
     let g = grupos.find(y=>y.pid===pid);
-    if(!g){ g = {pid, obj: PIVOS.find(p=>p.id===pid) || PIVOS[0], codes:[]}; grupos.push(g); }
+    if(!g){ g = {pid, obj: PIVOS.find(p=>p.id===pid) || PIVOS[0], codes:[], ha:0}; grupos.push(g); }
     g.codes.push(x.talhao);
+    g.ha += (parseFloat(x.area)||0);
   });
   if(!grupos.length) grupos.push({pid:'CRISTALINA', obj:PIVOS[0], codes:[]});
   const multi = grupos.length>1;
   grupos.forEach(g=>{
     g.codes.sort();
-    g.mapa = g.codes.length ? buildReceiptMapHTML(new Set(g.codes), g.obj) : '';
+    g.mapa = g.codes.length ? buildReceiptMapPorPivo(new Set(g.codes), g.obj) : '';
   });
-  const mapHtml = grupos.map(g=> g.mapa ? (multi? `<div style="font-size:12px;font-weight:800;color:#c94a08;margin:8px 0 4px;">${escapeHtml(g.obj.nome)}</div>` : '')+g.mapa : '').join('');
+  /* Um cartão por pivô (título, nº de quadras/ha, mapa e, quando poucas, os códigos) — antes tudo ficava
+     junto e dava pra confundir o que era Pivô 3 e o que era Pivô 4. */
+  const mapHtml = grupos.map(g=>{
+    const n = g.codes.length;
+    const listaCodes = (!g.mapa || n<=24) ? `<div style="font-size:11px;line-height:1.4;color:#5a4636;margin-top:6px;word-break:break-word;">${escapeHtml(g.codes.join(', '))}</div>` : '';
+    return `<div style="border:1.5px solid #e0cdb8;border-radius:12px;padding:8px 10px 10px;margin:10px 0;background:#fffdfa;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px solid #f0e4d4;padding-bottom:5px;margin-bottom:8px;">
+        <span style="font-size:14px;font-weight:800;color:#c94a08;">📍 ${escapeHtml(g.obj.nome)}</span>
+        <span style="font-size:12px;font-weight:700;color:#5a4636;">${n} quadra${n===1?'':'s'} · ${fmtNum(g.ha)} ha</span>
+      </div>
+      ${g.mapa? `<div style="text-align:center;overflow:auto;">${g.mapa}</div>` : ''}
+      ${listaCodes}
+    </div>`;
+  }).join('');
+  const _porCult = {}; itensApp.forEach(x=>{ const c=(x.cultura||'').toUpperCase(); if(!c) return; _porCult[c]=(_porCult[c]||0)+(parseFloat(x.area)||0); });
+  const areaPorCulturaTxt = Object.keys(_porCult).length>1 ? Object.keys(_porCult).map(c=>`${tituloCultura(c)} ${fmtNum(_porCult[c])} ha`).join(' · ') : '';
   const talhoes = talhoesArr.join(', ') || '—';
   /* Com o mapa mostrando quais quadras foram aplicadas (contorno escuro) e a cultura de
      cada uma (cor de fundo), a lista de talhões em texto fica redundante. Então, quando o
      mapa do pivô está disponível, mostra só a quantidade; se não puder ser desenhado
      (ex.: Pivô 4, croqui em SVG), mantém a lista completa em texto. */
-  const resumoGrupo = g => g.mapa ? `${g.codes.length} selecionado${g.codes.length===1?'':'s'}` : g.codes.join(', ');
+  const resumoGrupo = g => `${g.codes.length} selecionado${g.codes.length===1?'':'s'}`;
   const talhoesResumo = multi
     ? grupos.map(g=>`${g.obj.nome}: ${resumoGrupo(g)}`).join(' · ')
-    : (grupos[0].mapa ? resumoGrupo(grupos[0]) : talhoes);
+    : resumoGrupo(grupos[0]);
   const ensDe = (t,pid)=>(DATA.ensaios||[]).find(e=>e.talhao===t && (e.pivo||'CRISTALINA')===pid);
   const detalheTalhoes = grupos.filter(g=>!g.mapa).map(g=>g.codes.map(t=>{
     const ens = ensDe(t,g.pid);
@@ -7197,7 +7573,11 @@ function buildReceiptBodyHTML(app){
     }
   }
 
+  const avisoPivos = multi
+    ? `<div style="background:#fff3e8;border:1.5px solid #ea580c;border-radius:10px;padding:8px 10px;margin:0 0 8px;font-size:13px;font-weight:800;color:#c2410c;">Aplicação em ${grupos.length} pivôs: ${grupos.map(g=>`${escapeHtml(g.obj.nome)} (${g.codes.length} quadra${g.codes.length===1?'':'s'} · ${fmtNum(g.ha)} ha)`).join(' + ')}</div>`
+    : '';
   return `
+    ${avisoPivos}
     <div class="r-row"><span class="r-label">Nº de série</span><span class="r-val">#${app.serie}</span></div>
     <div class="r-row"><span class="r-label">Data da aplicação</span><span class="r-val">${fmtDateBR(app.dataAplicacao)}</span></div>
     <div class="r-row"><span class="r-label">Cultura</span><span class="r-val">${escapeHtml(app.cultura||'–')}</span></div>
@@ -7208,9 +7588,10 @@ function buildReceiptBodyHTML(app){
     ${numeroEnsaioTxt? `<div class="r-row"><span class="r-label">Número do ensaio</span><span class="r-val">${escapeHtml(numeroEnsaioTxt)}</span></div>` : ''}
     ${detalheTalhoes? `<div class="r-row"><span class="r-label">Cultura/ensaio por talhão</span><span class="r-val">${escapeHtml(detalheTalhoes)}</span></div>` : ''}
     <div class="r-row"><span class="r-label">Área aplicada</span><span class="r-val">${fmtNum(app.area)} ha</span></div>
+    ${areaPorCulturaTxt? `<div class="r-row"><span class="r-label">Área por cultura</span><span class="r-val">${escapeHtml(areaPorCulturaTxt)}</span></div>` : ''}
     <div class="r-row"><span class="r-label">Período de reentrada</span><span class="r-val">24 horas</span></div>
     ${caldaRows}
-    ${mapHtml? `<h4>Mapa da aplicação</h4><div style="text-align:center;overflow:auto;">${mapHtml}</div><div style="text-align:center;font-size:10px;color:#8a7d70;margin-top:4px;">Contorno escuro = quadra aplicada nesta ficha · cor = cultura cadastrada</div>` : ''}
+    ${mapHtml? `<h4>${multi? 'Mapas da aplicação (por pivô)' : 'Mapa da aplicação'}</h4>${mapHtml}<div style="text-align:center;font-size:10px;color:#8a7d70;margin-top:2px;">Contorno escuro = quadra aplicada nesta ficha · cor = cultura cadastrada</div>` : ''}
     <h4>Produtos aplicados</h4>
     ${prodHtml}
     ${app.obs? `<h4>Observações</h4><div class="r-row" style="border-bottom:none;"><span class="r-val" style="text-align:left;">${escapeHtml(app.obs)}</span></div>` : ''}
