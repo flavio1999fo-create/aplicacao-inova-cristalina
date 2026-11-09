@@ -916,6 +916,13 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   /* 09/09/2026 — fonte do código igual à do Pivô 3 (a mesma fonte do resto do app, em vez
      de uma monoespaçada só aqui), pra "escrita" ficar padronizada entre os dois croquis. */
   .pivo-svg-label{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:800;letter-spacing:.2px;fill:#1c1710;paint-order:stroke;stroke:#fdfaf2;stroke-width:2px;stroke-linejoin:round;text-anchor:middle;dominant-baseline:middle;pointer-events:none;user-select:none;}
+  .pivo-svg-label.on-color{fill:#fff;stroke:rgba(58,26,10,.7);stroke-width:2.4px;}
+  .pivo-svg-label.on-reserva{fill:#4a2f86;stroke:#f1ecfc;}
+  .pivo-svg-badge{fill:#ffd43b;pointer-events:none;}
+  .pivo-svg-badge-txt{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:11px;font-weight:800;fill:#2b1206;text-anchor:middle;dominant-baseline:middle;pointer-events:none;user-select:none;}
+  .pivo-svg-info{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;fill:#fff;stroke:rgba(58,26,10,.7);stroke-width:2px;paint-order:stroke;stroke-linejoin:round;text-anchor:end;dominant-baseline:middle;pointer-events:none;user-select:none;}
+  .pivo-svg-info.on-reserva{fill:#4a2f86;stroke:#f1ecfc;}
+  .pivo-svg-badge.dim,.pivo-svg-badge-txt.dim,.pivo-svg-info.dim{opacity:.25;}
   .pivo-svg-label.bordadura{font-size:12px;fill:#3a2410;stroke:#fbead9;}
   .pivo-svg-label.dim{opacity:.25;}
   .pivo-svg-bordadura{fill:#d9a066;fill-opacity:.55;stroke:#b9773a;stroke-width:.6;stroke-dasharray:3,2;vector-effect:non-scaling-stroke;pointer-events:none;}
@@ -2010,7 +2017,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.23.2';
+const APP_BUILD_ID = 'v2.23.4';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -2260,6 +2267,18 @@ function enforcePivo4Ensaios(){
      testando o botão novo, não tinha mais como reverter pelo app. Esse conserto roda
      uma única vez (por isso a trava _fixApagadasV166) — força A127/B127 de volta pra
      ativo, mas sem brigar com uma exclusão de verdade que ele venha a fazer depois. */
+  /* v2.23.3 — B127 estava salva com comprimento manual de 160 m (ajuste antigo) e por isso aparecia
+     menor que as vizinhas; o Flávio confirmou que ela tem 192 m. Corrige uma única vez. */
+  if(!DATA._fixB127Comp192){
+    DATA.ensaios.forEach(e=>{
+      if(e.pivo==='PIVO4' && e.talhao==='B127' && Number(e.comprimentoManual)===160){
+        e.comprimentoManual = 192;
+        mudou = true;
+      }
+    });
+    DATA._fixB127Comp192 = true;
+    mudou = true;
+  }
   if(!DATA._fixApagadasV166){
     DATA.ensaios.forEach(e=>{
       if(e.pivo==='PIVO4' && (e.talhao==='A127' || e.talhao==='B127') && e.ativo===false){
@@ -6796,8 +6815,43 @@ function renderPivoSvg(wrapId, q, modoCad){
     let label = '';
     {
       const pose = pivoSvgLabelPose(geom.pts);
-      const labelCls = 'pivo-svg-label'+(isDim? ' dim':'');
-      label = `<text class="${labelCls}" x="${pose.cx.toFixed(1)}" y="${pose.cy.toFixed(1)}" transform="rotate(${pose.angleDeg.toFixed(1)} ${pose.cx.toFixed(1)} ${pose.cy.toFixed(1)})">${escapeHtml(codePrefixSvg+cell.code)}</text>`;
+      const temCor = !!corModalidade;
+      const reserv = ensaioReservado(ens);
+      /* v2.23.4 — padrão do Pivô 3 dentro da quadra: código em branco sobre a cor, etiqueta amarela com o
+         número do ensaio e a modalidade/cultura à direita (só quando a quadra tem largura pra isso). */
+      const xs = geom.pts.map(pt=>pt[0]);
+      const xMin = Math.min(...xs), xMax = Math.max(...xs), larg = xMax-xMin;
+      const infoTxtSvg = (cultura? `${modalidade? modalidade+' ':''}${tituloCultura(cultura)}` : '') + (nEnsaiosExtras(ens)? ` +${nEnsaiosExtras(ens)}` : '');
+      const codeFull = codePrefixSvg+(ensaioReservado(ens)? '🔒 ':'')+cell.code;
+      if(temCor && larg>=140 && Math.abs(pose.angleDeg)<8){
+        const cy = pose.cy.toFixed(1);
+        const dimCls = isDim? ' dim':'';
+        const corCls = reserv? ' on-reserva' : ' on-color';
+        const xCode = xMin+5;
+        const wCode = codeFull.length*9.6;
+        let partes = `<text class="pivo-svg-label${corCls}${dimCls}" style="text-anchor:start" x="${xCode.toFixed(1)}" y="${cy}">${escapeHtml(codeFull)}</text>`;
+        let xCursor = xCode + wCode + 4;
+        if(numeroEnsaioAtualSvg){
+          let num = String(numeroEnsaioAtualSvg);
+          const maxCh = Math.max(3, Math.min(9, Math.floor((xMax-4-xCursor-4)/7.2)));
+          if(num.length>maxCh) num = num.slice(0,maxCh-1)+'…';
+          const wB = num.length*7.2+6;
+          if(xCursor+wB < xMax-4){
+            partes += `<rect class="pivo-svg-badge${dimCls}" x="${xCursor.toFixed(1)}" y="${(pose.cy-7.5).toFixed(1)}" width="${wB.toFixed(1)}" height="15" rx="3"/><text class="pivo-svg-badge-txt${dimCls}" x="${(xCursor+wB/2).toFixed(1)}" y="${cy}">${escapeHtml(num)}</text>`;
+            xCursor += wB + 4;
+          }
+        }
+        const espaco = xMax-4-xCursor;
+        if(infoTxtSvg && espaco>=44){
+          const maxCh = Math.floor(espaco/7);
+          const it = infoTxtSvg.length>maxCh? infoTxtSvg.slice(0,Math.max(1,maxCh-1))+'…' : infoTxtSvg;
+          partes += `<text class="pivo-svg-info${corCls}${dimCls}" x="${(xMax-4).toFixed(1)}" y="${cy}">${escapeHtml(it)}</text>`;
+        }
+        label = partes;
+      }else{
+        const labelCls = 'pivo-svg-label'+(temCor? (reserv? ' on-reserva':' on-color'):'')+(isDim? ' dim':'');
+        label = `<text class="${labelCls}" x="${pose.cx.toFixed(1)}" y="${pose.cy.toFixed(1)}" transform="rotate(${pose.angleDeg.toFixed(1)} ${pose.cx.toFixed(1)} ${pose.cy.toFixed(1)})">${escapeHtml(codeFull)}</text>`;
+      }
     }
     return path+label;
   }).join('');
@@ -7483,7 +7537,7 @@ function buildReceiptMapSvgHTML(selectedCodes, pivoObj){
     if(ens && ens.ativo===false) return '';
     const pose = pivoSvgLabelPose(cell.pts);
     const cx = pose.cx.toFixed(1), cy = pose.cy.toFixed(1);
-    return `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="800" fill="#241a12" stroke="#ffffff" stroke-width="7" stroke-linejoin="round" paint-order="stroke">${escapeHtml(cell.code)}</text>`;
+    return `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="800" fill="#ffffff" stroke="#3a1a0a" stroke-width="6" stroke-linejoin="round" paint-order="stroke">${escapeHtml(cell.code)}</text>`;
   }).join('');
   let legenda = '';
   if(temMilho || temSoja){
