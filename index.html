@@ -628,6 +628,10 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   /* 16/09/2026 — checkboxes de "o que exportar" no backup (Flávio pediu pra escolher
      categoria em vez de sempre exportar tudo junto). Cada linha vira um "chip" clicável
      numa grade que se ajusta ao tamanho da tela, igual os chips de armazém do Estoque. */
+  .exp-list{max-height:280px;overflow:auto;border:1px solid var(--border);border-radius:12px;background:#fff;}
+  .exp-item{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-bottom:1px solid var(--border);font-size:13px;}
+  .exp-item:last-child{border-bottom:none;}
+  .exp-box h2{margin-bottom:10px;}
   .export-backup-opcoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-bottom:4px;}
   .export-chk-row{
     display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text);
@@ -1611,14 +1615,9 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div class="empty" id="histEmpty" style="display:none;">Nenhuma aplicação registrada ainda.</div>
     </div>
     <div class="card">
-      <h2>Exportar histórico por e-mail</h2>
-      <p class="muted">Gera uma planilha .xlsx (arquivo de Excel de verdade, abre direto sem passo nenhum) com o histórico de aplicações e abre o compartilhamento do celular pra você escolher o e-mail (ou WhatsApp) e enviar. O app não manda o e-mail sozinho — ele só prepara o arquivo e abre seu aplicativo de e-mail com tudo pronto pra você revisar e enviar.</p>
-      <div class="row">
-        <div class="field"><label>De (opcional)</label><input type="date" id="histExportDe"></div>
-        <div class="field"><label>Até (opcional)</label><input type="date" id="histExportAte"></div>
-      </div>
-      <button class="btn-primary btn-block" onclick="exportHistoricoEmail()">📧 Exportar histórico por e-mail</button>
-      <div id="histExportResult" class="muted" style="margin-top:8px;white-space:pre-line;"></div>
+      <h2>📤 Exportar</h2>
+      <p class="muted">A exportação do histórico (Excel ou PDF), das fichas (PDF ou foto), do estoque e das aplicações por quadra ficou toda na aba <b>Exportar</b>.</p>
+      <button class="btn-primary btn-block" onclick="dashStatGo('exportar')">Abrir a aba Exportar</button>
     </div>
     <div class="card">
       <h2>Pasta para salvar as fichas/PDFs</h2>
@@ -1629,15 +1628,113 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button type="button" class="btn-ghost" onclick="limparPastaFichas()">Voltar ao padrão</button>
       </div>
     </div>
+  </section>
+
+
+  <!-- EXPORTAR -->
+  <section id="tab-exportar" class="section">
     <div class="card">
-      <h2>Baixar todas as fichas em PDF</h2>
-      <p class="muted">Gera um único arquivo PDF com a ficha de cada aplicação (uma por página, igual à ficha que abre depois de registrar) e baixa direto no aparelho — sem precisar abrir uma por uma. Deixe as datas em branco pra baixar todas.</p>
-      <div class="row">
-        <div class="field"><label>De (opcional)</label><input type="date" id="fichasExportDe"></div>
-        <div class="field"><label>Até (opcional)</label><input type="date" id="fichasExportAte"></div>
+      <h2>📤 Exportar</h2>
+      <p class="muted">Marque o que você quer levar. Os itens de dados (estoque, histórico, ciclo por quadra) saem juntos em um <b>relatório em PDF</b> ou em uma <b>planilha Excel</b> com uma aba para cada assunto. As fichas saem em PDF ou em foto (.zip de imagens).</p>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <button type="button" class="btn-ghost btn-sm" onclick="expMarcarTudo(true)">Selecionar tudo</button>
+        <button type="button" class="btn-ghost btn-sm" onclick="expMarcarTudo(false)">Nenhum</button>
       </div>
-      <button class="btn-primary btn-block" id="btnExportAllFichas" onclick="exportarTodasFichasPdf()">📄 Baixar todas as fichas (PDF)</button>
-      <div id="exportAllFichasProgress" class="muted" style="margin-top:8px;"></div>
+      <div class="export-backup-opcoes" id="expOpcoes">
+        <label class="export-chk-row"><input type="checkbox" id="expChkEstoque" checked onchange="expAtualiza()"><span>📦 Estoque atualizado<span class="lbl-desc">produtos, saldo por armazém, mínimo e situação</span></span></label>
+        <label class="export-chk-row"><input type="checkbox" id="expChkHist" checked onchange="expAtualiza()"><span>📋 Histórico de aplicações<span class="lbl-desc">todas as aplicações, produtos, talhões e consumo no período</span></span></label>
+        <label class="export-chk-row"><input type="checkbox" id="expChkCiclo" onchange="expAtualiza()"><span>🌱 Aplicações por quadra no ciclo<span class="lbl-desc">quantas aplicações cada talhão recebeu do plantio até a última</span></span></label>
+        <label class="export-chk-row"><input type="checkbox" id="expChkFichas" onchange="expAtualiza()"><span>🧾 Fichas de aplicação<span class="lbl-desc">escolha quais fichas e baixe em PDF ou em foto (.zip)</span></span></label>
+      </div>
+      <div id="expResumoSel" class="muted" style="margin-top:8px;font-weight:700;"></div>
+    </div>
+
+    <div class="card exp-box" id="expBoxEstoque" style="display:none;">
+      <h2>📦 Estoque atualizado</h2>
+      <div class="row">
+        <div class="field"><label>Armazém</label><select id="expEstArmazem" onchange="expAtualiza()"></select></div>
+        <div class="field"><label>Mostrar</label>
+          <select id="expEstSit" onchange="expAtualiza()">
+            <option value="todos">Todos os produtos</option>
+            <option value="com">Só com saldo</option>
+            <option value="baixo">Só estoque baixo (abaixo do mínimo)</option>
+            <option value="zero">Só zerados / negativos</option>
+          </select></div>
+      </div>
+    </div>
+
+    <div class="card exp-box" id="expBoxHist" style="display:none;">
+      <h2>📋 Histórico de aplicações</h2>
+      <div class="row">
+        <div class="field"><label>De (opcional)</label><input type="date" id="expHistDe" onchange="expAtualiza()"></div>
+        <div class="field"><label>Até (opcional)</label><input type="date" id="expHistAte" onchange="expAtualiza()"></div>
+        <div class="field"><label>Status</label>
+          <select id="expHistStatus" onchange="expAtualiza()">
+            <option value="todos">Todas</option>
+            <option value="feita">Só feitas</option>
+            <option value="pendente">Aguardando confirmação</option>
+            <option value="nao_feita">Não feitas</option>
+          </select></div>
+      </div>
+    </div>
+
+    <div class="card exp-box" id="expBoxCiclo" style="display:none;">
+      <h2>🌱 Aplicações por quadra no ciclo</h2>
+      <p class="muted">Escolha o talhão: o app mostra a data de plantio e as datas em que ele recebeu aplicação — você escolhe qual foi a <b>última aplicação do ciclo</b>. Depois é só adicionar ao relatório (dá pra juntar vários talhões).</p>
+      <div class="row">
+        <div class="field"><label>Pivô/Área</label><select id="expCicloPivo" onchange="expCicloMontarTalhoes()"></select></div>
+        <div class="field"><label>Talhão</label><select id="expCicloTalhao" onchange="expCicloMontarPlantios()"></select></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Plantio</label><select id="expCicloPlantio" onchange="expCicloMontarFim()"></select></div>
+        <div class="field"><label>Última aplicação do ciclo</label><select id="expCicloFim" onchange="expCicloPreview()"></select></div>
+      </div>
+      <div id="expCicloPrev" class="muted" style="margin-bottom:8px;"></div>
+      <div class="field"><label>Contar aplicações</label>
+        <select id="expCicloStatus" onchange="expCicloMontarTalhoes();expCicloRenderLista();expAtualiza()">
+          <option value="padrao">Feitas e aguardando confirmação (não feitas ficam de fora)</option>
+          <option value="feitas">Só as confirmadas como feitas</option>
+          <option value="todas">Todas, inclusive as não feitas</option>
+        </select></div>
+      <div class="row" style="margin-bottom:8px;">
+        <button type="button" class="btn-primary" onclick="expCicloAdicionar()">➕ Adicionar ao relatório</button>
+        <button type="button" class="btn-ghost" onclick="expCicloAdicionarTodos()">➕ Todos os talhões com plantio</button>
+        <button type="button" class="btn-ghost" onclick="expCicloLimpar()">Limpar lista</button>
+      </div>
+      <div id="expCicloLista"></div>
+    </div>
+
+    <div class="card exp-box" id="expBoxFichas" style="display:none;">
+      <h2>🧾 Fichas de aplicação</h2>
+      <div class="row">
+        <div class="field"><label>De (opcional)</label><input type="date" id="expFichaDe" onchange="expFichasRender()"></div>
+        <div class="field"><label>Até (opcional)</label><input type="date" id="expFichaAte" onchange="expFichasRender()"></div>
+        <div class="field"><label>Buscar</label><input type="search" id="expFichaBusca" autocomplete="off" placeholder="série, cultura, produto, talhão..." oninput="expFichasRender()"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+        <button type="button" class="btn-ghost btn-sm" onclick="expFichasMarcar('filtradas')">Marcar as listadas</button>
+        <button type="button" class="btn-ghost btn-sm" onclick="expFichasMarcar('todas')">Marcar todas</button>
+        <button type="button" class="btn-ghost btn-sm" onclick="expFichasMarcar('nenhuma')">Desmarcar tudo</button>
+      </div>
+      <div class="exp-list" id="expFichaLista"></div>
+      <div id="expFichaContagem" class="muted" style="margin:8px 0;font-weight:700;"></div>
+      <div class="row">
+        <button type="button" class="btn-primary" onclick="expExportarFichas('pdf')">📄 Fichas em PDF</button>
+        <button type="button" class="btn-primary" onclick="expExportarFichas('foto')">🖼️ Fichas em foto (.zip)</button>
+      </div>
+    </div>
+
+    <div class="card exp-box" id="expBoxBaixar" style="display:none;">
+      <h2>⬇️ Baixar relatório</h2>
+      <div class="row">
+        <button type="button" class="btn-primary" onclick="expBaixarRelatorio('pdf')">📄 Relatório em PDF</button>
+        <button type="button" class="btn-primary" onclick="expBaixarRelatorio('xlsx')">📊 Planilha em Excel</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="export-chk-row" style="margin-bottom:8px;"><input type="checkbox" id="expChkShare"><span>Compartilhar pelo celular (WhatsApp, e-mail...) em vez de só baixar<span class="lbl-desc">funciona nos aparelhos que têm o menu “Compartilhar”; no computador, baixa normalmente</span></span></label>
+      <div id="expStatusMsg" class="muted" style="white-space:pre-line;"></div>
     </div>
   </section>
 
@@ -1801,6 +1898,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   <button class="tab-btn" data-tab="nova"><span class="ic">➕</span>Aplicação</button>
   <button class="tab-btn" data-tab="talhoes"><span class="ic">🌾</span>Talhões</button>
   <button class="tab-btn" data-tab="historico"><span class="ic">📋</span>Histórico</button>
+  <button class="tab-btn" data-tab="exportar"><span class="ic">📤</span>Exportar</button>
   <button class="tab-btn" data-tab="limpeza"><span class="ic">🧼</span>Limpeza</button>
   <button class="tab-btn" data-tab="usuarios"><span class="ic">👤</span>Usuários</button>
   <button class="tab-btn" data-tab="backup"><span class="ic">💾</span>Backup</button>
@@ -2017,7 +2115,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.23.4';
+const APP_BUILD_ID = 'v2.24.0';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -3560,6 +3658,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     if(btn.dataset.tab==='talhoes') refreshTalhaoCadUI();
     if(btn.dataset.tab==='historico') renderHistory();
     if(btn.dataset.tab==='limpeza') refreshLimpezaUI();
+    if(btn.dataset.tab==='exportar') expInit();
     renderAguardandoConfirmacao();
     /* 16/09/2026 — no celular o menu lateral virou gaveta (ver toggleNavMenu); depois de
        escolher uma aba ali, fecha ela sozinha pra já mostrar o conteúdo escolhido, em vez
@@ -8432,6 +8531,756 @@ function exportPlantiosPlanilha(){
   a.remove();
   URL.revokeObjectURL(url);
   toast(linhas.length>1 ? `Planilha exportada com ${linhas.length-1} plantio(s)` : 'Nenhum plantio cadastrado ainda');
+}
+
+/* ====================== EXPORTAR (v2.24.0) ======================
+   Pedido do Flávio (10/11/2026): uma aba só pra exportar tudo — estoque atualizado, histórico de
+   aplicações, número de aplicações por quadra/talhão durante o ciclo (do plantio até a última aplicação
+   escolhida) e as fichas (PDF ou foto PNG em .zip), com escolha do que entra e saída em PDF (relatório)
+   ou Excel (planilha com várias abas). Tudo roda no próprio aparelho (offline), sem biblioteca nova:
+   o Excel usa o gerador .xlsx já existente no app (agora com várias abas) e o PDF usa o jsPDF embutido. */
+const EXP = { fichas: new Set(), cicloItens: [], fichasInit: false };
+const EXP_ST_TXT = { feita:'Feita', nao_feita:'Não feita', pendente:'Aguardando confirmação' };
+
+/* ---------- utilidades ---------- */
+function expEl(id){ return document.getElementById(id); }
+function expStatus(a){ return a.statusExecucao || 'pendente'; }
+function expNatCmp(a,b){ return String(a).localeCompare(String(b),'pt-BR',{numeric:true}); }
+function expPivoPadrao(){ return (PIVOS && PIVOS[0] && PIVOS[0].id) || 'CRISTALINA'; }
+function expNomePivo(id){ const p=(PIVOS||[]).find(x=>x.id===id); return p? p.nome : (id||''); }
+function expKeyEns(e){ return (e.pivo||expPivoPadrao())+'|'+(e.talhao||e.ensaio||''); }
+function expKeyItem(x){ return (x.pivo||expPivoPadrao())+'|'+(x.talhao||x.ensaio||''); }
+function expDataBR(iso){ return iso? formatDateBR(iso) : ''; }
+function expNum(n, casas){
+  if(n===null||n===undefined||n===''||isNaN(n)) return '';
+  const f = Math.pow(10, casas==null?3:casas);
+  return Math.round(Number(n)*f)/f;
+}
+function expDiasEntre(a,b){
+  if(!a||!b) return '';
+  const d = (new Date(b+'T00:00:00') - new Date(a+'T00:00:00'))/86400000;
+  return isNaN(d)? '' : Math.round(d);
+}
+function expPlantios(e){
+  let pl = Array.isArray(e.plantios) ? e.plantios
+    : (e.cultura ? [{id:'legacy', cultura:e.cultura, modalidade:e.modalidade||'', dataPlantio:e.dataPlantio||'', numeroEnsaio:e.numeroEnsaio||''}] : []);
+  return pl.filter(p=>p && (p.cultura||p.dataPlantio||p.numeroEnsaio)).map((p,i)=>Object.assign({}, p, {_id: p.id || ('i'+i)}))
+    .sort((a,b)=>(a.dataPlantio||'').localeCompare(b.dataPlantio||''));
+}
+function expTalhoesTxt(a, comArea){
+  const grupos = new Map();
+  (a.ensaiosSel||[]).forEach(x=>{
+    const nome = expNomePivo(x.pivo||expPivoPadrao());
+    if(!grupos.has(nome)) grupos.set(nome, []);
+    grupos.get(nome).push((x.talhao||x.ensaio||'') + (comArea && x.area? ` (${fmtNum(x.area)}ha)` : ''));
+  });
+  const multi = grupos.size>1 || ((PIVOS||[]).length>1);
+  return Array.from(grupos.entries()).map(([n,l])=> (multi? n+': ' : '') + l.sort(expNatCmp).join(', ')).join(' | ');
+}
+function expProdutosTxt(a){
+  return (a.produtos||[]).map(p=>{
+    const dose = (p.doseHa!=null && p.doseHa!=='') ? `${fmtNum(p.doseHa)}${p.unidade? ' '+p.unidade:''}/ha` : '';
+    const qtd = `${fmtNum(p.qtd)}${p.unidade? ' '+p.unidade:''}`;
+    return dose ? `${p.nome||''} — ${dose} (${qtd})` : `${p.nome||''} — ${qtd}`;
+  }).join('\n');
+}
+function expAppsFiltradas(de, ate, status){
+  let apps = (DATA.applications||[]).slice().sort((a,b)=>(a.dataAplicacao||'').localeCompare(b.dataAplicacao||'') || ((a.serie||0)-(b.serie||0)));
+  if(de) apps = apps.filter(a=>(a.dataAplicacao||'')>=de);
+  if(ate) apps = apps.filter(a=>(a.dataAplicacao||'')<=ate);
+  if(status && status!=='todos') apps = apps.filter(a=>expStatus(a)===status);
+  return apps;
+}
+
+/* ---------- tela ---------- */
+function expInit(){
+  if(!EXP.fichasInit){
+    EXP.fichasInit = true;
+  }
+  expCicloMontarPivos();
+  expAtualiza();
+  expFichasRender();
+}
+function expAtualiza(){
+  const chk = id=> !!(expEl(id) && expEl(id).checked);
+  expEl('expBoxEstoque').style.display = chk('expChkEstoque')? '' : 'none';
+  expEl('expBoxHist').style.display = chk('expChkHist')? '' : 'none';
+  expEl('expBoxCiclo').style.display = chk('expChkCiclo')? '' : 'none';
+  expEl('expBoxFichas').style.display = chk('expChkFichas')? '' : 'none';
+  expEl('expBoxBaixar').style.display = (chk('expChkEstoque')||chk('expChkHist')||chk('expChkCiclo'))? '' : 'none';
+  if(chk('expChkEstoque')) expEstoqueMontarArmazens();
+  const partes = [];
+  if(chk('expChkEstoque')) partes.push(`Estoque: ${expEstoqueFiltrado().length} produto(s)`);
+  if(chk('expChkHist')) partes.push(`Histórico: ${expHistFiltrado().length} aplicação(ões)`);
+  if(chk('expChkCiclo')) partes.push(`Ciclo: ${EXP.cicloItens.length} talhão(ões)/plantio(s)`);
+  expEl('expResumoSel').textContent = partes.length? partes.join(' · ') : 'Nada marcado ainda.';
+  if(chk('expChkFichas')) expFichasRender();
+}
+function expMarcarTudo(v){
+  ['expChkEstoque','expChkHist','expChkCiclo','expChkFichas'].forEach(id=>{ expEl(id).checked = v; });
+  expAtualiza();
+}
+
+/* ---------- 1) estoque ---------- */
+function expEstoqueMontarArmazens(){
+  const sel = expEl('expEstArmazem'); if(!sel) return;
+  const atual = sel.value;
+  const arms = getArmazensDisponiveis();
+  sel.innerHTML = '<option value="">Todos os armazéns</option>' + arms.map(a=>`<option value="${escapeHtml(a.cod)}">${escapeHtml(a.cod)}${a.desc? ' — '+escapeHtml(a.desc):''}</option>`).join('');
+  if(arms.some(a=>a.cod===atual)) sel.value = atual;
+}
+function expSaldoArmazem(p, cod){
+  const e = (p.estoquePorArmazem||[]).find(x=>x.armazem===cod);
+  return e ? (Number(e.saldo)||0) : 0;
+}
+function expEstoqueFiltrado(){
+  const arm = (expEl('expEstArmazem')||{}).value || '';
+  const filtro = (expEl('expEstSit')||{}).value || 'todos';
+  const lista = (DATA.products||[]).map(p=>{
+    const saldo = arm ? expSaldoArmazem(p, arm) : (Number(p.saldo)||0);
+    const st = situacaoProduto({saldo, estoqueMinimo:p.estoqueMinimo});
+    return {p, saldo, st};
+  }).filter(x=>{
+    if(arm && !armazensDoProduto(x.p).some(e=>e.armazem===arm)) return false;
+    if(filtro==='com') return x.saldo>0;
+    if(filtro==='baixo') return x.st==='low';
+    if(filtro==='zero') return x.st==='zero' || x.st==='neg';
+    return true;
+  });
+  lista.sort((a,b)=>expNatCmp(classeCanon(a.p.classe), classeCanon(b.p.classe)) || expNatCmp(a.p.nome||'', b.p.nome||''));
+  return lista;
+}
+function expDsEstoque(){
+  const arm = (expEl('expEstArmazem')||{}).value || '';
+  const lista = expEstoqueFiltrado();
+  const armsTodos = getArmazensDisponiveis();
+  const armsCols = arm ? armsTodos.filter(a=>a.cod===arm) : armsTodos;
+  const cols = [
+    {t:'Produto', w:5}, {t:'Classe', w:2.4}, {t:'Ingrediente ativo', w:4}, {t:'Un.', w:.8, al:'c'},
+    {t:arm? 'Saldo no armazém':'Saldo total', w:1.5, al:'r'}
+  ].concat(armsCols.map(a=>({t:'Saldo arm. '+a.cod, w:1.5, al:'r'})))
+   .concat([{t:'Estoque mín.', w:1.2, al:'r'},{t:'Situação', w:1.5, al:'c'},{t:'Vencimento', w:1.4, al:'c'}]);
+  const rows = lista.map(({p, saldo, st})=>{
+    const base = [p.nome||'', classeCanon(p.classe), p.ia||'', p.unidadeEstoque||'', expNum(saldo)];
+    const porArm = armsCols.map(a=> expNum(expSaldoArmazem(p, a.cod)));
+    const ven = p.vencimento ? (/^\d{4}-\d{2}-\d{2}/.test(p.vencimento)? expDataBR(String(p.vencimento).slice(0,10)) : String(p.vencimento)) : '';
+    return base.concat(porArm).concat([expNum(p.estoqueMinimo||0), {ok:'Em estoque', low:'Baixo', zero:'Zerado', neg:'Negativo'}[st], ven]);
+  });
+  const nSit = k=> lista.filter(x=>x.st===k).length;
+  const iSit = cols.length-2;
+  const kpis = [
+    {l:'Produtos', v:String(lista.length)},
+    {l:'Em estoque', v:String(nSit('ok')+nSit('low'))},
+    {l:'Estoque baixo', v:String(nSit('low'))},
+    {l:'Zerados / negativos', v:String(nSit('zero')+nSit('neg'))}
+  ];
+  return {
+    secao:'Estoque atualizado',
+    sub: arm? ('Armazém: '+((armsTodos.find(a=>a.cod===arm)||{}).desc||arm)) : ('Armazéns: '+armsTodos.map(a=>a.cod+' = '+(a.desc||a.cod)).join('; ')),
+    kpis,
+    tabelas:[{ nome:'Estoque', cols, rows, corCelula:(r,ci,v)=>{
+      if(ci!==iSit) return null;
+      if(v==='Baixo') return [180,100,0];
+      if(v==='Zerado'||v==='Negativo') return [190,30,30];
+      return null;
+    }}]
+  };
+}
+
+/* ---------- 2) histórico ---------- */
+function expHistFiltrado(){
+  return expAppsFiltradas((expEl('expHistDe')||{}).value, (expEl('expHistAte')||{}).value, (expEl('expHistStatus')||{}).value||'todos');
+}
+function expDsHistorico(){
+  const apps = expHistFiltrado();
+  const cols = [
+    {t:'Série', w:.8, al:'c'}, {t:'Data', w:1.2, al:'c'}, {t:'Status', w:1.6}, {t:'Cultura', w:1.1}, {t:'Operador', w:1.4},
+    {t:'Equipamento', w:1.8}, {t:'Recomendação', w:2}, {t:'Área (ha)', w:1, al:'r'}, {t:'Talhões', w:3.4}, {t:'Produtos', w:4.2}, {t:'Observações', w:2}
+  ];
+  const rows = apps.map(a=>[
+    a.serie, expDataBR(a.dataAplicacao), EXP_ST_TXT[expStatus(a)]||'', a.cultura||'', a.operador||'', a.equipamento||'', a.recomendacao||'',
+    expNum(a.area), expTalhoesTxt(a, false), expProdutosTxt(a), a.obs||''
+  ]);
+  const areaTot = apps.reduce((s,a)=>s+(Number(a.area)||0),0);
+  const prodDistintos = new Set(); apps.forEach(a=>(a.produtos||[]).forEach(p=>prodDistintos.add((p.nome||'').trim().toUpperCase())));
+  const kpis = [
+    {l:'Aplicações', v:String(apps.length)},
+    {l:'Feitas', v:String(apps.filter(a=>expStatus(a)==='feita').length)},
+    {l:'Aguardando confirmação', v:String(apps.filter(a=>expStatus(a)==='pendente').length)},
+    {l:'Área somada (ha)', v:fmtNum(areaTot)},
+    {l:'Produtos diferentes', v:String(prodDistintos.size)}
+  ];
+  /* consumo por produto no período */
+  const cons = new Map();
+  apps.filter(a=>expStatus(a)!=='nao_feita').forEach(a=>(a.produtos||[]).forEach(p=>{
+    const k = (p.nome||'').trim().toUpperCase()+'|'+(p.unidade||'');
+    if(!cons.has(k)) cons.set(k, {nome:p.nome||'', un:p.unidade||'', n:0, qtd:0});
+    const c = cons.get(k); c.n++; c.qtd += Number(p.qtd)||0;
+  }));
+  const consRows = Array.from(cons.values()).sort((a,b)=>b.qtd-a.qtd).map(c=>[c.nome, c.n, expNum(c.qtd), c.un]);
+  /* um produto por linha */
+  const prodRows = [];
+  apps.forEach(a=>(a.produtos||[]).forEach(p=>prodRows.push([a.serie, expDataBR(a.dataAplicacao), a.cultura||'', p.nome||'', expNum(p.doseHa), expNum(p.qtd), p.unidade||'', EXP_ST_TXT[expStatus(a)]||''])));
+  /* um talhão por linha */
+  const talRows = [];
+  apps.forEach(a=>(a.ensaiosSel||[]).forEach(x=>talRows.push([a.serie, expDataBR(a.dataAplicacao), expNomePivo(x.pivo||expPivoPadrao()), x.talhao||x.ensaio||'', x.cultura||'', x.modalidade||'', expNum(x.area), EXP_ST_TXT[expStatus(a)]||''])));
+  const sub = (expEl('expHistDe').value||expEl('expHistAte').value) ? `Período: ${expDataBR(expEl('expHistDe').value)||'início'} a ${expDataBR(expEl('expHistAte').value)||'hoje'}` : 'Todo o período';
+  return {
+    secao:'Histórico de aplicações', sub, kpis,
+    tabelas:[
+      {nome:'Histórico', cols, rows},
+      {nome:'Consumo por produto', titulo:'Consumo de produtos (aplicações feitas ou aguardando confirmação)',
+       cols:[{t:'Produto', w:6},{t:'Nº de aplicações', w:1.6, al:'r'},{t:'Quantidade total', w:1.6, al:'r'},{t:'Un.', w:.8, al:'c'}], rows:consRows},
+      {nome:'Produtos por aplicação', titulo:'Um produto por linha, por aplicação', pdf:false,
+       cols:[{t:'Série'},{t:'Data'},{t:'Cultura'},{t:'Produto'},{t:'Dose/ha', al:'r'},{t:'Quantidade', al:'r'},{t:'Un.'},{t:'Status'}], rows:prodRows},
+      {nome:'Talhões por aplicação', titulo:'Um talhão por linha, por aplicação', pdf:false,
+       cols:[{t:'Série'},{t:'Data'},{t:'Pivô/Área'},{t:'Talhão'},{t:'Cultura'},{t:'Modalidade'},{t:'Área (ha)', al:'r'},{t:'Status'}], rows:talRows}
+    ]
+  };
+}
+
+/* ---------- 3) ciclo por quadra ---------- */
+function expCicloStatusModo(){ return (expEl('expCicloStatus')||{}).value || 'padrao'; }
+function expAppsDoTalhao(key){
+  const modo = expCicloStatusModo();
+  return (DATA.applications||[]).filter(a=>{
+    const st = expStatus(a);
+    if(modo==='padrao' && st==='nao_feita') return false;
+    if(modo==='feitas' && st!=='feita') return false;
+    return (a.ensaiosSel||[]).some(x=>expKeyItem(x)===key);
+  }).sort((a,b)=>(a.dataAplicacao||'').localeCompare(b.dataAplicacao||'') || ((a.serie||0)-(b.serie||0)));
+}
+function expCicloJanela(e, pl){
+  const todos = expPlantios(e);
+  const inicio = pl.dataPlantio || '';
+  const prox = inicio ? todos.find(p=>p.dataPlantio && p.dataPlantio>inicio) : null;
+  const apps = expAppsDoTalhao(expKeyEns(e)).filter(a=>{
+    const d = a.dataAplicacao||'';
+    return (!inicio || d>=inicio) && (!prox || d<prox.dataPlantio);
+  });
+  return {inicio, apps, datas: Array.from(new Set(apps.map(a=>a.dataAplicacao||''))).filter(Boolean)};
+}
+function expCicloMontarPivos(){
+  const sel = expEl('expCicloPivo'); if(!sel) return;
+  const atual = sel.value;
+  sel.innerHTML = (PIVOS||[]).map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.nome)}</option>`).join('');
+  if((PIVOS||[]).some(p=>p.id===atual)) sel.value = atual;
+  expCicloMontarTalhoes();
+}
+function expCicloEnsaiosDoPivo(pivoId){
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||expPivoPadrao())===pivoId && (e.talhao||e.ensaio)).filter(e=>{
+    const temPlantio = expPlantios(e).length>0;
+    return temPlantio || expAppsDoTalhao(expKeyEns(e)).length>0;
+  }).sort((a,b)=>expNatCmp(a.talhao||a.ensaio, b.talhao||b.ensaio));
+}
+function expCicloMontarTalhoes(){
+  const sel = expEl('expCicloTalhao'); if(!sel) return;
+  const atual = sel.value;
+  const lista = expCicloEnsaiosDoPivo(expEl('expCicloPivo').value);
+  sel.innerHTML = lista.length
+    ? lista.map(e=>{
+        const n = expAppsDoTalhao(expKeyEns(e)).length;
+        const cult = e.cultura ? ' · '+e.cultura : '';
+        return `<option value="${escapeHtml(e.id)}">${escapeHtml(e.talhao||e.ensaio)}${escapeHtml(cult)} (${n} aplic.)</option>`;
+      }).join('')
+    : '<option value="">Nenhum talhão com plantio ou aplicação neste pivô</option>';
+  if(lista.some(e=>e.id===atual)) sel.value = atual;
+  expCicloMontarPlantios();
+}
+function expCicloEnsaioSel(){ return (DATA.ensaios||[]).find(e=>e.id===expEl('expCicloTalhao').value); }
+function expCicloMontarPlantios(){
+  const sel = expEl('expCicloPlantio'); if(!sel) return;
+  const e = expCicloEnsaioSel();
+  const pls = e ? expPlantios(e) : [];
+  if(!e){ sel.innerHTML = '<option value="">—</option>'; expCicloMontarFim(); return; }
+  sel.innerHTML = pls.length
+    ? pls.map(p=>`<option value="${escapeHtml(p._id)}">${p.dataPlantio? expDataBR(p.dataPlantio) : 'sem data de plantio'} — ${escapeHtml([p.cultura, p.modalidade, p.numeroEnsaio? 'ensaio '+p.numeroEnsaio : ''].filter(Boolean).join(' · '))}</option>`).join('')
+    : '<option value="__nenhum">Sem plantio cadastrado (conta desde a primeira aplicação)</option>';
+  expCicloMontarFim();
+}
+function expCicloPlantioSel(){
+  const e = expCicloEnsaioSel(); if(!e) return null;
+  const v = expEl('expCicloPlantio').value;
+  const pls = expPlantios(e);
+  return pls.find(p=>p._id===v) || (pls.length? pls[0] : {_id:'__nenhum', cultura:e.cultura||'', modalidade:e.modalidade||'', dataPlantio:'', numeroEnsaio:''});
+}
+function expCicloMontarFim(){
+  const sel = expEl('expCicloFim'); if(!sel) return;
+  const e = expCicloEnsaioSel();
+  if(!e){ sel.innerHTML = '<option value="">—</option>'; expCicloPreview(); return; }
+  const j = expCicloJanela(e, expCicloPlantioSel());
+  sel.innerHTML = j.datas.length
+    ? j.datas.map(d=>`<option value="${d}">${expDataBR(d)}</option>`).join('')
+    : '<option value="">Nenhuma aplicação neste talhão depois do plantio</option>';
+  if(j.datas.length) sel.value = j.datas[j.datas.length-1];
+  expCicloPreview();
+}
+function expCicloPreview(){
+  const el = expEl('expCicloPrev'); if(!el) return;
+  const e = expCicloEnsaioSel();
+  if(!e){ el.textContent = ''; return; }
+  const pl = expCicloPlantioSel();
+  const fim = expEl('expCicloFim').value;
+  const j = expCicloJanela(e, pl);
+  const n = j.apps.filter(a=>!fim || (a.dataAplicacao||'')<=fim).length;
+  el.innerHTML = pl.dataPlantio
+    ? `🌱 Plantio em <b>${expDataBR(pl.dataPlantio)}</b>${fim? ` → última aplicação <b>${expDataBR(fim)}</b> (${expDiasEntre(pl.dataPlantio, fim)} dias)` : ''} · <b>${n}</b> aplicação(ões) no ciclo.`
+    : `⚠️ Este plantio está sem data cadastrada — o ciclo conta desde a primeira aplicação${fim? ' até '+expDataBR(fim):''} · <b>${n}</b> aplicação(ões).`;
+}
+function expCicloAdicionar(){
+  const e = expCicloEnsaioSel();
+  if(!e){ toast('Escolha um talhão'); return; }
+  const pl = expCicloPlantioSel();
+  const fim = expEl('expCicloFim').value;
+  expCicloPush(e, pl, fim);
+  expCicloRenderLista(); expAtualiza();
+}
+function expCicloPush(e, pl, fim){
+  const id = e.id+'|'+pl._id;
+  const ex = EXP.cicloItens.find(i=>i.id===id);
+  if(ex){ ex.fim = fim; return; }
+  EXP.cicloItens.push({id, ensaioId:e.id, plantioId:pl._id, fim});
+}
+function expCicloAdicionarTodos(){
+  let n = 0;
+  (PIVOS||[]).forEach(p=>{
+    expCicloEnsaiosDoPivo(p.id).forEach(e=>{
+      expPlantios(e).filter(pl=>pl.dataPlantio).forEach(pl=>{
+        const j = expCicloJanela(e, pl);
+        expCicloPush(e, pl, j.datas.length? j.datas[j.datas.length-1] : '');
+        n++;
+      });
+    });
+  });
+  if(!n) toast('Nenhum talhão com data de plantio cadastrada');
+  else toast(`${n} plantio(s) adicionados — fim do ciclo = última aplicação de cada um`);
+  expCicloRenderLista(); expAtualiza();
+}
+function expCicloLimpar(){ EXP.cicloItens = []; expCicloRenderLista(); expAtualiza(); }
+function expCicloRemover(id){ EXP.cicloItens = EXP.cicloItens.filter(i=>i.id!==id); expCicloRenderLista(); expAtualiza(); }
+function expCicloCalc(it){
+  const e = (DATA.ensaios||[]).find(x=>x.id===it.ensaioId); if(!e) return null;
+  const pl = expPlantios(e).find(p=>p._id===it.plantioId) || {_id:'__nenhum', cultura:e.cultura||'', modalidade:e.modalidade||'', dataPlantio:'', numeroEnsaio:''};
+  const j = expCicloJanela(e, pl);
+  const key = expKeyEns(e);
+  const apps = j.apps.filter(a=>!it.fim || (a.dataAplicacao||'')<=it.fim);
+  const ultima = apps.length? apps[apps.length-1].dataAplicacao : '';
+  const prods = new Set(); apps.forEach(a=>(a.produtos||[]).forEach(p=>prods.add((p.nome||'').trim().toUpperCase())));
+  return {e, pl, key, apps, inicio:j.inicio, fim: it.fim||ultima||'', ultima, prods, pivoNome: expNomePivo(e.pivo||expPivoPadrao())};
+}
+function expCicloRenderLista(){
+  const el = expEl('expCicloLista'); if(!el) return;
+  if(!EXP.cicloItens.length){ el.innerHTML = '<div class="muted" style="padding:8px 2px;">Nenhum talhão no relatório ainda. Escolha acima e toque em “Adicionar”.</div>'; return; }
+  const linhas = EXP.cicloItens.map(it=>{
+    const c = expCicloCalc(it); if(!c) return '';
+    return `<div class="exp-item"><div style="flex:1;min-width:0;"><b>${escapeHtml(c.pivoNome)} · ${escapeHtml(c.e.talhao||c.e.ensaio||'')}</b> <span class="muted">${escapeHtml([c.pl.cultura,c.pl.modalidade].filter(Boolean).join(' · '))}</span><br>
+      <span class="muted">${c.inicio? 'plantio '+expDataBR(c.inicio) : 'sem data de plantio'}${c.fim? ' → última aplicação '+expDataBR(c.fim) : ''} · <b>${c.apps.length}</b> aplicação(ões)</span></div>
+      <button type="button" class="btn-ghost btn-sm" onclick="expCicloRemover('${escapeHtml(it.id).replace(/'/g,'&#39;')}')">✕</button></div>`;
+  }).join('');
+  el.innerHTML = `<div class="exp-list">${linhas}</div>`;
+}
+function expDsCiclo(){
+  const calcs = EXP.cicloItens.map(expCicloCalc).filter(Boolean)
+    .sort((a,b)=>expNatCmp(a.pivoNome,b.pivoNome) || expNatCmp(a.e.talhao||'', b.e.talhao||'') || (a.inicio||'').localeCompare(b.inicio||''));
+  const resumo = calcs.map(c=>[
+    c.pivoNome, c.e.talhao||c.e.ensaio||'', c.pl.cultura||'', c.pl.modalidade||'', c.pl.numeroEnsaio||'',
+    expDataBR(c.inicio), expDataBR(c.fim), expDiasEntre(c.inicio, c.fim), c.apps.length, c.prods.size
+  ]);
+  const detalhe = [], produtos = [];
+  calcs.forEach(c=>{
+    c.apps.forEach(a=>detalhe.push([c.pivoNome, c.e.talhao||c.e.ensaio||'', a.serie, expDataBR(a.dataAplicacao), expDiasEntre(c.inicio, a.dataAplicacao), expProdutosTxt(a), a.operador||'', EXP_ST_TXT[expStatus(a)]||'']));
+    const mapa = new Map();
+    c.apps.forEach(a=>{
+      const item = (a.ensaiosSel||[]).find(x=>expKeyItem(x)===c.key);
+      const area = item && Number(item.area) ? Number(item.area) : 0;
+      (a.produtos||[]).forEach(p=>{
+        const k = (p.nome||'').trim().toUpperCase()+'|'+(p.unidade||'');
+        if(!mapa.has(k)) mapa.set(k, {nome:p.nome||'', un:p.unidade||'', n:0, dose:0, qtd:0});
+        const m = mapa.get(k); m.n++;
+        const dose = Number(p.doseHa); if(!isNaN(dose) && p.doseHa!=null && p.doseHa!=='') { m.dose += dose; m.qtd += dose*area; }
+        else if(Number(a.area)>0){ m.qtd += (Number(p.qtd)||0)*(area/Number(a.area)); }
+      });
+    });
+    Array.from(mapa.values()).sort((x,y)=>expNatCmp(x.nome,y.nome)).forEach(m=>produtos.push([c.pivoNome, c.e.talhao||c.e.ensaio||'', m.nome, m.n, expNum(m.dose), expNum(m.qtd), m.un]));
+  });
+  const totApps = calcs.reduce((s,c)=>s+c.apps.length,0);
+  const maior = calcs.reduce((m,c)=>c.apps.length>m? c.apps.length : m, 0);
+  const kpis = [
+    {l:'Talhões / plantios', v:String(calcs.length)},
+    {l:'Aplicações somadas', v:String(totApps)},
+    {l:'Média por talhão', v:calcs.length? fmtNum(totApps/calcs.length) : '0'},
+    {l:'Máximo em um talhão', v:String(maior)}
+  ];
+  const modo = expCicloStatusModo();
+  return {
+    secao:'Aplicações por quadra/talhão no ciclo',
+    sub:'Do plantio até a última aplicação escolhida · contagem: ' + (modo==='feitas'? 'só aplicações feitas' : modo==='todas'? 'todas as aplicações' : 'feitas e aguardando confirmação (não feitas ficam de fora)'),
+    kpis,
+    tabelas:[
+      {nome:'Ciclo por quadra', cols:[{t:'Pivô/Área',w:1.3},{t:'Talhão',w:1.1},{t:'Cultura',w:1.2},{t:'Modalidade',w:1.8},{t:'Nº ensaio',w:1.5},{t:'Data de plantio',w:1.5,al:'c'},{t:'Última aplicação',w:1.5,al:'c'},{t:'Dias do ciclo',w:1.1,al:'r'},{t:'Nº de aplicações',w:1.3,al:'r'},{t:'Produtos diferentes',w:1.3,al:'r'}], rows:resumo},
+      {nome:'Ciclo - aplicações', titulo:'Aplicações de cada talhão no ciclo (DAP = dias após o plantio)', cols:[{t:'Pivô/Área',w:1.3},{t:'Talhão',w:1.1},{t:'Série',w:.9,al:'c'},{t:'Data',w:1.2,al:'c'},{t:'DAP',w:.8,al:'r'},{t:'Produtos',w:6},{t:'Operador',w:1.5},{t:'Status',w:1.7}], rows:detalhe},
+      {nome:'Ciclo - produtos', titulo:'Produtos usados em cada talhão no ciclo (quantidade estimada = dose/ha × área do talhão)', cols:[{t:'Pivô/Área',w:1.3},{t:'Talhão',w:1.1},{t:'Produto',w:4},{t:'Nº de aplicações',w:1.4,al:'r'},{t:'Dose acumulada /ha',w:1.6,al:'r'},{t:'Qtd. estimada no talhão',w:1.8,al:'r'},{t:'Un.',w:.7,al:'c'}], rows:produtos}
+    ]
+  };
+}
+
+/* ---------- 4) fichas ---------- */
+function expFichasFiltradas(){
+  const q = ((expEl('expFichaBusca')||{}).value||'').toLowerCase().trim();
+  return expAppsFiltradas((expEl('expFichaDe')||{}).value, (expEl('expFichaAte')||{}).value, 'todos').reverse().filter(a=>{
+    if(!q) return true;
+    const hay = [a.serie, a.cultura, a.operador, a.dataAplicacao, expDataBR(a.dataAplicacao), expTalhoesTxt(a), ...(a.produtos||[]).map(p=>p.nome)].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+function expFichasRender(){
+  const el = expEl('expFichaLista'); if(!el) return;
+  const lista = expFichasFiltradas();
+  el.innerHTML = lista.length ? lista.map(a=>{
+    const nT = (a.ensaiosSel||[]).length;
+    return `<label class="exp-item" style="cursor:pointer;"><input type="checkbox" style="width:auto;margin-top:2px;flex-shrink:0;" ${EXP.fichas.has(a.id)?'checked':''} onchange="expFichaToggle('${a.id}',this.checked)">
+      <span style="flex:1;min-width:0;"><b>#${escapeHtml(String(a.serie))}</b> · ${escapeHtml(expDataBR(a.dataAplicacao))} · ${escapeHtml(a.cultura||'')}<br><span class="muted">${nT} talhão(ões) · ${(a.produtos||[]).length} produto(s) · ${escapeHtml(a.operador||'')} · ${escapeHtml(EXP_ST_TXT[expStatus(a)]||'')}</span></span></label>`;
+  }).join('') : '<div class="muted" style="padding:10px;">Nenhuma aplicação encontrada com esses filtros.</div>';
+  expFichasContagem();
+}
+function expFichaToggle(id, v){ if(v) EXP.fichas.add(id); else EXP.fichas.delete(id); expFichasContagem(); }
+function expFichasContagem(){
+  const el = expEl('expFichaContagem'); if(el) el.textContent = `${EXP.fichas.size} ficha(s) selecionada(s)`;
+}
+function expFichasMarcar(modo){
+  const lista = expFichasFiltradas();
+  if(modo==='filtradas') lista.forEach(a=>EXP.fichas.add(a.id));
+  else if(modo==='nenhuma') EXP.fichas.clear();
+  else if(modo==='todas') (DATA.applications||[]).forEach(a=>EXP.fichas.add(a.id));
+  expFichasRender();
+}
+function expFichasSelecionadas(){
+  return (DATA.applications||[]).filter(a=>EXP.fichas.has(a.id)).sort((a,b)=>(a.dataAplicacao||'').localeCompare(b.dataAplicacao||'') || ((a.serie||0)-(b.serie||0)));
+}
+async function expRenderFichas(apps, aoCanvas, progresso){
+  if(typeof html2canvas === 'undefined') throw new Error('html2canvas indisponível');
+  const card = expEl('receiptCard'), overlay = expEl('receiptOverlay');
+  const actions = card.querySelector('.receipt-actions');
+  const wasHidden = overlay.classList.contains('hidden');
+  const previaApp = currentReceiptApp;
+  overlay.classList.remove('hidden');
+  if(actions) actions.style.display = 'none';
+  try{
+    for(let i=0;i<apps.length;i++){
+      const app = apps[i];
+      if(progresso) progresso(i+1, apps.length);
+      expEl('rHeadSerie').textContent = 'Nº ' + app.serie;
+      expEl('receiptBody').innerHTML = buildReceiptBodyHTML(app);
+      const dg = app.data ? new Date(app.data) : new Date();
+      expEl('rFootDate').textContent = dg.toLocaleDateString('pt-BR')+' '+dg.toLocaleTimeString('pt-BR');
+      const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
+      await aoCanvas(app, canvas, i);
+    }
+  }finally{
+    if(actions) actions.style.display = '';
+    if(wasHidden){
+      overlay.classList.add('hidden');
+      if(previaApp){
+        currentReceiptApp = previaApp;
+        expEl('rHeadSerie').textContent = 'Nº ' + previaApp.serie;
+        expEl('receiptBody').innerHTML = buildReceiptBodyHTML(previaApp);
+      }
+    }
+  }
+}
+let expOcupado = false;
+function expMsg(txt){ const el = expEl('expStatusMsg'); if(el) el.textContent = txt||''; }
+async function expEntregar(blob, nome, usarPasta){
+  const compart = expEl('expChkShare') && expEl('expChkShare').checked;
+  if(compart){
+    try{
+      const f = new File([blob], nome, {type: blob.type});
+      if(navigator.canShare && navigator.canShare({files:[f]})){ await navigator.share({files:[f], title:nome}); return 'compartilhado'; }
+    }catch(e){ if(e && e.name==='AbortError') return 'cancelado'; console.warn('Share indisponível, baixando:', e); }
+  }
+  if(usarPasta){
+    const ok = await salvarArquivoNaPastaEscolhida(nome, blob);
+    if(ok) return 'pasta';
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 8000);
+  return 'baixado';
+}
+async function expExportarFichas(formato){
+  if(expOcupado) return;
+  const apps = expFichasSelecionadas();
+  if(!apps.length){ toast('Marque pelo menos uma ficha'); return; }
+  if(formato==='pdf' && !(window.jspdf && window.jspdf.jsPDF)){ toast('PDF indisponível neste aparelho'); return; }
+  expOcupado = true;
+  const botoes = document.querySelectorAll('#expBoxFichas button, #expBoxBaixar button'); botoes.forEach(b=>b.disabled=true);
+  try{
+    const nomeBase = `fichas_aplicacoes_${todayISO()}`;
+    if(formato==='pdf'){
+      let doc = null;
+      await expRenderFichas(apps, async (app, canvas)=>{
+        const img = canvas.toDataURL('image/png');
+        const mm = 25.4/(96*2), w = canvas.width*mm, h = canvas.height*mm;
+        if(!doc) doc = new window.jspdf.jsPDF({unit:'mm', format:[w,h]}); else doc.addPage([w,h], w>h?'l':'p');
+        doc.addImage(img, 'PNG', 0, 0, w, h);
+      }, (i,n)=>expMsg(`⏳ Gerando ficha ${i} de ${n}...`));
+      const r = await expEntregar(doc.output('blob'), `${nomeBase}.pdf`, true);
+      expMsg(r==='cancelado'? 'Envio cancelado.' : `✅ PDF com ${apps.length} ficha(s) ${r==='compartilhado'?'enviado pelo compartilhamento':r==='pasta'?'salvo na pasta escolhida':'baixado'}.`);
+    }else{
+      const arquivos = [];
+      await expRenderFichas(apps, async (app, canvas)=>{
+        const blob = await new Promise(res=>canvas.toBlob(res,'image/png'));
+        const buf = new Uint8Array(await blob.arrayBuffer());
+        arquivos.push({name:`ficha_${String(app.serie).padStart(3,'0')}_${app.dataAplicacao||'sem-data'}.png`, data:buf, blob});
+      }, (i,n)=>expMsg(`⏳ Gerando foto da ficha ${i} de ${n}...`));
+      let r, descr;
+      if(arquivos.length===1){
+        r = await expEntregar(arquivos[0].blob, arquivos[0].name, true); descr = '1 foto';
+      }else{
+        const zip = xlsxBuildZip(arquivos.map(f=>({name:f.name, data:f.data})));
+        r = await expEntregar(new Blob([zip], {type:'application/zip'}), `${nomeBase}_fotos.zip`, true); descr = `.zip com ${arquivos.length} fotos`;
+      }
+      expMsg(r==='cancelado'? 'Envio cancelado.' : `✅ ${descr} ${r==='compartilhado'?'enviado pelo compartilhamento':r==='pasta'?'salvo na pasta escolhida':'baixado'}.`);
+    }
+  }catch(e){
+    console.warn('Erro ao exportar fichas:', e);
+    expMsg('🔴 Erro ao gerar as fichas — tente de novo (com menos fichas de uma vez, se forem muitas).');
+  }finally{
+    expOcupado = false; botoes.forEach(b=>b.disabled=false);
+  }
+}
+
+/* ---------- relatório: junta as seções marcadas ---------- */
+function expColetarSecoes(){
+  const chk = id=> !!(expEl(id) && expEl(id).checked);
+  const secs = [];
+  if(chk('expChkEstoque')) secs.push(expDsEstoque());
+  if(chk('expChkHist')) secs.push(expDsHistorico());
+  if(chk('expChkCiclo')){
+    if(!EXP.cicloItens.length){ toast('No ciclo por quadra, adicione pelo menos um talhão'); return null; }
+    secs.push(expDsCiclo());
+  }
+  if(!secs.length){ toast('Marque pelo menos um item pra exportar'); return null; }
+  return secs;
+}
+function expRodape(){ return `Gerado em ${new Date().toLocaleString('pt-BR')}${currentUser && currentUser.nome? ' por '+currentUser.nome : ''}`; }
+async function expBaixarRelatorio(formato){
+  if(expOcupado) return;
+  const secs = expColetarSecoes(); if(!secs) return;
+  expOcupado = true;
+  const botoes = document.querySelectorAll('#expBoxFichas button, #expBoxBaixar button'); botoes.forEach(b=>b.disabled=true);
+  try{
+    const est = estacaoAtiva().nome;
+    const nome = `relatorio_inova_${todayISO()}`;
+    let blob, arq;
+    if(formato==='pdf'){
+      if(!(window.jspdf && window.jspdf.jsPDF)) throw new Error('jsPDF indisponível');
+      blob = expPdfRelatorio(secs, est); arq = nome+'.pdf';
+    }else{
+      blob = new Blob([expXlsxRelatorio(secs, est)], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}); arq = nome+'.xlsx';
+    }
+    const r = await expEntregar(blob, arq, false);
+    expMsg(r==='cancelado'? 'Envio cancelado.' : `✅ ${formato==='pdf'?'Relatório PDF':'Planilha Excel'} ${r==='compartilhado'?'enviado pelo compartilhamento':'baixado'}: ${arq}`);
+  }catch(e){
+    console.warn('Erro ao gerar relatório:', e);
+    expMsg('🔴 Erro ao gerar o arquivo — tente de novo.');
+  }finally{
+    expOcupado = false; botoes.forEach(b=>b.disabled=false);
+  }
+}
+
+/* ---------- Excel com várias abas ---------- */
+function expXlsxCelula(ref, v, estilo){
+  if(typeof v==='number' && isFinite(v)) return `<c r="${ref}" s="${estilo+1}"><v>${v}</v></c>`;
+  if(v===''||v==null) return `<c r="${ref}" s="${estilo}"/>`;
+  return `<c r="${ref}" s="${estilo}" t="inlineStr"><is><t xml:space="preserve">${xlsxEscape(v)}</t></is></c>`;
+}
+function expXlsxSheetXml(sh, primeira){
+  const cabecalho = sh.cols.map(c=>c.t);
+  const strRows = [cabecalho].concat(sh.rows.map(r=>r.map(v=> v==null? '' : String(v))));
+  const widths = xlsxColWidths(strRows);
+  let off = 0, xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
+  const linhasTopo = sh.titulo? 3 : 0;
+  xml += `<sheetViews><sheetView ${primeira?'tabSelected="1" ':''}workbookViewId="0"><pane ySplit="${linhasTopo+1}" topLeftCell="A${linhasTopo+2}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="16"/><cols>`;
+  widths.forEach((w,i)=>{ xml += `<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`; });
+  xml += '</cols><sheetData>';
+  let r = 0;
+  if(sh.titulo){
+    r++; xml += `<row r="${r}" ht="22" customHeight="1">${expXlsxCelula('A'+r, sh.titulo, 6)}</row>`;
+    r++; xml += `<row r="${r}">${expXlsxCelula('A'+r, sh.subtitulo||'', 7)}</row>`;
+    r++; xml += `<row r="${r}"/>`;
+  }
+  r++; xml += `<row r="${r}" ht="22" customHeight="1">`;
+  cabecalho.forEach((t,ci)=>{ xml += `<c r="${xlsxColLetter(ci+1)}${r}" s="1" t="inlineStr"><is><t xml:space="preserve">${xlsxEscape(t)}</t></is></c>`; });
+  xml += '</row>';
+  sh.rows.forEach((row,ri)=>{
+    r++;
+    const est = (ri%2===0)? 2 : 4; // 2 = branco, 4 = zebra (números usam +2)
+    const nL = xlsxRowLineCount(row.map(v=>v==null?'':String(v)), widths);
+    xml += `<row r="${r}" ht="${Math.max(16, nL*15+4)}" customHeight="1">`;
+    row.forEach((v,ci)=>{ xml += expXlsxCelula(xlsxColLetter(ci+1)+r, v, est); });
+    xml += '</row>';
+  });
+  xml += '</sheetData></worksheet>';
+  return xml;
+}
+function expXlsxRelatorio(secs, estacao){
+  const resumo = [['Estação', estacao], ['Gerado em', new Date().toLocaleString('pt-BR')], ['Gerado por', (currentUser && currentUser.nome)||'']];
+  secs.forEach(s=>{
+    resumo.push(['', '']);
+    resumo.push([s.secao.toUpperCase(), s.sub||'']);
+    (s.kpis||[]).forEach(k=>resumo.push(['   '+k.l, k.v]));
+  });
+  const nomesUsados = new Set();
+  const nomeSeguro = n=>{
+    let base = String(n).replace(/[\[\]\:\*\?\/\\]/g,' ').slice(0,31).trim() || 'Aba';
+    let nome = base, i = 2;
+    while(nomesUsados.has(nome.toLowerCase())){ nome = base.slice(0,28)+' '+i; i++; }
+    nomesUsados.add(nome.toLowerCase()); return nome;
+  };
+  const folhas = [{name:nomeSeguro('Resumo'), titulo:'Relatório Inova Genética', subtitulo:estacao, cols:[{t:'Item'},{t:'Valor'}], rows:resumo}];
+  secs.forEach(s=>s.tabelas.forEach(t=>{
+    folhas.push({name:nomeSeguro(t.nome), titulo:t.titulo||s.secao, subtitulo:(s.sub||'')+' — '+expRodape(), cols:t.cols, rows:t.rows});
+  }));
+  const n = folhas.length;
+  const sheetOverrides = folhas.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('');
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+sheetOverrides+'<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+  const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  const workbookXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'
+    + folhas.map((f,i)=>`<sheet name="${xlsxEscape(f.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('') + '</sheets></workbook>';
+  const workbookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    + folhas.map((_,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')
+    + `<Relationship Id="rId${n+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+  const borda = '<border><left style="thin"><color rgb="FFE0D5CC"/></left><right style="thin"><color rgb="FFE0D5CC"/></right><top style="thin"><color rgb="FFE0D5CC"/></top><bottom style="thin"><color rgb="FFE0D5CC"/></bottom><diagonal/></border>';
+  const stylesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    + '<fonts count="4"><font><sz val="11"/><color rgb="FF1A1A1A"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>'
+    + '<font><b/><sz val="15"/><color rgb="FFC94A08"/><name val="Calibri"/></font><font><i/><sz val="10"/><color rgb="FF6E5F50"/><name val="Calibri"/></font></fonts>'
+    + '<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'
+    + '<fill><patternFill patternType="solid"><fgColor rgb="FFE97132"/><bgColor indexed="64"/></patternFill></fill>'
+    + '<fill><patternFill patternType="solid"><fgColor rgb="FFFBEFE7"/><bgColor indexed="64"/></patternFill></fill></fills>'
+    + '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+borda+'</borders>'
+    + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+    + '<cellXfs count="10">'
+    + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'                                                                                                  // 0
+    + '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' // 1 cabeçalho
+    + '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'                       // 2 texto
+    + '<xf numFmtId="4" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="top"/></xf>' // 3 número
+    + '<xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'       // 4 texto zebra
+    + '<xf numFmtId="4" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="top"/></xf>' // 5 número zebra
+    + '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>'                                                                                      // 6 título
+    + '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>'                                                                                      // 7 subtítulo
+    + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+    + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+  const files = [
+    {name:'[Content_Types].xml', data:xlsxUtf8Bytes(contentTypes)},
+    {name:'_rels/.rels', data:xlsxUtf8Bytes(rootRels)},
+    {name:'xl/workbook.xml', data:xlsxUtf8Bytes(workbookXml)},
+    {name:'xl/_rels/workbook.xml.rels', data:xlsxUtf8Bytes(workbookRels)},
+    {name:'xl/styles.xml', data:xlsxUtf8Bytes(stylesXml)}
+  ];
+  folhas.forEach((f,i)=>files.push({name:`xl/worksheets/sheet${i+1}.xml`, data:xlsxUtf8Bytes(expXlsxSheetXml(f, i===0))}));
+  return xlsxBuildZip(files);
+}
+
+/* ---------- PDF (relatório) ---------- */
+function expT(s){
+  return String(s==null?'':s).replace(/[–—]/g,'-').replace(/→/g,'>').replace(/≤/g,'<=').replace(/≥/g,'>=').replace(/…/g,'...').replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[^\u0000-ÿ]/g,'');
+}
+function expFmtCel(v){
+  if(typeof v==='number') return isFinite(v)? v.toLocaleString('pt-BR',{maximumFractionDigits:3}) : '';
+  return v==null? '' : String(v);
+}
+function expPdfRelatorio(secs, estacao){
+  const J = window.jspdf.jsPDF;
+  const doc = new J({orientation:'landscape', unit:'mm', format:'a4'});
+  const W = 297, H = 210, M = 12;
+  let y = 0;
+  const cor = (r,g,b)=>doc.setTextColor(r,g,b);
+  const garante = h=>{ if(y+h > H-14){ doc.addPage(); y = M+2; } };
+  // capa/cabeçalho
+  doc.setFillColor(234,88,12); doc.rect(0,0,W,24,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(17); cor(255,255,255); doc.text('Relatório Inova Genética', M, 11);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.text(expT(`${estacao} - ${expRodape()}`), M, 18);
+  y = 32; cor(40,30,20);
+  secs.forEach(s=>{
+    garante(30);
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); cor(201,74,8); doc.text(expT(s.secao), M, y);
+    doc.setDrawColor(234,88,12); doc.setLineWidth(.5); doc.line(M, y+2, W-M, y+2);
+    y += 7; doc.setFont('helvetica','normal'); doc.setFontSize(8.5); cor(110,95,80); doc.text(expT(s.sub||''), M, y); y += 5; cor(40,30,20);
+    // KPIs
+    if(s.kpis && s.kpis.length){
+      const n = s.kpis.length, gap = 4, w = (W-2*M-gap*(n-1))/n;
+      garante(18);
+      s.kpis.forEach((k,i)=>{
+        const x = M+i*(w+gap);
+        doc.setFillColor(251,239,231); doc.setDrawColor(224,213,204); doc.setLineWidth(.2); doc.roundedRect(x, y, w, 14, 2, 2, 'FD');
+        doc.setFont('helvetica','bold'); doc.setFontSize(13); cor(201,74,8); doc.text(expT(k.v), x+3, y+7);
+        doc.setFont('helvetica','normal'); doc.setFontSize(7.5); cor(110,95,80); doc.text(expT(k.l), x+3, y+11.8);
+      });
+      y += 19; cor(40,30,20);
+    }
+    // tabelas
+    s.tabelas.filter(t=>t.pdf!==false).forEach(t=>{
+      if(!t.rows.length){
+        garante(10); doc.setFont('helvetica','italic'); doc.setFontSize(9); cor(110,95,80);
+        doc.text(expT((t.titulo||t.nome)+': nenhum registro.'), M, y); y += 8; cor(40,30,20); return;
+      }
+      if(t.titulo){ garante(14); doc.setFont('helvetica','bold'); doc.setFontSize(9.5); cor(60,45,30); doc.text(expT(t.titulo), M, y); y += 5; cor(40,30,20); }
+      const totalW = t.cols.reduce((a,c)=>a+(c.w||1),0);
+      const cw = t.cols.map(c=>(c.w||1)/totalW*(W-2*M));
+      const FS = 7.5, LH = 3.2;
+      const desenhaCab = ()=>{
+        doc.setFillColor(233,113,50); doc.rect(M, y, W-2*M, 7, 'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(FS); cor(255,255,255);
+        let x = M;
+        t.cols.forEach((c,i)=>{
+          const tx = expT(c.t);
+          const al = c.al==='r'? 'right' : c.al==='c'? 'center' : 'left';
+          const px = al==='right'? x+cw[i]-1.5 : al==='center'? x+cw[i]/2 : x+1.5;
+          const linhas = doc.splitTextToSize(tx, cw[i]-3).slice(0,2);
+          doc.text(linhas, px, y+(linhas.length>1?3:4.6), {align:al});
+          x += cw[i];
+        });
+        y += 7; cor(40,30,20);
+      };
+      garante(20); desenhaCab();
+      t.rows.forEach((row, ri)=>{
+        doc.setFont('helvetica','normal'); doc.setFontSize(FS);
+        const cel = row.map((v,i)=>{
+          const txt = expT(expFmtCel(v));
+          const partes = [];
+          txt.split('\n').forEach(p=>doc.splitTextToSize(p, cw[i]-3).forEach(l=>partes.push(l)));
+          return partes.length>14? partes.slice(0,14).concat(['...']) : partes;
+        });
+        const nL = Math.max(1, ...cel.map(c=>c.length));
+        const h = nL*LH+2.4;
+        if(y+h > H-14){ doc.addPage(); y = M+2; desenhaCab(); }
+        if(ri%2===1){ doc.setFillColor(251,239,231); doc.rect(M, y, W-2*M, h, 'F'); }
+        let x = M;
+        cel.forEach((linhas,i)=>{
+          const c = t.cols[i];
+          const al = c.al==='r'? 'right' : c.al==='c'? 'center' : 'left';
+          const px = al==='right'? x+cw[i]-1.5 : al==='center'? x+cw[i]/2 : x+1.5;
+          const rgb = t.corCelula ? t.corCelula(row, i, row[i]) : null;
+          if(rgb){ doc.setFont('helvetica','bold'); cor(rgb[0],rgb[1],rgb[2]); } else { doc.setFont('helvetica','normal'); cor(40,30,20); }
+          doc.text(linhas, px, y+3.6, {align:al, lineHeightFactor:1.15});
+          x += cw[i];
+        });
+        doc.setDrawColor(230,220,210); doc.setLineWidth(.15); doc.line(M, y+h, W-M, y+h);
+        y += h;
+      });
+      y += 8; cor(40,30,20);
+    });
+    y += 4;
+  });
+  const total = doc.getNumberOfPages();
+  for(let i=1;i<=total;i++){
+    doc.setPage(i); doc.setFont('helvetica','normal'); doc.setFontSize(7.5); cor(140,125,112);
+    doc.text('Inova Genética', M, H-6);
+    doc.text(`Página ${i} de ${total}`, W-M, H-6, {align:'right'});
+  }
+  return doc.output('blob');
 }
 
 function importBackup(){
