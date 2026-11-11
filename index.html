@@ -632,6 +632,46 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .exp-item{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-bottom:1px solid var(--border);font-size:13px;}
   .exp-item:last-child{border-bottom:none;}
   .exp-box h2{margin-bottom:10px;}
+  .tc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+  .tc-head h2{margin-bottom:2px;}
+  .tc-stats{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 8px;}
+  .tc-stat{flex:1 1 72px;min-width:72px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:7px 6px;text-align:center;cursor:pointer;font-family:inherit;box-shadow:none;color:var(--text);}
+  .tc-stat b{display:block;font-size:17px;line-height:1.2;}
+  .tc-stat span{font-size:10.5px;color:var(--muted);font-weight:700;}
+  .tc-stat i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px;}
+  .tc-stat.on{border-color:var(--orange);box-shadow:0 0 0 2px rgba(234,88,12,.18);}
+  .tc-tools{position:relative;display:flex;gap:8px;align-items:center;justify-content:space-between;margin:0 0 8px;}
+  .tc-tools .tc-res{font-size:12px;color:var(--muted);font-weight:700;}
+  .tc-menu{position:absolute;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:6px;z-index:30;display:none;width:270px;}
+  .tc-menu.open{display:block;}
+  .tc-menu button{display:block;width:100%;text-align:left;border:none;background:none;padding:9px 12px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--text);box-shadow:none;}
+  .tc-menu button:hover{background:#faf3ea;}
+  .tc-menu hr{border:none;border-top:1px solid var(--border);margin:4px 0;}
+  .tc-menu .tc-rng{display:flex;gap:6px;align-items:center;padding:6px 10px;font-size:13px;}
+  .tc-menu .tc-rng input{width:64px;}
+  #tab-talhoes.tc-bar-on{padding-bottom:150px;}
+  #talhaoCadBar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:640px;background:#fff;border-top:1px solid var(--border);box-shadow:0 -8px 24px rgba(0,0,0,.14);padding:10px 12px 14px;z-index:60;border-radius:18px 18px 0 0;display:none;}
+  #talhaoCadBar .tc-bar-info{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:13px;}
+  #talhaoCadBar .tc-bar-info b{font-size:14px;}
+  #talhaoCadBar .tc-bar-info small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;}
+  #talhaoCadBar .tc-bar-acts{display:flex;gap:6px;flex-wrap:wrap;}
+  #talhaoCadBar .tc-bar-acts button{flex:1 1 auto;text-align:center;}
+  .tc-ov{position:fixed;inset:0;background:rgba(30,20,10,.45);z-index:80;display:none;align-items:flex-end;justify-content:center;}
+  .tc-sheet{background:#fff;border-radius:20px 20px 0 0;padding:16px;width:100%;max-width:560px;max-height:90vh;overflow:auto;}
+  .tc-sheet .talhao-cad-editor{border:none;background:transparent;padding:0;margin:0;}
+  .tc-chips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px;max-height:58px;overflow:hidden;}
+  .tc-chips span{background:#f3ece2;border-radius:8px;padding:3px 7px;font-size:11px;font-weight:700;}
+  .tc-opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:14px;padding:11px 12px;margin-bottom:8px;cursor:pointer;text-align:left;}
+  .tc-opt.on{border-color:var(--orange);background:#fff5ec;}
+  .tc-opt input{margin-top:3px;width:auto;}
+  .tc-opt b{font-size:13.5px;display:block;}
+  .tc-opt small{display:block;font-size:12px;color:var(--muted);margin-top:2px;font-weight:600;}
+  .tc-adv{border:1px solid var(--border);border-radius:12px;padding:8px 12px;margin:10px 0;background:#fcfaf7;}
+  .tc-adv summary{font-weight:700;font-size:13px;cursor:pointer;}
+  .tc-hist{font-size:12.5px;border-top:1px solid var(--border);padding:7px 0;}
+  .tc-hist:first-of-type{border-top:none;}
+  #tcUndoToast{position:fixed;left:50%;transform:translateX(-50%);bottom:150px;background:#241a12;color:#fff;border-radius:14px;padding:11px 14px;font-size:13px;z-index:95;display:none;gap:12px;align-items:center;max-width:92%;box-shadow:0 8px 24px rgba(0,0,0,.3);}
+  #tcUndoToast button{background:none;border:none;color:#ffb27a;font-weight:800;cursor:pointer;font-size:13px;padding:0;box-shadow:none;}
   .export-backup-opcoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-bottom:4px;}
   .export-chk-row{
     display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text);
@@ -1541,35 +1581,17 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     <div class="card">
       <div id="mapaCadFullscreenArea">
       <div class="map-toolbar">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+      <div class="tc-head">
         <div>
-          <h2 style="margin-bottom:2px;">Cultura por talhão</h2>
-          <p class="muted" style="margin-top:0;">Cadastre qual cultura está em cada talhão/quadra e, quando for Milho ou Soja, a modalidade do ensaio. Isso também passa a filtrar automaticamente o mapa da aba Aplicação pela cultura escolhida ali.<br>💡 <b>Toque num talhão</b> (Pivô, Grade ou Lista) <b>pra selecionar ele</b> — aparece na hora a opção de editar a ficha ou limpar só aquele talhão.</p>
+          <h2>Talhões</h2>
+          <p class="muted" style="margin:0;">Toque nas quadras para selecionar. Embaixo aparecem as ações: cadastrar plantio, encerrar ciclo e detalhes. A cultura cadastrada aqui também filtra o mapa da aba Aplicação.</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
           <button class="btn-ghost btn-sm" id="btnGerenciarListasAdm" onclick="abrirListasAdm()" style="white-space:nowrap;display:none;" title="Só administrador: adicionar culturas e modalidades de ensaio">⚙️ Culturas e modalidades</button>
-          <button class="btn-ghost btn-sm" id="btnToggleAcoesMassaTalhaoCad" onclick="toggleAcoesMassaTalhaoCad()" style="white-space:nowrap;">🧹 Ações em massa ▾</button>
           <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapaCad" onclick="toggleFullscreenMapaCad()" style="white-space:nowrap;">⛶ Tela cheia</button>
         </div>
       </div>
-      <!-- 29/09/2026, a pedido do Flávio: essas ferramentas (limpar toda Soja/Milho do pivô,
-           selecionar por faixa de número) são usadas bem menos que o fluxo normal (tocar num
-           talhão pra editar ou limpar só ele) — ficavam sempre visíveis, ocupando a tela toda
-           e deixando confuso pra quem só quer mexer num talhão. Agora ficam escondidas atrás
-           do botão "🧹 Ações em massa", só aparecem quem for realmente limpar/selecionar em
-           lote. Ver toggleAcoesMassaTalhaoCad(). -->
-      <div id="talhaoCadAcoesMassaPanel" class="talhao-acoes-massa-panel" style="display:none;">
-        <div class="muted" style="font-size:12px;margin-bottom:8px;width:100%;">Ferramentas pra mexer em vários talhões do pivô ativo de uma vez:</div>
-        <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('SOJA')" style="white-space:nowrap;" title="Limpa a cultura de TODOS os talhões deste pivô que hoje estão com Soja (não apaga o talhão nem as aplicações já feitas)">🧹 Limpar toda Soja deste pivô</button>
-        <button class="btn-ghost btn-sm" onclick="limparCulturaEmMassa('MILHO')" style="white-space:nowrap;" title="Limpa a cultura de TODOS os talhões deste pivô que hoje estão com Milho (não apaga o talhão nem as aplicações já feitas)">🧹 Limpar todo Milho deste pivô</button>
-        <span style="display:flex;gap:4px;align-items:center;" title="Seleciona de uma vez todos os talhões cujo número esteja nessa faixa (ex: 100 até 200 pega A100...A200, B100...B200 etc)">
-          <span class="muted" style="font-size:12px;">Selecionar faixa:</span>
-          <input type="number" id="faixaTalhaoDe" placeholder="De" inputmode="numeric" style="width:64px;">
-          <span class="muted" style="font-size:12px;">até</span>
-          <input type="number" id="faixaTalhaoAte" placeholder="Até" inputmode="numeric" style="width:64px;">
-          <button class="btn-ghost btn-sm" onclick="selecionarFaixaTalhaoCad()" style="white-space:nowrap;">🎯 Selecionar</button>
-        </span>
-      </div>
+      <div class="tc-stats" id="talhaoCadStats"></div>
 
       <div class="subtabs pivo-tabs">
         <button class="subtab-btn pivo-tab-btn active" data-pivo="CRISTALINA" onclick="switchPivoAtivo('CRISTALINA')">📍 Pivô 3</button>
@@ -1584,8 +1606,15 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <input class="searchbar" id="talhaoCadastroSearch" name="busca_talhaoCadastroSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoCadastroSearch()">
 
-      <div id="talhaoCadBulkPanel" style="display:none;"></div>
-      <div id="talhaoCadEditor" style="display:none;"></div>
+      <div class="tc-tools">
+        <span class="tc-res" id="talhaoCadSelResumo"></span>
+        <button type="button" class="btn-ghost btn-sm" onclick="tcMenuToggle(event)">☑ Selecionar ▾</button>
+        <div class="tc-menu" id="tcMenu" onclick="event.stopPropagation()"></div>
+      </div>
+      <div id="talhaoCadBulkPanel" class="tc-ov" style="display:none;"></div>
+      <div id="talhaoCadEditor" class="tc-ov" style="display:none;"></div>
+      <div id="talhaoCadCicloSheet" class="tc-ov" style="display:none;"></div>
+      <div id="talhaoCadBar"></div>
       </div>
 
       <div class="map-stage">
@@ -2115,7 +2144,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.24.0';
+const APP_BUILD_ID = 'v2.25.0';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -5064,6 +5093,9 @@ let talhaoCadEditingId = null;
    preencher cultura/modalidade/data de plantio/número do ensaio pra vários
    talhões de uma vez só, em vez de um por um. */
 let talhaoCadSelMode = false;
+let talhaoCadFiltro = null;      // 'SOJA' | 'MILHO' | 'LIVRE' | 'RES' | 'OUTRA'
+let talhaoCadFormAberto = false;  // janela "Cadastrar plantio"
+let talhaoCadCicloAberto = false; // janela "Encerrar ciclo"
 let selectedTalhaoCad = {}; // id -> {talhao, area}
 
 function onTalhaoCadastroSearch(){
@@ -5147,7 +5179,7 @@ function renderTalhaoCadastro(){
   const body = document.getElementById('talhaoCadastroBody');
   if(!body) return;
   const q = talhaoCadastroSearch;
-  const list = (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pivoAtivoId && (!q || (e.talhao||'').toUpperCase().includes(q)));
+  const list = (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pivoAtivoId && (!q || (e.talhao||'').toUpperCase().includes(q)) && !talhaoCadForaDoFiltro(e));
   if(!list.length){ body.innerHTML = '<div class="empty">Nenhum talhão encontrado.</div>'; return; }
 
   const porQuadrante = {};
@@ -5191,6 +5223,11 @@ function updateTalhaoPlantioField(ensaioId, plantioId, campo, valor){
   ensurePlantiosArray(e);
   const p = e.plantios.find(x=>x.id===plantioId);
   if(!p) return;
+  if(campo==='cultura' && !valor && p.cultura && !isAdmin()){
+    toast('Só o administrador pode limpar a cultura de uma quadra (use "Encerrar ciclo")');
+    refreshTalhaoCadUI();
+    return;
+  }
   p[campo] = valor;
   if(campo==='cultura' && !MODALIDADES_POR_CULTURA[valor]) p.modalidade = '';
   syncEnsaioTopFields(e);
@@ -5229,6 +5266,7 @@ function addTalhaoPlantio(ensaioId){
 }
 
 function deleteTalhaoPlantio(ensaioId, plantioId){
+  if(!isAdmin()){ toast('Só o administrador pode remover um plantio'); return; }
   const e = (DATA.ensaios||[]).find(x=>x.id===ensaioId);
   if(!e) return;
   ensurePlantiosArray(e);
@@ -5277,9 +5315,227 @@ function refreshTalhaoCadUI(){
   if(talhaoCadView==='pivo') renderPivoCad();
   else if(talhaoCadView==='mapa') renderMapaCad();
   else renderTalhaoCadastro();
+  renderTalhaoCadStats();
   renderTalhaoCadEditor();
   renderTalhaoCadBulkPanel();
+  renderTalhaoCadCicloSheet();
+  renderTalhaoCadBar();
   atualizarQuadraInfo();
+}
+
+/* ====================== TALHÕES — NOVA TELA (v2.25.0) ======================
+   Pedido do Flávio (11/11/2026): cadastro de talhões mais profissional e menos "inchado".
+   - Quadros no topo (Soja/Milho/Livres/Reservadas) que também filtram o mapa.
+   - Menu "Selecionar ▾" (faixa, quadrante, tudo de Soja/Milho, livres, inverter).
+   - Barra de ações fixa embaixo com o resumo da seleção (acabou a janelinha que tampava o mapa).
+   - Cadastrar plantio e Detalhes abrem como janelas que fecham sozinhas.
+   - "Encerrar ciclo" (só administrador): libera a quadra pro próximo plantio e GUARDA o plantio no
+     histórico dela (e.historico) — o relatório de aplicações por ciclo da aba Exportar usa esse histórico.
+   - Sem botão "Excluir quadra". Técnico só edita; limpar/encerrar é só do administrador.
+   - "Desfazer" por 10 segundos depois de cadastrar, reservar ou encerrar. */
+function talhaoCadTipo(e){
+  if(!e) return 'LIVRE';
+  if(e.reservado) return 'RES';
+  const c = (e.cultura||'').toUpperCase();
+  if(c==='SOJA' || c==='MILHO') return c;
+  return c ? 'OUTRA' : 'LIVRE';
+}
+function talhaoCadForaDoFiltro(e){ return !!talhaoCadFiltro && talhaoCadTipo(e)!==talhaoCadFiltro; }
+function renderTalhaoCadStats(){
+  const el = document.getElementById('talhaoCadStats');
+  if(!el) return;
+  const cont = {SOJA:0, MILHO:0, LIVRE:0, RES:0, OUTRA:0};
+  activosTalhoesCad().forEach(e=>{ cont[talhaoCadTipo(e)]++; });
+  const itens = [['SOJA','Soja','var(--orange)'],['MILHO','Milho','#2f9e44'],['LIVRE','Livres','#d8cdbd'],['RES','Reservadas','#a78bfa']];
+  if(cont.OUTRA) itens.push(['OUTRA','Outras','#64748b']);
+  el.innerHTML = itens.map(([k,nome,cor])=>`<button type="button" class="tc-stat${talhaoCadFiltro===k?' on':''}" onclick="tcSetFiltro('${k}')"><b>${cont[k]}</b><span><i style="background:${cor}"></i>${nome}</span></button>`).join('');
+  const r = document.getElementById('talhaoCadSelResumo');
+  if(r){ const n = Object.keys(selectedTalhaoCad).length; r.textContent = talhaoCadFiltro ? `Filtro: ${({SOJA:'Soja',MILHO:'Milho',LIVRE:'Livres',RES:'Reservadas',OUTRA:'Outras'})[talhaoCadFiltro]} (toque de novo para tirar)` : (n? `${n} selecionada${n===1?'':'s'}` : ''); }
+}
+function tcSetFiltro(k){
+  talhaoCadFiltro = (talhaoCadFiltro===k) ? null : k;
+  refreshTalhaoCadUI();
+}
+/* ---- menu Selecionar ---- */
+function tcMenuToggle(ev){
+  if(ev) ev.stopPropagation();
+  const m = document.getElementById('tcMenu');
+  if(!m) return;
+  if(m.classList.contains('open')){ m.classList.remove('open'); return; }
+  const letras = Array.from(new Set(activosTalhoesCad().map(e=>{ const mm = /^([A-Za-z_]+)-?\d+$/.exec(e.talhao||''); return mm? mm[1].toUpperCase() : ''; }).filter(Boolean))).sort();
+  m.innerHTML = `<div class="tc-rng">Faixa: <input type="number" id="faixaTalhaoDe" placeholder="De" inputmode="numeric"> até <input type="number" id="faixaTalhaoAte" placeholder="Até" inputmode="numeric"></div>
+    <button type="button" onclick="selecionarFaixaTalhaoCad();tcMenuFechar()">🎯 Selecionar a faixa</button><hr>
+    ${letras.map(l=>`<button type="button" onclick="tcSelQuadrante('${l}')">Quadrante ${escapeHtml(l)} inteiro</button>`).join('')}
+    <button type="button" onclick="tcSelTipo('SOJA')">Tudo que está com Soja</button>
+    <button type="button" onclick="tcSelTipo('MILHO')">Tudo que está com Milho</button>
+    <button type="button" onclick="tcSelTipo('LIVRE')">Todas as quadras livres</button><hr>
+    <button type="button" onclick="tcInverterSel()">⇄ Inverter seleção</button>
+    <button type="button" onclick="toggleTalhaoCadSelMode();tcMenuFechar()">✕ Limpar seleção</button>`;
+  m.classList.add('open');
+}
+function tcMenuFechar(){ const m = document.getElementById('tcMenu'); if(m) m.classList.remove('open'); }
+document.addEventListener('click', ()=>tcMenuFechar());
+function tcSelAdd(lista){
+  lista.forEach(e=>{ selectedTalhaoCad[e.id] = {talhao: e.talhao||'', area: e.area||0}; });
+  talhaoCadEditingId = null;
+  tcMenuFechar();
+  refreshTalhaoCadUI();
+  toast(`${lista.length} quadra${lista.length===1?'':'s'} selecionada${lista.length===1?'':'s'}`);
+}
+function tcSelQuadrante(letra){ tcSelAdd(activosTalhoesCad().filter(e=>{ const m = /^([A-Za-z_]+)-?\d+$/.exec(e.talhao||''); return m && m[1].toUpperCase()===letra; })); }
+function tcSelTipo(tipo){
+  const lista = activosTalhoesCad().filter(e=>talhaoCadTipo(e)===tipo);
+  if(!lista.length){ tcMenuFechar(); toast('Nenhuma quadra nesse grupo'); return; }
+  tcSelAdd(lista);
+}
+function tcInverterSel(){
+  activosTalhoesCad().forEach(e=>{ if(selectedTalhaoCad[e.id]) delete selectedTalhaoCad[e.id]; else selectedTalhaoCad[e.id] = {talhao: e.talhao||'', area: e.area||0}; });
+  talhaoCadEditingId = null;
+  tcMenuFechar();
+  refreshTalhaoCadUI();
+}
+/* ---- desfazer ---- */
+let __tcUndo = null, __tcUndoTimer = null;
+function tcSnapshot(ids){ return ids.map(id=>{ const e = ensaioById(id); return {id, json: e? JSON.stringify(e) : null}; }); }
+function tcUndoToast(msg, snap){
+  __tcUndo = snap;
+  let el = document.getElementById('tcUndoToast');
+  if(!el){ el = document.createElement('div'); el.id = 'tcUndoToast'; document.body.appendChild(el); }
+  el.innerHTML = `<span>${escapeHtml(msg)}</span><button type="button" onclick="tcDesfazer()">Desfazer</button>`;
+  el.style.display = 'flex';
+  clearTimeout(__tcUndoTimer);
+  __tcUndoTimer = setTimeout(()=>{ el.style.display = 'none'; __tcUndo = null; }, 10000);
+}
+function tcDesfazer(){
+  if(!__tcUndo) return;
+  __tcUndo.forEach(({id, json})=>{
+    if(!json) return;
+    const i = (DATA.ensaios||[]).findIndex(x=>x.id===id);
+    if(i>=0) DATA.ensaios[i] = JSON.parse(json);
+  });
+  __tcUndo = null;
+  clearTimeout(__tcUndoTimer);
+  const el = document.getElementById('tcUndoToast'); if(el) el.style.display = 'none';
+  saveData();
+  fbPushEstoque();
+  refreshTalhaoUI();
+  refreshTalhaoCadUI();
+  toast('↩ Desfeito');
+}
+/* ---- cultura: técnico não consegue "esvaziar" uma cultura já cadastrada ---- */
+function tcCulturaOptions(atual){
+  const html = culturaOptionsHtml(atual);
+  return (atual && !isAdmin()) ? html.replace(/<option value="">[^<]*<\/option>/, '') : html;
+}
+function tcAplicacoesNoCiclo(e, h){
+  const key = (e.pivo||((PIVOS&&PIVOS[0])?PIVOS[0].id:'CRISTALINA'))+'|'+(e.talhao||e.ensaio||'');
+  return (DATA.applications||[]).filter(a=>{
+    if(a.statusExecucao==='nao_feita') return false;
+    const d = a.dataAplicacao||'';
+    if(h.dataPlantio && d<h.dataPlantio) return false;
+    if(h.encerradoEm && d>h.encerradoEm) return false;
+    return (a.ensaiosSel||[]).some(x=>((x.pivo||((PIVOS&&PIVOS[0])?PIVOS[0].id:'CRISTALINA'))+'|'+(x.talhao||x.ensaio||''))===key);
+  }).length;
+}
+/* ---- barra de ações ---- */
+function tcTemPlantio(e){ return !!(e && Array.isArray(e.plantios) && e.plantios.some(p=>p && p.cultura)); }
+function tcResumoQuadra(e){
+  const at = (e.plantios && e.plantios[0]) || null;
+  let t = e.cultura ? [tituloCultura(e.cultura), e.modalidade].filter(Boolean).join(' · ') : 'Livre (sem plantio)';
+  if(at && at.dataPlantio) t += ' · plantio '+formatDateBR(at.dataPlantio);
+  if(at && at.numeroEnsaio) t += ' · ensaio nº '+at.numeroEnsaio;
+  if(nEnsaiosExtras(e)) t += ` · +${nEnsaiosExtras(e)} ensaio(s)`;
+  if(e.reservado) t += ' · '+reservaTxt(e);
+  return t;
+}
+function renderTalhaoCadBar(){
+  const bar = document.getElementById('talhaoCadBar');
+  const sec = document.getElementById('tab-talhoes');
+  if(!bar) return;
+  const ids = Object.keys(selectedTalhaoCad);
+  if(!ids.length){ bar.style.display = 'none'; bar.innerHTML = ''; if(sec) sec.classList.remove('tc-bar-on'); return; }
+  const ens = ids.map(id=>ensaioById(id)).filter(Boolean);
+  const n = ens.length;
+  const comPlantio = ens.filter(tcTemPlantio);
+  const reservadas = ens.filter(e=>e.reservado);
+  let info;
+  if(n===1){
+    info = `<div><b>${escapeHtml(ens[0].talhao||'')}</b>${ens[0].area? ` <span class="muted">· ${escapeHtml(String(ens[0].area))} ha</span>`:''}<small>${escapeHtml(tcResumoQuadra(ens[0]))}</small></div>`;
+  }else{
+    const lista = ens.slice(0,6).map(e=>e.talhao).join(', ') + (n>6? '…' : '');
+    info = `<div><b>${n} quadras</b><small>${comPlantio.length} com plantio · ${n-comPlantio.length} sem plantio${reservadas.length? ` · ${reservadas.length} reservada(s)`:''}<br>${escapeHtml(lista)}</small></div>`;
+  }
+  const btns = [`<button type="button" class="btn-primary" onclick="tcAbrirForm()">🌱 Cadastrar plantio</button>`];
+  if(isAdmin() && comPlantio.length) btns.push(`<button type="button" class="btn-ghost" onclick="tcAbrirCiclo()">🧹 Encerrar ciclo${n>1? ' ('+comPlantio.length+')':''}</button>`);
+  if(n===1) btns.push(`<button type="button" class="btn-ghost" onclick="openTalhaoCadEditor('${ens[0].id}')">📋 Detalhes</button>`);
+  if(reservadas.length) btns.push(`<button type="button" class="btn-ghost" onclick="tirarReservaSelecionados()">🔓 Tirar reserva</button>`);
+  bar.innerHTML = `<div class="tc-bar-info">${info}<button type="button" class="btn-ghost btn-sm" onclick="toggleTalhaoCadSelMode()" title="Limpar seleção">✕</button></div><div class="tc-bar-acts">${btns.join('')}</div>`;
+  bar.style.display = 'block';
+  if(sec) sec.classList.add('tc-bar-on');
+}
+function tcEsconderUndo(){ const u = document.getElementById('tcUndoToast'); if(u) u.style.display = 'none'; }
+function tcAbrirForm(){ tcEsconderUndo(); talhaoCadFormAberto = true; talhaoCadEditingId = null; refreshTalhaoCadUI(); }
+function tcFecharForm(){ talhaoCadFormAberto = false; refreshTalhaoCadUI(); }
+/* ---- Encerrar ciclo (só administrador) ---- */
+function tcAbrirCiclo(){
+  if(!isAdmin()){ toast('Só o administrador pode encerrar ciclo'); return; }
+  tcEsconderUndo();
+  talhaoCadCicloAberto = true; talhaoCadEditingId = null; talhaoCadFormAberto = false;
+  refreshTalhaoCadUI();
+}
+function tcFecharCiclo(){ talhaoCadCicloAberto = false; refreshTalhaoCadUI(); }
+function tcCicloOpt(i){
+  document.querySelectorAll('#talhaoCadCicloSheet .tc-opt').forEach((o,k)=>{ o.classList.toggle('on', k===i); const r = o.querySelector('input'); if(r) r.checked = (k===i); });
+  const b = document.getElementById('tcCicloBtn'); if(b) b.textContent = i===0 ? '🧹 Encerrar ciclo' : '🗑 Apagar plantio';
+}
+function renderTalhaoCadCicloSheet(){
+  const box = document.getElementById('talhaoCadCicloSheet');
+  if(!box) return;
+  const ids = Object.keys(selectedTalhaoCad);
+  if(!ids.length || !talhaoCadCicloAberto || !isAdmin()){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  if(box.style.display==='flex' && box.innerHTML) return; // já aberta: não reconstrói (mantém a escolha)
+  const alvos = ids.map(id=>ensaioById(id)).filter(tcTemPlantio);
+  const n = alvos.length;
+  box.className = 'tc-ov';
+  box.style.display = 'flex';
+  box.onclick = ev=>{ if(ev.target===box) tcFecharCiclo(); };
+  const chips = alvos.slice(0,40).map(e=>`<span>${escapeHtml(e.talhao||'')}</span>`).join('') + (n>40? `<span>+${n-40}</span>` : '');
+  box.innerHTML = `<div class="tc-sheet"><div class="talhao-cad-editor-head"><b>🧹 Encerrar ciclo em ${n} ${n===1?'quadra':'quadras'}</b><button type="button" class="btn-ghost btn-sm" onclick="tcFecharCiclo()">✕ Fechar</button></div>
+    <div class="muted" style="font-size:12px;">Libera ${n===1?'a quadra':'as quadras'} para o próximo plantio. Só administrador faz isso.</div>
+    <div class="tc-chips">${chips}</div>
+    <label class="tc-opt on" onclick="tcCicloOpt(0)"><input type="radio" name="tcCicloModo" value="encerrar" checked><div><b>Encerrar ciclo (recomendado)</b><small>A quadra fica livre no mapa, mas o plantio (cultura, modalidade, datas e nº do ensaio) fica guardado no histórico dela. O relatório de aplicações no ciclo continua funcionando.</small></div></label>
+    <label class="tc-opt" onclick="tcCicloOpt(1)"><input type="radio" name="tcCicloModo" value="apagar"><div><b>Apagar plantio</b><small>Remove de vez, sem guardar histórico. Use só para corrigir um cadastro errado.</small></div></label>
+    <div class="field" style="margin-top:6px;"><label>Data do encerramento do ciclo</label><input type="date" id="tcCicloData" value="${todayISO()}"></div>
+    <div class="row" style="margin-top:8px;align-items:center;gap:8px;">
+      <button type="button" class="btn-ghost" onclick="tcFecharCiclo()">Cancelar</button>
+      <button type="button" class="btn-primary" id="tcCicloBtn" onclick="tcAplicarCiclo()">🧹 Encerrar ciclo</button>
+    </div>
+  </div>`;
+}
+function tcAplicarCiclo(){
+  requireAdmin(()=>{
+    const ids = Object.keys(selectedTalhaoCad);
+    const alvos = ids.map(id=>ensaioById(id)).filter(tcTemPlantio);
+    if(!alvos.length){ toast('Nenhuma quadra selecionada tem plantio'); return; }
+    const modo = (document.querySelector('input[name="tcCicloModo"]:checked')||{}).value || 'encerrar';
+    const data = (document.getElementById('tcCicloData')||{}).value || todayISO();
+    const snap = tcSnapshot(alvos.map(e=>e.id));
+    const quem = (currentUser && currentUser.nome) || '';
+    alvos.forEach(e=>{
+      ensurePlantiosArray(e);
+      if(modo==='encerrar'){
+        e.historico = (Array.isArray(e.historico)? e.historico : []).concat(e.plantios.filter(p=>p && (p.cultura||p.dataPlantio||p.numeroEnsaio)).map(p=>Object.assign({}, p, {encerradoEm:data, encerradoPor:quem})));
+      }
+      e.plantios = [];
+      syncEnsaioTopFields(e);
+    });
+    saveData();
+    fbPushEstoque();
+    talhaoCadCicloAberto = false;
+    toggleTalhaoCadSelMode();
+    refreshTalhaoUI();
+    tcUndoToast((modo==='encerrar'? '✅ Ciclo encerrado em ' : '🗑 Plantio apagado em ')+alvos.length+(alvos.length===1?' quadra':' quadras'), snap);
+  });
 }
 
 /* ---- Seleção múltipla + preenchimento em massa (aba Talhões, cadastro) ---- */
@@ -5290,6 +5546,8 @@ function refreshTalhaoCadUI(){
 function toggleTalhaoCadSelMode(){
   selectedTalhaoCad = {};
   talhaoCadEditingId = null;
+  talhaoCadFormAberto = false;
+  talhaoCadCicloAberto = false;
   refreshTalhaoCadUI();
 }
 /* Limpa a cultura de todos os talhões ativos do pivô atual que estejam hoje cadastrados
@@ -5343,7 +5601,7 @@ function toggleTalhaoCadSelecao(id){
   if(desmarcando) delete selectedTalhaoCad[id];
   else selectedTalhaoCad[id] = {talhao: e.talhao||'', area: e.area||0};
   refreshTalhaoCadUI();
-  if(desmarcando) esconderQuadraInfo(); else mostrarQuadraInfo(id);
+  esconderQuadraInfo();
 }
 
 function onBulkCadCulturaChange(valor){
@@ -5368,6 +5626,7 @@ function aplicarBulkTalhaoCad(){
   const motivoEl = document.getElementById('bulkCadMotivo');
   const motivo = motivoEl ? motivoEl.value.trim() : '';
   if(!cultura && !reservar){ toast('Escolha uma cultura pra aplicar aos talhões selecionados'); return; }
+  const snapAntes = tcSnapshot(ids);
   ids.forEach(id=>{
     const e = ensaioById(id);
     if(!e) return;
@@ -5390,8 +5649,9 @@ function aplicarBulkTalhaoCad(){
   saveData();
   fbPushEstoque();
   refreshTalhaoUI();
-  toast((ids.length===1 ? '1 talhão atualizado' : `${ids.length} talhões atualizados`)+(reservar? ' (reservado'+(ids.length===1?'':'s')+(motivo? ': '+motivo : '')+')' : ''));
+  talhaoCadFormAberto = false;
   toggleTalhaoCadSelMode();
+  tcUndoToast((ids.length===1 ? '✅ 1 quadra atualizada' : `✅ ${ids.length} quadras atualizadas`)+(reservar? ' (reservada'+(ids.length===1?'':'s')+(motivo? ': '+motivo : '')+')' : ''), snapAntes);
 }
 
 /* 01/09/2026 — a pedido do Flávio: usado pelos editores de talhão (individual e em massa)
@@ -5427,70 +5687,28 @@ function renderTalhaoCadBulkPanel(){
   const box = document.getElementById('talhaoCadBulkPanel');
   if(!box) return;
   const ids = Object.keys(selectedTalhaoCad);
-  /* 28/09/2026 — não existe mais um "modo" separado de seleção (ver toggleTalhaoCadSelMode);
-     agora esse painel some/aparece sozinho conforme tem ou não talhão selecionado. Também
-     fica escondido enquanto o editor de um talhão específico está aberto (talhaoCadEditingId),
-     pra não mostrar os dois painéis ao mesmo tempo — ver openTalhaoCadEditor/closeTalhaoCadEditor. */
-  if(!ids.length || talhaoCadEditingId){ box.style.display = 'none'; box.innerHTML = ''; return; }
-  /* Corrigido bug reportado pelo Flávio: cadastrando vários talhões de uma vez (seleção
-     múltipla), se a sincronização de fundo rodasse enquanto ele ainda estava digitando em
-     "Data de plantio" ou "Número do ensaio" — antes de sair do campo —, este painel era
-     reconstruído do zero e o que ele tinha acabado de escrever sumia (esses campos nem
-     chegam a existir em nenhum lugar salvo até o "✓ Aplicar" ser clicado, então a
-     reconstrução sempre voltava em branco). Ver focoEmCampoDeTexto() acima. */
+  /* v2.25.0 — o formulário de cadastro virou uma janela (folha) que só abre quando se toca em
+     "Cadastrar plantio" na barra de baixo, e fecha sozinha depois de aplicar — antes ficava um painel
+     grande aberto em cima do mapa o tempo todo. As proteções contra perder o que está sendo digitado
+     (focoEmCampoDeTexto / guarda do formulário) continuam iguais. */
+  if(!ids.length || talhaoCadEditingId || !talhaoCadFormAberto){ box.style.display = 'none'; box.innerHTML = ''; return; }
   if(focoEmCampoDeTexto(box)) return;
-  box.style.display = 'block';
-  /* v2.12.0 — guarda o que já foi escolhido no formulário (cultura, modalidade, situação, motivo, data,
-     nº do ensaio) antes de redesenhar o painel. A sincronização com a nuvem (a cada ~45s, ou ao voltar o
-     sinal) redesenhava o painel do zero e zerava as escolhas de quem estava cadastrando ensaios — o
-     formulário "sumia" no meio do preenchimento. Restaurado logo depois do innerHTML abaixo. */
+  box.className = 'tc-ov';
+  box.style.display = 'flex';
+  box.onclick = ev=>{ if(ev.target===box) tcFecharForm(); };
   const __prevBulk = {};
   ['bulkCadCultura','bulkCadModalidade','bulkCadSituacao','bulkCadMotivo','bulkCadData','bulkCadEnsaio','bulkReservaMotivo'].forEach(fid=>{
     const el = document.getElementById(fid); if(el) __prevBulk[fid] = el.value;
   });
   { const el = document.getElementById('bulkCadJunto'); if(el) __prevBulk.bulkCadJunto = el.checked; }
-  const listaTxt = ids.map(id=>selectedTalhaoCad[id].talhao).join(', ');
-  /* 04/09/2026 (v1.69) — a pedido do Flávio: excluir quadra também em lote, igual já
-     funciona a seleção múltipla pra cultura/modalidade. "Excluir quadra" só existe pro
-     Pivô 4 (ver excluirTalhaoPivo4), então esse botão só conta/afeta as selecionadas
-     que forem do Pivô 4 e ainda ativas — as demais (Pivô 3, ou já excluídas) ficam de
-     fora da exclusão, mas continuam valendo pro "✓ Aplicar" de cultura acima. */
-  const elegiveisExcluir = ids.map(id=>ensaioById(id)).filter(e=>e && e.ativo!==false);
-  const nExc = elegiveisExcluir.length;
-  const btnExcluirHtml = nExc
-    ? `<button type="button" class="btn-danger btn-sm" onclick="excluirSelecionadosTalhaoCad()">🗑 Excluir ${nExc} quadra${nExc===1?'':'s'}</button>`
-    : '';
-  /* 28/09/2026 — a pedido do Flávio: como agora um único clique já seleciona o talhão (não
-     abre mais o editor direto — ver onTalhaoCadastroTileClick), quando só tem 1 selecionado
-     este botão dá o acesso de volta pro editor completo (histórico de plantio, comprimento
-     manual/excluir quadra do Pivô 4, etc). Com 2+ selecionados não faz sentido, então some. */
-  const soloId = ids.length===1 ? ids[0] : null;
-  const soloEnsaio = soloId ? ensaioById(soloId) : null;
-  const btnEditarHtml = soloId
-    ? `<button type="button" class="btn-ghost btn-sm" onclick="openTalhaoCadEditor('${soloId}')">✎ Editar detalhes</button>`
-    : '';
-  /* 29/09/2026 — a pedido do Flávio (achou confuso ter que ir no "Limpar tudo de X" pra
-     limpar só 1 talhão): com exatamente 1 selecionado, e ele tendo alguma cultura hoje,
-     mostra também um botão de limpar só aquele — sem precisar passar pelo "Limpar tudo". */
-  const btnLimparUnicoHtml = (soloEnsaio && (soloEnsaio.cultura||''))
-    ? `<button type="button" class="btn-ghost btn-sm" onclick="limparCulturaTalhaoUnico('${soloId}')">🧹 Limpar cultura deste talhão</button>`
-    : '';
-  /* Texto explicativo muda conforme quantos estão selecionados — pra deixar claro o que dá
-     pra fazer em cada caso (pedido do Flávio: "deixa mais didático"). */
-  const explicacaoTxt = soloId
-    ? `Selecionado: ${escapeHtml(listaTxt)}${soloEnsaio && soloEnsaio.cultura ? ` — hoje: ${escapeHtml(tituloCultura(soloEnsaio.cultura))}` : ' — sem cultura'}`
-    : `Selecionados: ${escapeHtml(listaTxt)}`;
-  box.innerHTML = `<div class="talhao-cad-editor talhao-cad-bulk">
+  const n = ids.length;
+  const chips = ids.slice(0,40).map(id=>`<span>${escapeHtml(selectedTalhaoCad[id].talhao)}</span>`).join('') + (n>40? `<span>+${n-40}</span>` : '');
+  box.innerHTML = `<div class="tc-sheet"><div class="talhao-cad-editor talhao-cad-bulk">
     <div class="talhao-cad-editor-head">
-      <b>${ids.length} ${ids.length===1?'talhão':'talhões'} selecionado${ids.length===1?'':'s'}</b>
-      <span style="display:flex;gap:8px;flex-wrap:wrap;">
-        ${btnEditarHtml}
-        ${btnLimparUnicoHtml}
-        <button type="button" class="btn-ghost btn-sm" onclick="toggleTalhaoCadSelMode()">✕ Cancelar seleção</button>
-      </span>
+      <b>🌱 Cadastrar plantio em ${n} ${n===1?'quadra':'quadras'}</b>
+      <button type="button" class="btn-ghost btn-sm" onclick="tcFecharForm()">✕ Fechar</button>
     </div>
-    <div class="muted" style="font-size:12px;margin-bottom:10px;">${explicacaoTxt}</div>
-    <div class="muted" style="font-size:12px;margin-bottom:10px;">Pra ${ids.length===1?'esse talhão':'esses talhões'}, preencha abaixo e clique em "✓ Aplicar" pra cadastrar um plantio novo (cultura, modalidade, data, nº do ensaio):</div>
+    <div class="tc-chips">${chips}</div>
     <div class="row">
       <div class="field"><label>Cultura</label><select id="bulkCadCultura" onchange="onBulkCadCulturaChange(this.value)">${culturaOptionsHtml('')}</select></div>
       <div class="field"><label>Modalidade</label><select id="bulkCadModalidade" disabled>${modalidadeOptionsHtml('', '')}</select></div>
@@ -5511,14 +5729,14 @@ function renderTalhaoCadBulkPanel(){
       <div class="muted" style="font-size:11px;margin-top:4px;">Reservada: a cultura/modalidade acima é opcional (só colore a quadra). "Já plantada" tira a reserva, se tinha.</div>
       ${reservaDatalistHtml()}
     </div>
-    <div class="row" style="margin-top:8px; align-items:center; gap:8px;">
-      <button type="button" class="btn-primary btn-sm" ${ids.length? '' : 'disabled'} onclick="aplicarBulkTalhaoCad()">✓ Aplicar a ${ids.length} ${ids.length===1?'talhão':'talhões'} selecionado${ids.length===1?'':'s'}</button>
-      ${ids.some(id=>ensaioReservado(ensaioById(id)))? `<button type="button" class="btn-ghost btn-sm" onclick="tirarReservaSelecionados()">🔓 Tirar reserva</button>` : ''}
-      ${btnExcluirHtml}
+    <div class="row" style="margin-top:10px; align-items:center; gap:8px;">
+      <button type="button" class="btn-ghost" onclick="tcFecharForm()">Cancelar</button>
+      <button type="button" class="btn-primary" onclick="aplicarBulkTalhaoCad()">✓ Aplicar a ${n} ${n===1?'quadra':'quadras'}</button>
     </div>
-  </div>`;
+  </div></div>`;
   restaurarFormBulkTalhaoCad(__prevBulk);
 }
+
 function restaurarFormBulkTalhaoCad(prev){
   if(!prev) return;
   const set = (fid, v)=>{ const el = document.getElementById(fid); if(el && v!==undefined && v!==null) el.value = v; };
@@ -5567,13 +5785,14 @@ function updateTalhaoReserva(id, flag, motivo){
 function tirarReservaSelecionados(){
   const ids = Object.keys(selectedTalhaoCad);
   let n = 0;
+  const snapAntes = tcSnapshot(ids);
   ids.forEach(id=>{ const e = ensaioById(id); if(e && e.reservado){ delete e.reservado; delete e.reservadoMotivo; n++; } });
   if(!n){ toast('Nenhum dos selecionados está reservado'); return; }
   saveData();
   fbPushEstoque();
   toggleTalhaoCadSelMode();
   refreshTalhaoUI();
-  toast(`Reserva removida de ${n} talhão(ões)`);
+  tcUndoToast(`🔓 Reserva removida de ${n} quadra(s)`, snapAntes);
 }
 /* 29/09/2026 — a pedido do Flávio: limpar a cultura de 1 talhão só, direto do painel de
    seleção (sem precisar usar o "Limpar tudo de Soja/Milho", que afeta todos os talhões do
@@ -5628,9 +5847,12 @@ function switchTalhaoCadView(view){
 }
 
 function openTalhaoCadEditor(id){
+  tcEsconderUndo();
   talhaoCadEditingId = id;
+  talhaoCadFormAberto = false;
+  talhaoCadCicloAberto = false;
   refreshTalhaoCadUI();
-  mostrarQuadraInfo(id);
+  esconderQuadraInfo();
 }
 
 function closeTalhaoCadEditor(){
@@ -5654,7 +5876,9 @@ function renderTalhaoCadEditor(){
      continuam redesenhando a tela normalmente, como sempre. */
   if(focoEmCampoDeTexto(box)) return;
   ensurePlantiosArray(e);
-  box.style.display = 'block';
+  box.className = 'tc-ov';
+  box.style.display = 'flex';
+  box.onclick = ev=>{ if(ev.target===box) closeTalhaoCadEditor(); };
   const plantiosHtml = e.plantios.length ? e.plantios.map((p,idx)=>{
     const disabledModalidade = !MODALIDADES_POR_CULTURA[p.cultura];
     const tag = idx===0 ? '<span class="tag">Plantio atual</span>' : (p.emCampo ? '<span class="tag tag-mais">Também em campo</span>' : `<span class="tag">Histórico ${idx}</span>`);
@@ -5662,11 +5886,11 @@ function renderTalhaoCadEditor(){
     return `<div class="talhao-plantio-row">
       <div class="talhao-plantio-head">
         ${tag}
-        ${e.plantios.length>1? `<button type="button" class="btn-ghost btn-sm" onclick="deleteTalhaoPlantio('${e.id}','${p.id}')">🗑 Remover</button>` : ''}
+        ${(e.plantios.length>1 && isAdmin())? `<button type="button" class="btn-ghost btn-sm" onclick="deleteTalhaoPlantio('${e.id}','${p.id}')">🗑 Remover</button>` : ''}
       </div>
       ${emCampoChk}
       <div class="row">
-        <div class="field"><label>Cultura</label><select onchange="updateTalhaoPlantioField('${e.id}','${p.id}','cultura', this.value)">${culturaOptionsHtml(p.cultura)}</select></div>
+        <div class="field"><label>Cultura</label><select onchange="updateTalhaoPlantioField('${e.id}','${p.id}','cultura', this.value)">${tcCulturaOptions(p.cultura)}</select></div>
         <div class="field"><label>Modalidade</label><select ${disabledModalidade?'disabled':''} onchange="updateTalhaoPlantioField('${e.id}','${p.id}','modalidade', this.value)">${modalidadeOptionsHtml(p.cultura, p.modalidade)}</select></div>
       </div>
       <div class="row">
@@ -5694,17 +5918,26 @@ function renderTalhaoCadEditor(){
       <div class="field"><label>Comprimento da quadra (m) <span class="muted">— largura fixa 20m${escapeHtml(hint)}${ePivo4?'':' — só informativo, não muda o desenho'}</span></label>
         <input type="text" inputmode="decimal" placeholder="${ePivo4?'Deixe vazio pra usar o formato real':'Deixe vazio pra calcular pela área'}" value="${e.comprimentoManual? escapeHtml(fmtNum(e.comprimentoManual)):''}" onchange="updateTalhaoComprimento('${e.id}', this.value)" oninput="marcarDigitandoTalhaoCad()"></div>
       <div class="field" style="flex:0 0 auto;">
-        ${e.ativo===false
+        ${(e.ativo===false && isAdmin())
           ? `<button type="button" class="btn-primary btn-sm" onclick="reativarTalhaoPivo4('${e.id}')">↩ Reativar quadra</button>`
-          : `<button type="button" class="btn-danger btn-sm" onclick="excluirTalhaoPivo4('${e.id}')">🗑 Excluir quadra</button>`}
+          : ''}
       </div>
     </div>`;
   }
-  box.innerHTML = `<div class="talhao-cad-editor">
+  const histCiclos = Array.isArray(e.historico) ? e.historico.slice().sort((a,b)=>(b.encerradoEm||'').localeCompare(a.encerradoEm||'')) : [];
+  const historicoCiclosHtml = histCiclos.length ? `<details class="tc-adv" open><summary>📜 Ciclos encerrados (${histCiclos.length})</summary>${histCiclos.map(h=>{
+    const nome = [h.cultura, h.modalidade].filter(Boolean).join(' · ');
+    const nApl = tcAplicacoesNoCiclo(e, h);
+    return `<div class="tc-hist"><b>${escapeHtml(nome||'Plantio')}</b>${h.numeroEnsaio? ' · ensaio nº '+escapeHtml(h.numeroEnsaio):''}<br><span class="muted">plantio ${h.dataPlantio? escapeHtml(formatDateBR(h.dataPlantio)) : '—'} · encerrado em ${h.encerradoEm? escapeHtml(formatDateBR(h.encerradoEm)) : '—'} · ${nApl} aplicação(ões)${h.encerradoPor? ' · por '+escapeHtml(h.encerradoPor):''}</span></div>`;
+  }).join('')}</details>` : '';
+  box.innerHTML = `<div class="tc-sheet" onclick="event.stopPropagation()"><div class="talhao-cad-editor">
     <div class="talhao-cad-editor-head">
       <b>Talhão ${escapeHtml(e.talhao||'')}</b>${e.area? ` <span class="muted">· ${escapeHtml(String(e.area))}ha</span>`:''}
       <button type="button" class="btn-ghost btn-sm" onclick="closeTalhaoCadEditor()">✕ Fechar</button>
     </div>
+    ${plantiosHtml}
+    ${historicoCiclosHtml}
+    <details class="tc-adv"><summary>⚙️ Opções avançadas</summary>
     ${comprimentoHtml}
     <div class="reserva-box">
       <div class="field"><label>Situação do talhão</label>
@@ -5716,13 +5949,13 @@ function renderTalhaoCadEditor(){
       ${e.reservado? `<div class="field"><label>Reservada pra quê?</label><input type="text" list="reservaMotivosList" placeholder="Ex: Purificação milho" value="${escapeHtml(e.reservadoMotivo||'')}" onchange="updateTalhaoReserva('${e.id}', null, this.value)" oninput="marcarDigitandoTalhaoCad()"></div>` : ''}
       ${reservaDatalistHtml()}
     </div>
-    ${plantiosHtml}
+    </details>
     <div class="row" style="margin-top:8px;">
       <button type="button" class="btn-primary btn-sm" onclick="salvarTalhaoCadEditor('${e.id}', this)">💾 Salvar</button>
       <button type="button" class="btn-primary btn-sm" onclick="addEnsaioEmCampo('${e.id}')">➕ Mais um ensaio nesta quadra (junto com o atual)</button>
       <button type="button" class="btn-ghost btn-sm" onclick="addTalhaoPlantio('${e.id}')">Novo plantio (o atual vai pro histórico)</button>
     </div>
-  </div>`;
+  </div></div>`;
 }
 
 /* 27/08/2026 — a pedido do Flávio: cada campo já salva sozinho assim que você sai dele
@@ -5810,8 +6043,8 @@ function renderQuadBlockCad(letra, quadInfo, q){
     const isEditing = talhaoCadEditingId===id;
     const isSelected = !!selectedTalhaoCad[id];
     const isMatch = q && cell.q.toUpperCase().includes(q);
-    const isDim = q && !isMatch;
     const ens = ensaioById(id);
+    const isDim = (q && !isMatch) || talhaoCadForaDoFiltro(ens);
     const cultura = (ens && ens.cultura) || '';
     const modalidade = (ens && ens.modalidade) || '';
     const culturaClass = culturaCellClass(cultura);
@@ -5935,7 +6168,7 @@ function renderMapaCad(){
         if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
         if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
         const numHtml = numeroEnsaioAtual ? `${escapeHtml(numLabel)}<span class="tile-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : escapeHtml(numLabel);
-        return `<button type="button" class="quadra-tile ${isEditing?'sel':''} ${isSelected?'multisel':''} ${temCultura}${ensaioReservado(e)?' reservada':''}" data-id="${e.id}" onclick="onTalhaoCadastroTileClick('${e.id}')" title="${escapeHtml(titleTxt)}">${ensaioReservado(e)?'🔒 ':''}${isSelected?'☑ ':''}${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
+        return `<button type="button" class="quadra-tile ${isEditing?'sel':''} ${isSelected?'multisel':''} ${temCultura}${ensaioReservado(e)?' reservada':''}${talhaoCadForaDoFiltro(e)?' dim':''}" data-id="${e.id}" onclick="onTalhaoCadastroTileClick('${e.id}')" title="${escapeHtml(titleTxt)}">${ensaioReservado(e)?'🔒 ':''}${isSelected?'☑ ':''}${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
       }).join('');
       return `<div class="faixa-row"><div class="flabel">Faixa ${escapeHtml(fx)}</div><div class="faixa-tiles">${tiles}</div></div>`;
     }).join('');
@@ -6177,6 +6410,8 @@ function mostrarQuadraInfo(id){
   el.innerHTML = `<div class="qi-head"><span>${escapeHtml(e.talhao||id)}</span><button type="button" class="qi-x" onclick="esconderQuadraInfo()" aria-label="Fechar">✕</button></div>${corpo}${reserva}`;
   el.dataset.id = id;
   el.style.display = 'block';
+  clearTimeout(window.__quadraInfoTimer);
+  window.__quadraInfoTimer = setTimeout(esconderQuadraInfo, 6000);
 }
 
 function selecionarQuadrante(letra, marcar){
@@ -6495,7 +6730,7 @@ function areaCellClickHandler(id, modoCad){
 function areaCellState(code, id, q, modoCad){
   const isMatch = q && code.toUpperCase().includes(q);
   const ens = ensaioById(id);
-  const isDim = (q && !isMatch) || (!modoCad && filtroCultModFora(ens));
+  const isDim = (q && !isMatch) || (!modoCad && filtroCultModFora(ens)) || (modoCad && talhaoCadForaDoFiltro(ens));
   const cultura = (ens && ens.cultura) || '';
   const modalidade = (ens && ens.modalidade) || '';
   const culturaClass = culturaCellClass(cultura);
@@ -6882,7 +7117,7 @@ function renderPivoSvg(wrapId, q, modoCad){
     const modalidade = (ens && ens.modalidade) || '';
     const corModalidade = corEnsaioExibida(ens, cultura, modalidade);
     const isMatch = q && cell.code.toUpperCase().includes(q);
-    const isDim = (q && !isMatch) || (!modoCad && filtroCultModFora(ens));
+    const isDim = (q && !isMatch) || (!modoCad && filtroCultModFora(ens)) || (modoCad && talhaoCadForaDoFiltro(ens));
     let cls = 'pivo-svg-quadra';
     let codePrefixSvg = '';
     if(modoCad){
@@ -8488,7 +8723,7 @@ function xlsxBuildBytes(sheetName, rows){
    listar). */
 function exportPlantiosPlanilha(){
   const linhas = [];
-  const cab = ['Estação','Pivô/Área','Talhão','Área (ha)','Cultura','Modalidade','Data de plantio','Número do ensaio','Ativo'];
+  const cab = ['Estação','Pivô/Área','Talhão','Área (ha)','Cultura','Modalidade','Data de plantio','Número do ensaio','Ativo','Ciclo encerrado em'];
   linhas.push(cab);
   ESTACOES.forEach(est=>{
     let dados = null;
@@ -8515,8 +8750,13 @@ function exportPlantiosPlanilha(){
           p.modalidade||'',
           formatDateBR(p.dataPlantio||''),
           p.numeroEnsaio||'',
-          e.ativo!==false ? 'Sim' : 'Não'
+          e.ativo!==false ? 'Sim' : 'Não',
+          ''
         ]);
+      });
+      (Array.isArray(e.historico)? e.historico : []).forEach(p=>{
+        if(!p.cultura && !p.dataPlantio && !p.numeroEnsaio) return;
+        linhas.push([est.nome, nomePivo(e.pivo||'CRISTALINA'), e.talhao||'', e.area!=null ? String(e.area).replace('.',',') : '', p.cultura||'', p.modalidade||'', formatDateBR(p.dataPlantio||''), p.numeroEnsaio||'', e.ativo!==false ? 'Sim' : 'Não', formatDateBR(p.encerradoEm||'')]);
       });
     });
   });
@@ -8564,8 +8804,9 @@ function expDiasEntre(a,b){
 function expPlantios(e){
   let pl = Array.isArray(e.plantios) ? e.plantios
     : (e.cultura ? [{id:'legacy', cultura:e.cultura, modalidade:e.modalidade||'', dataPlantio:e.dataPlantio||'', numeroEnsaio:e.numeroEnsaio||''}] : []);
-  return pl.filter(p=>p && (p.cultura||p.dataPlantio||p.numeroEnsaio)).map((p,i)=>Object.assign({}, p, {_id: p.id || ('i'+i)}))
-    .sort((a,b)=>(a.dataPlantio||'').localeCompare(b.dataPlantio||''));
+  const atuais = pl.filter(p=>p && (p.cultura||p.dataPlantio||p.numeroEnsaio)).map((p,i)=>Object.assign({}, p, {_id: p.id || ('i'+i)}));
+  const encerrados = (Array.isArray(e.historico)? e.historico : []).filter(p=>p && (p.cultura||p.dataPlantio||p.numeroEnsaio)).map((p,i)=>Object.assign({}, p, {_id: p.id || ('h'+i), _encerrado:true}));
+  return atuais.concat(encerrados).sort((a,b)=>(a.dataPlantio||'').localeCompare(b.dataPlantio||''));
 }
 function expTalhoesTxt(a, comArea){
   const grupos = new Map();
