@@ -1614,6 +1614,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div id="talhaoCadBulkPanel" class="tc-ov" style="display:none;"></div>
       <div id="talhaoCadEditor" class="tc-ov" style="display:none;"></div>
       <div id="talhaoCadCicloSheet" class="tc-ov" style="display:none;"></div>
+      <div id="talhaoCadEditLote" class="tc-ov" style="display:none;"></div>
       <div id="talhaoCadBar"></div>
       </div>
 
@@ -2144,7 +2145,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.25.0';
+const APP_BUILD_ID = 'v2.25.1';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -5096,6 +5097,7 @@ let talhaoCadSelMode = false;
 let talhaoCadFiltro = null;      // 'SOJA' | 'MILHO' | 'LIVRE' | 'RES' | 'OUTRA'
 let talhaoCadFormAberto = false;  // janela "Cadastrar plantio"
 let talhaoCadCicloAberto = false; // janela "Encerrar ciclo"
+let talhaoCadEditLoteAberto = false; // janela "Editar plantio" (várias quadras de uma vez)
 let selectedTalhaoCad = {}; // id -> {talhao, area}
 
 function onTalhaoCadastroSearch(){
@@ -5319,6 +5321,7 @@ function refreshTalhaoCadUI(){
   renderTalhaoCadEditor();
   renderTalhaoCadBulkPanel();
   renderTalhaoCadCicloSheet();
+  renderTalhaoCadEditLote();
   renderTalhaoCadBar();
   atualizarQuadraInfo();
 }
@@ -5350,7 +5353,9 @@ function renderTalhaoCadStats(){
   if(cont.OUTRA) itens.push(['OUTRA','Outras','#64748b']);
   el.innerHTML = itens.map(([k,nome,cor])=>`<button type="button" class="tc-stat${talhaoCadFiltro===k?' on':''}" onclick="tcSetFiltro('${k}')"><b>${cont[k]}</b><span><i style="background:${cor}"></i>${nome}</span></button>`).join('');
   const r = document.getElementById('talhaoCadSelResumo');
-  if(r){ const n = Object.keys(selectedTalhaoCad).length; r.textContent = talhaoCadFiltro ? `Filtro: ${({SOJA:'Soja',MILHO:'Milho',LIVRE:'Livres',RES:'Reservadas',OUTRA:'Outras'})[talhaoCadFiltro]} (toque de novo para tirar)` : (n? `${n} selecionada${n===1?'':'s'}` : ''); }
+  if(r){ const n = Object.keys(selectedTalhaoCad).length; r.innerHTML = '';
+    if(n && !talhaoCadFiltro){ r.innerHTML = `${n} selecionada${n===1?'':'s'} · <a href="#" onclick="toggleTalhaoCadSelMode();return false;" style="color:var(--orange);font-weight:800;">✕ limpar seleção</a>`; return; }
+    r.textContent = talhaoCadFiltro ? `Filtro: ${({SOJA:'Soja',MILHO:'Milho',LIVRE:'Livres',RES:'Reservadas',OUTRA:'Outras'})[talhaoCadFiltro]} (toque de novo para tirar)` : (n? `${n} selecionada${n===1?'':'s'}` : ''); }
 }
 function tcSetFiltro(k){
   talhaoCadFiltro = (talhaoCadFiltro===k) ? null : k;
@@ -5466,21 +5471,105 @@ function renderTalhaoCadBar(){
     info = `<div><b>${n} quadras</b><small>${comPlantio.length} com plantio · ${n-comPlantio.length} sem plantio${reservadas.length? ` · ${reservadas.length} reservada(s)`:''}<br>${escapeHtml(lista)}</small></div>`;
   }
   const btns = [`<button type="button" class="btn-primary" onclick="tcAbrirForm()">🌱 Cadastrar plantio</button>`];
+  if(n>1 && comPlantio.length) btns.push(`<button type="button" class="btn-ghost" onclick="tcAbrirEditLote()">✎ Editar ${comPlantio.length} plantios</button>`);
   if(isAdmin() && comPlantio.length) btns.push(`<button type="button" class="btn-ghost" onclick="tcAbrirCiclo()">🧹 Encerrar ciclo${n>1? ' ('+comPlantio.length+')':''}</button>`);
   if(n===1) btns.push(`<button type="button" class="btn-ghost" onclick="openTalhaoCadEditor('${ens[0].id}')">📋 Detalhes</button>`);
   if(reservadas.length) btns.push(`<button type="button" class="btn-ghost" onclick="tirarReservaSelecionados()">🔓 Tirar reserva</button>`);
+  btns.push(`<button type="button" class="btn-ghost" onclick="toggleTalhaoCadSelMode()">✕ Limpar seleção</button>`);
   bar.innerHTML = `<div class="tc-bar-info">${info}<button type="button" class="btn-ghost btn-sm" onclick="toggleTalhaoCadSelMode()" title="Limpar seleção">✕</button></div><div class="tc-bar-acts">${btns.join('')}</div>`;
   bar.style.display = 'block';
   if(sec) sec.classList.add('tc-bar-on');
 }
 function tcEsconderUndo(){ const u = document.getElementById('tcUndoToast'); if(u) u.style.display = 'none'; }
-function tcAbrirForm(){ tcEsconderUndo(); talhaoCadFormAberto = true; talhaoCadEditingId = null; refreshTalhaoCadUI(); }
+function tcAbrirForm(){ tcEsconderUndo(); talhaoCadFormAberto = true; talhaoCadEditLoteAberto = false; talhaoCadEditingId = null; refreshTalhaoCadUI(); }
 function tcFecharForm(){ talhaoCadFormAberto = false; refreshTalhaoCadUI(); }
+/* ---- Editar plantio de várias quadras de uma vez (v2.25.1) ----
+   Pedido do Flávio: selecionar 3 quadras do mesmo ensaio/estágio e editar as três juntas (técnico também pode:
+   é edição, não limpeza). Campo em branco = mantém o que já está em cada quadra. */
+function tcAbrirEditLote(){
+  tcEsconderUndo();
+  talhaoCadEditLoteAberto = true; talhaoCadFormAberto = false; talhaoCadCicloAberto = false; talhaoCadEditingId = null;
+  const b = document.getElementById('talhaoCadEditLote'); if(b){ b.innerHTML = ''; b.style.display = 'none'; }
+  refreshTalhaoCadUI();
+}
+function tcFecharEditLote(){
+  talhaoCadEditLoteAberto = false;
+  const b = document.getElementById('talhaoCadEditLote'); if(b){ b.innerHTML = ''; b.style.display = 'none'; }
+  refreshTalhaoCadUI();
+}
+function tcEditLoteCulturaChange(v){
+  const m = document.getElementById('tcElModalidade'); if(!m) return;
+  m.disabled = !MODALIDADES_POR_CULTURA[v];
+  m.innerHTML = modalidadeOptionsHtml(v, '').replace(/<option value="">[^<]*<\/option>/, '<option value="">— manter —</option>');
+}
+function renderTalhaoCadEditLote(){
+  const box = document.getElementById('talhaoCadEditLote');
+  if(!box) return;
+  const ids = Object.keys(selectedTalhaoCad);
+  if(!ids.length || !talhaoCadEditLoteAberto){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  if(box.style.display==='flex' && box.innerHTML) return;
+  const alvos = ids.map(id=>ensaioById(id)).filter(tcTemPlantio);
+  if(!alvos.length){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  const atuais = alvos.map(e=>{ ensurePlantiosArray(e); return e.plantios[0]; });
+  const comum = campo=>{ const v = atuais.map(p=>p[campo]||''); return v.every(x=>x===v[0]) ? v[0] : ''; };
+  const cult = comum('cultura'), mod = comum('modalidade'), dt = comum('dataPlantio'), num = comum('numeroEnsaio');
+  const n = alvos.length;
+  box.className = 'tc-ov'; box.style.display = 'flex';
+  box.onclick = ev=>{ if(ev.target===box) tcFecharEditLote(); };
+  const chips = alvos.slice(0,40).map(e=>`<span>${escapeHtml(e.talhao||'')}</span>`).join('') + (n>40? `<span>+${n-40}</span>` : '');
+  const optCult = culturaOptionsHtml(cult).replace(/<option value="">[^<]*<\/option>/, '<option value="">— manter —</option>');
+  const optMod = modalidadeOptionsHtml(cult, mod).replace(/<option value="">[^<]*<\/option>/, '<option value="">— manter —</option>');
+  box.innerHTML = `<div class="tc-sheet"><div class="talhao-cad-editor-head"><b>✎ Editar plantio de ${n} ${n===1?'quadra':'quadras'}</b><button type="button" class="btn-ghost btn-sm" onclick="tcFecharEditLote()">✕ Fechar</button></div>
+    <div class="muted" style="font-size:12px;">Corrige o plantio atual de todas de uma vez. Campo em branco (“— manter —”) mantém o que cada quadra já tem. Para um plantio novo use “Cadastrar plantio”.</div>
+    <div class="tc-chips">${chips}</div>
+    <div class="row">
+      <div class="field"><label>Cultura</label><select id="tcElCultura" onchange="tcEditLoteCulturaChange(this.value)">${optCult}</select></div>
+      <div class="field"><label>Modalidade</label><select id="tcElModalidade" ${MODALIDADES_POR_CULTURA[cult]?'':'disabled'}>${optMod}</select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Data de plantio</label><input type="date" id="tcElData" value="${escapeHtml(dt)}"></div>
+      <div class="field"><label>Número do ensaio</label><input type="text" id="tcElEnsaio" value="${escapeHtml(num)}" placeholder="${num?'':'(varia entre as quadras)'}"></div>
+    </div>
+    <div class="row" style="margin-top:8px;align-items:center;gap:8px;">
+      <button type="button" class="btn-ghost" onclick="tcFecharEditLote()">Cancelar</button>
+      <button type="button" class="btn-primary" onclick="tcAplicarEditLote()">✓ Salvar nas ${n} quadras</button>
+    </div>
+  </div>`;
+}
+function tcAplicarEditLote(){
+  const ids = Object.keys(selectedTalhaoCad);
+  const alvos = ids.map(id=>ensaioById(id)).filter(tcTemPlantio);
+  if(!alvos.length) return;
+  const cultura = document.getElementById('tcElCultura').value;
+  const modalidade = document.getElementById('tcElModalidade').value;
+  const dataPlantio = document.getElementById('tcElData').value;
+  const numeroEnsaio = document.getElementById('tcElEnsaio').value.trim();
+  const snap = tcSnapshot(alvos.map(e=>e.id));
+  alvos.forEach(e=>{
+    ensurePlantiosArray(e);
+    const p = e.plantios[0];
+    if(cultura && cultura!==p.cultura){
+      p.cultura = cultura;
+      if(!MODALIDADES_POR_CULTURA[cultura]) p.modalidade = '';
+      else if(!(MODALIDADES_POR_CULTURA[cultura]||[]).some(m=>(m&&m.nome?m.nome:m)===p.modalidade)) p.modalidade = '';
+    }
+    if(modalidade) p.modalidade = modalidade;
+    if(dataPlantio) p.dataPlantio = dataPlantio;
+    if(numeroEnsaio) p.numeroEnsaio = numeroEnsaio;
+    syncEnsaioTopFields(e);
+  });
+  saveData();
+  fbPushEstoque();
+  talhaoCadEditLoteAberto = false;
+  toggleTalhaoCadSelMode();
+  refreshTalhaoUI();
+  tcUndoToast(`✅ ${alvos.length} plantio${alvos.length===1?'':'s'} editado${alvos.length===1?'':'s'}`, snap);
+}
 /* ---- Encerrar ciclo (só administrador) ---- */
 function tcAbrirCiclo(){
   if(!isAdmin()){ toast('Só o administrador pode encerrar ciclo'); return; }
   tcEsconderUndo();
-  talhaoCadCicloAberto = true; talhaoCadEditingId = null; talhaoCadFormAberto = false;
+  talhaoCadCicloAberto = true; talhaoCadEditingId = null; talhaoCadFormAberto = false; talhaoCadEditLoteAberto = false;
   refreshTalhaoCadUI();
 }
 function tcFecharCiclo(){ talhaoCadCicloAberto = false; refreshTalhaoCadUI(); }
@@ -5548,6 +5637,7 @@ function toggleTalhaoCadSelMode(){
   talhaoCadEditingId = null;
   talhaoCadFormAberto = false;
   talhaoCadCicloAberto = false;
+  talhaoCadEditLoteAberto = false;
   refreshTalhaoCadUI();
 }
 /* Limpa a cultura de todos os talhões ativos do pivô atual que estejam hoje cadastrados
@@ -5848,6 +5938,7 @@ function switchTalhaoCadView(view){
 
 function openTalhaoCadEditor(id){
   tcEsconderUndo();
+  talhaoCadEditLoteAberto = false;
   talhaoCadEditingId = id;
   talhaoCadFormAberto = false;
   talhaoCadCicloAberto = false;
