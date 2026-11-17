@@ -972,10 +972,15 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .reserva-box select,.reserva-box input[type=text]{width:100%;margin-top:6px;}
   .ensaio-item.dim{opacity:.4;}
   .sat-beta{background:#ffd43b;color:#2b1206;border-radius:999px;padding:0 6px;font-size:10px;font-weight:800;margin-left:3px;}
-  .sat-bar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;}
-  #satMap{height:68vh;min-height:380px;border-radius:12px;overflow:hidden;background:#2a2622;border:1px solid var(--border,#d8cdbd);}
-  .sat-rot{background:transparent!important;border:0!important;color:#fff;font-weight:800;font-size:10px;text-shadow:0 0 3px #000,0 0 3px #000,0 0 2px #000;white-space:nowrap;text-align:center;pointer-events:none;}
-  .sat-rot.sel{color:#fde047;font-size:11px;}
+  .sat-bar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px;}
+  .sat-bar .btn-sm.on{background:var(--orange,#ea580c);color:#fff;border-color:var(--orange,#ea580c);}
+  .sat-bar .sat-sep{flex:0 0 100%;height:0;}
+  .sat-mapa{height:68vh;min-height:380px;border-radius:12px;overflow:hidden;background:#2a2622;border:1px solid var(--border,#d8cdbd);position:relative;}
+  .sat-rot{color:#fff;font:800 10px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;text-shadow:0 0 3px #000,0 0 3px #000,0 0 2px #000;white-space:nowrap;pointer-events:none;}
+  .sat-rot.peq{font-size:8px;font-weight:700;}
+  .sat-rot.sel{color:#fde047;}
+  .sat-mapa .maplibregl-popup-content{padding:5px 9px;font:700 12px -apple-system,Segoe UI,Arial,sans-serif;color:#2b1206;}
+  .sat-mapa .maplibregl-ctrl-attrib{font-size:10px;}
   .pivo-svg-quadra{fill:#e6ddd0;stroke:#b7a88e;stroke-width:1.1;cursor:pointer;vector-effect:non-scaling-stroke;}
   .pivo-svg-quadra:active{opacity:.85;}
   /* 09/09/2026 — padronização visual pedida pelo Flávio: mesma cor/espessura de seleção
@@ -1563,16 +1568,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <div id="mapaBody"></div>
       </div>
 
-      <div id="satWrap" class="hidden-view">
-        <div id="satMsg" class="muted" style="margin:0 0 8px;"></div>
-        <div id="satBar" class="sat-bar">
-          <button type="button" class="btn-sm" id="satBtnFoto" onclick="satToggleFoto()">🛰️ Foto do satélite: ligada</button>
-          <button type="button" class="btn-sm" id="satBtnCod" onclick="satToggleCodigos()">🔢 Códigos: ligados</button>
-          <button type="button" class="btn-ghost btn-sm" onclick="satReenquadrar()">🎯 Enquadrar pivô</button>
-        </div>
-        <div id="satMap"></div>
-        <div class="muted" style="font-size:11px;margin-top:6px;">Posição das quadras estimada a partir do croqui (versão de teste) — confira com o campo. Imagens © Esri, Maxar, Earthstar Geographics.</div>
-      </div>
+      <div id="satWrap" class="hidden-view"></div>
 
       <div id="listaWrap" class="hidden-view">
         <div id="ensaioList" style="max-height:280px;overflow:auto;border:1px solid var(--border);border-radius:9px;"></div>
@@ -1638,6 +1634,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="subtab-btn active" data-viewcad="pivo" onclick="switchTalhaoCadView('pivo')">🌀 Pivô</button>
         <button class="subtab-btn" data-viewcad="mapa" onclick="switchTalhaoCadView('mapa')">🔲 Grade</button>
         <button class="subtab-btn" data-viewcad="lista" onclick="switchTalhaoCadView('lista')">☰ Lista</button>
+        <button class="subtab-btn" data-viewcad="sat" onclick="switchTalhaoCadView('sat')">🛰️ Satélite <span class="sat-beta">teste</span></button>
       </div>
 
       <input class="searchbar" id="talhaoCadastroSearch" name="busca_talhaoCadastroSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoCadastroSearch()">
@@ -1663,6 +1660,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div id="mapaCadWrap" class="hidden-view">
         <div id="mapaCadBody"></div>
       </div>
+
+      <div id="satCadWrap" class="hidden-view"></div>
 
       <div id="listaCadWrap" class="hidden-view">
         <div id="talhaoCadastroBody" style="max-height:65vh;overflow:auto;"></div>
@@ -2216,7 +2215,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.29.0';
+const APP_BUILD_ID = 'v2.30.0';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -5418,6 +5417,7 @@ function activosTalhoesCad(){
 function refreshTalhaoCadUI(){
   if(talhaoCadView==='pivo') renderPivoCad();
   else if(talhaoCadView==='mapa') renderMapaCad();
+  else if(talhaoCadView==='sat') renderSat('cad');
   else renderTalhaoCadastro();
   renderTalhaoCadStats();
   renderTalhaoCadEditor();
@@ -6035,6 +6035,7 @@ function switchTalhaoCadView(view){
   document.getElementById('pivoCadWrap').classList.toggle('hidden-view', view!=='pivo');
   document.getElementById('mapaCadWrap').classList.toggle('hidden-view', view!=='mapa');
   document.getElementById('listaCadWrap').classList.toggle('hidden-view', view!=='lista');
+  const _sc = document.getElementById('satCadWrap'); if(_sc) _sc.classList.toggle('hidden-view', view!=='sat');
   refreshTalhaoCadUI();
 }
 
@@ -6406,7 +6407,7 @@ function refreshTalhaoUI(){
   renderFiltroCultMod();
   if(talhaoView==='pivo') renderPivo();
   else if(talhaoView==='mapa') renderMapa();
-  else if(talhaoView==='sat') renderSat();
+  else if(talhaoView==='sat') renderSat('app');
   else renderEnsaioList();
 }
 
@@ -6486,18 +6487,6 @@ const SAT_GEO = {
   CRISTALINA: { lat0:-16.194542904961484, lon0:-47.472659583632584, R:656.5,
     phi:31.7, W:20.3, L:192, pitch:200, uN:25, uS:13, g:{A:16,B:-4.3,C:16,D:16}, du:0, dv:0 }
 };
-let __satMap = null, __satFoto = null, __satGrp = null, __satRot = null, __satPivo = null, __satPolys = {};
-let __satMostraFoto = true, __satMostraCod = true, __satLoading = null;
-function satCarregaLeaflet(){
-  if(window.L && window.L.map) return Promise.resolve();
-  if(__satLoading) return __satLoading;
-  if(!document.getElementById('leafletCss')){
-    const l = document.createElement('link'); l.id='leafletCss'; l.rel='stylesheet';
-    l.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.appendChild(l);
-  }
-  __satLoading = loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js').catch(e=>{ __satLoading=null; throw e; });
-  return __satLoading;
-}
 function satClipPoly(poly, cp){ /* Sutherland–Hodgman contra polígono convexo anti-horário */
   let out = poly;
   for(let i=0;i<cp.length;i++){
@@ -6535,89 +6524,211 @@ function satPoligonosPivo(pivoId, codigos){
   });
   return res;
 }
-function satEstiloQuadra(ens){
-  const sel = !!selectedEnsaios[ens.id];
-  const cor = corEnsaioExibida(ens, ens.cultura||'', ens.modalidade||'') || '#e6ddd0';
-  const dim = filtroCultModFora(ens);
-  const res = ensaioReservado(ens);
-  return {
-    color: sel ? '#fde047' : (res ? '#c4b5fd' : 'rgba(255,255,255,.85)'),
-    weight: sel ? 3 : (res ? 2 : 1),
-    dashArray: res && !sel ? '4 3' : null,
-    fillColor: cor, fillOpacity: dim ? .10 : (sel ? .85 : .55),
-    opacity: dim ? .35 : 1
-  };
+/* ---- motor do mapa (MapLibre GL: gira e inclina, estilo Google Earth) — serve Aplicação ('app') e Talhões ('cad') ---- */
+const SAT_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+const SAT_LIB_FONTES = [
+  ['https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css','https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js'],
+  ['https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css','https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js'],
+  ['https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.min.css','https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.min.js']
+];
+const SAT_PREFS_KEY = 'inova_sat_prefs_v1';
+let __satPrefs = { foto:true, pintura:true, cod:true };
+try{ Object.assign(__satPrefs, JSON.parse(localStorage.getItem(SAT_PREFS_KEY)||'{}')); }catch(e){}
+function satSalvaPrefs(){ try{ localStorage.setItem(SAT_PREFS_KEY, JSON.stringify(__satPrefs)); }catch(e){} }
+const __satInst = { app:{}, cad:{} };
+let __satLibP = null;
+const SAT_MODOS = {
+  app:{ pfx:'sat', wrapId:'satWrap',
+    ativo:()=>talhaoView==='sat', ensaios:()=>activosTalhoes(),
+    busca:()=>{ const el=document.getElementById('mapaSearch'); return el? (el.value||'').trim().toUpperCase() : ''; },
+    estado:(e,q)=>({ sel:!!selectedEnsaios[e.id], edit:false, match:!!q && (e.talhao||'').toUpperCase().includes(q), dim:(!!q && !(e.talhao||'').toUpperCase().includes(q)) || !!filtroCultModFora(e) }),
+    clique:id=>toggleTalhaoTile(id),
+    dica:'Toque numa quadra para selecioná-la (é a mesma seleção das outras visões).' },
+  cad:{ pfx:'satCad', wrapId:'satCadWrap',
+    ativo:()=>talhaoCadView==='sat', ensaios:()=>activosTalhoesCad(),
+    busca:()=>talhaoCadastroSearch||'',
+    estado:(e,q)=>({ sel:!!selectedTalhaoCad[e.id], edit:talhaoCadEditingId===e.id, match:!!q && (e.talhao||'').toUpperCase().includes(q), dim:(!!q && !(e.talhao||'').toUpperCase().includes(q)) || !!talhaoCadForaDoFiltro(e) }),
+    clique:id=>onTalhaoCadastroTileClick(id),
+    dica:'Toque numa quadra para marcá-la e cadastrar a cultura (mesma seleção das outras visões).' }
+};
+function satCarregaLib(){
+  if(window.maplibregl) return Promise.resolve();
+  if(__satLibP) return __satLibP;
+  const p = (async()=>{
+    for(const [css,js] of SAT_LIB_FONTES){
+      try{
+        await new Promise((res,rej)=>{
+          const l=document.createElement('link'); l.rel='stylesheet'; l.href=css; l.dataset.satlib='1'; document.head.appendChild(l);
+          const sc=document.createElement('script'); sc.src=js; sc.dataset.satlib='1'; sc.onload=res; sc.onerror=()=>rej(new Error('falhou')); document.head.appendChild(sc);
+        });
+        if(window.maplibregl) return;
+      }catch(e){ document.querySelectorAll('[data-satlib]').forEach(n=>n.remove()); }
+    }
+    throw new Error('Não carregou o mapa');
+  })();
+  __satLibP = p.catch(e=>{ __satLibP = null; throw e; });
+  return __satLibP;
 }
-function satAtualizaRotulos(){
-  if(!__satMap || !__satRot) return;
-  __satRot.clearLayers();
-  if(!__satMostraCod || __satMap.getZoom()<17) return;
-  const b = __satMap.getBounds();
-  Object.keys(__satPolys).forEach(id=>{
-    const o = __satPolys[id]; if(!b.contains(o.c)) return;
-    const sel = !!selectedEnsaios[id];
-    L.marker(o.c,{icon:L.divIcon({className:'sat-rot'+(sel?' sel':''), html:(sel?'✓ ':'')+o.code, iconSize:[1,1]}), interactive:false}).addTo(__satRot);
+function satHtml(m){
+  const c = SAT_MODOS[m], p = c.pfx;
+  return `<div class="muted" id="${p}Msg" style="margin:0 0 8px;"></div>
+  <div id="${p}Bar">
+    <div class="sat-bar">
+      <button type="button" class="btn-sm" id="${p}BtnFoto" onclick="satTogglePref('foto')"></button>
+      <button type="button" class="btn-sm" id="${p}BtnPint" onclick="satTogglePref('pintura')"></button>
+      <button type="button" class="btn-sm" id="${p}BtnCod" onclick="satTogglePref('cod')"></button>
+    </div>
+    <div class="sat-bar">
+      <button type="button" class="btn-ghost btn-sm" onclick="satAcao('${m}','horario')" title="Girar o pivô no sentido horário">⟳ Girar horário</button>
+      <button type="button" class="btn-ghost btn-sm" onclick="satAcao('${m}','anti')" title="Girar o pivô no sentido anti-horário">⟲ Anti-horário</button>
+      <button type="button" class="btn-ghost btn-sm" onclick="satAcao('${m}','inclinar')" title="Inclinar a visão (como no Google Earth)">⬆ Inclinar</button>
+      <button type="button" class="btn-ghost btn-sm" onclick="satAcao('${m}','achatar')" title="Voltar a ver de cima">⬇ Ver de cima</button>
+      <button type="button" class="btn-ghost btn-sm" onclick="satAcao('${m}','norte')">🧭 Norte pra cima</button>
+      <button type="button" class="btn-ghost btn-sm" onclick="satAcao('${m}','enquadrar')">🎯 Enquadrar</button>
+    </div>
+  </div>
+  <div id="${p}Map" class="sat-mapa"></div>
+  <div class="muted" style="font-size:11px;margin-top:6px;">Gire e incline com dois dedos (no computador: botão direito do mouse + arrastar). Posição das quadras estimada a partir do croqui (versão de teste) — confira no campo. Imagens © Esri, Maxar, Earthstar Geographics.</div>`;
+}
+function satSincBotoes(){
+  Object.keys(SAT_MODOS).forEach(m=>{
+    const p = SAT_MODOS[m].pfx;
+    const set=(id,txt,on)=>{ const b=document.getElementById(id); if(b){ b.textContent=txt; b.classList.toggle('on',!!on); } };
+    set(p+'BtnFoto','🛰️ Foto do satélite: '+(__satPrefs.foto?'ligada':'desligada'), __satPrefs.foto);
+    set(p+'BtnPint','🎨 Pintura das quadras: '+(__satPrefs.pintura?'ligada':'desligada'), __satPrefs.pintura);
+    set(p+'BtnCod','🔢 Números: '+(__satPrefs.cod?'ligados':'desligados'), __satPrefs.cod);
   });
 }
-function satToggleFoto(){
-  __satMostraFoto = !__satMostraFoto;
-  if(__satMap && __satFoto){ if(__satMostraFoto) __satFoto.addTo(__satMap); else __satMap.removeLayer(__satFoto); }
-  const b=document.getElementById('satBtnFoto'); if(b) b.textContent='🛰️ Foto do satélite: '+(__satMostraFoto?'ligada':'desligada');
+function satTogglePref(k){
+  __satPrefs[k] = !__satPrefs[k]; satSalvaPrefs(); satSincBotoes();
+  Object.keys(__satInst).forEach(m=>{ const i=__satInst[m]; if(i.map && i.pronto){ if(k==='foto') satAplicaFoto(m); satAtualiza(m); } });
 }
-function satToggleCodigos(){
-  __satMostraCod = !__satMostraCod;
-  const b=document.getElementById('satBtnCod'); if(b) b.textContent='🔢 Códigos: '+(__satMostraCod?'ligados':'desligados');
-  satAtualizaRotulos();
+function satAplicaFoto(m){
+  const i=__satInst[m]; if(!i.map||!i.pronto) return;
+  i.map.setLayoutProperty('foto','visibility', __satPrefs.foto?'visible':'none');
+  i.map.setPaintProperty('bg','background-color', __satPrefs.foto?'#2a2622':'#efe9df');
 }
-function satReenquadrar(){
-  const G = SAT_GEO[pivoAtivoId]; if(!__satMap || !G) return;
+function satAcao(m,a){
+  const i=__satInst[m], map=i&&i.map; if(!map) return;
+  const al = i.alvo || (i.alvo={b:map.getBearing(), p:map.getPitch()});
+  if(!map.isMoving()){ al.b=map.getBearing(); al.p=map.getPitch(); }
+  if(a==='horario') al.b-=15;           /* o conteúdo gira no sentido horário */
+  else if(a==='anti') al.b+=15;
+  else if(a==='inclinar') al.p=Math.min(65,al.p+15);
+  else if(a==='achatar') al.p=Math.max(0,al.p-15);
+  else if(a==='norte'){ al.b=0; al.p=0; }
+  else if(a==='enquadrar'){ satEnquadra(m,true); return; }
+  map.easeTo({bearing:al.b, pitch:al.p, duration:450});
+}
+function satEnquadra(m,anima){
+  const i=__satInst[m], G=SAT_GEO[pivoAtivoId]; if(!i.map||!G) return;
   const K=111320, KX=K*Math.cos(G.lat0*Math.PI/180);
-  __satMap.fitBounds([[G.lat0-G.R/K, G.lon0-G.R/KX],[G.lat0+G.R/K, G.lon0+G.R/KX]]);
+  i.map.fitBounds([[G.lon0-G.R/KX, G.lat0-G.R/K],[G.lon0+G.R/KX, G.lat0+G.R/K]], {padding:12, duration:anima?600:0, bearing:i.map.getBearing(), pitch:i.map.getPitch()});
 }
-async function renderSat(){
-  const msg = document.getElementById('satMsg'), bar = document.getElementById('satBar'), mapEl = document.getElementById('satMap');
-  if(!msg || !mapEl) return;
-  const G = SAT_GEO[pivoAtivoId];
-  if(!G){
-    msg.innerHTML = '🛰️ O <b>'+escapeHtml(pivoAtivo().nome)+'</b> ainda não foi georreferenciado no satélite. Por enquanto só o Pivô 3 está disponível — use 🌀 Pivô ou 🔲 Grade aqui.';
+function satMontaGeo(m){
+  const cfg=SAT_MODOS[m], i=__satInst[m];
+  const ativos=cfg.ensaios();
+  const polis=satPoligonosPivo(pivoAtivoId, ativos.map(e=>e.talhao||''))||{};
+  const q=cfg.busca();
+  const feats=[]; i.centros={}; let falt=0;
+  ativos.forEach(ens=>{
+    const g=polis[ens.talhao]; if(!g){ falt++; return; }
+    const st=cfg.estado(ens,q);
+    const plantada=!!ens.cultura;
+    let cor=corEnsaioExibida(ens, ens.cultura||'', ens.modalidade||'');
+    if(!cor && plantada) cor='#bcae94';
+    const res=ensaioReservado(ens);
+    let fill, op;
+    if(!plantada){ fill='#e6ddd0'; op=.42; }                      /* livre: sempre um tom neutro, pra destacar o que está vago */
+    else if(__satPrefs.pintura){ fill=cor; op=.55; }
+    else { fill='#ffffff'; op=0; }                                  /* plantada com a pintura desligada: só o contorno + número */
+    if(st.sel){ if(__satPrefs.pintura || !plantada){ if(plantada) op=.85; else { fill='#fde047'; op=.45; } } else { fill='#fde047'; op=.3; } }
+    if(st.dim) op*=.25;
+    let lc='rgba(255,255,255,.85)', lw=1;
+    if(res){ lc='#c4b5fd'; lw=2; }
+    if(st.match){ lc='#e2402b'; lw=3; }
+    const ring=g.ll.map(p=>[p[1],p[0]]); ring.push(ring[0]);
+    const ha=ens.area? String(ens.area).replace('.',',') : '';
+    const cl=talhaoCulturaLabel(ens);
+    const tip=(ens.talhao||'')+(ha?' — '+ha+' ha':'')+(cl?' — '+cl:'')+(res?' — 🔒 reservada':'');
+    feats.push({type:'Feature', properties:{id:ens.id, fill, op, lc, lw, sel:st.sel?1:0, edit:st.edit?1:0, res:res?1:0, tip}, geometry:{type:'Polygon', coordinates:[ring]}});
+    i.centros[ens.id]={ c:[g.c[1],g.c[0]], code:ens.talhao||'', sel:st.sel||st.edit };
+  });
+  i.falt=falt;
+  return {type:'FeatureCollection', features:feats};
+}
+function satAtualizaRotulos(m){
+  const i=__satInst[m]; if(!i.map||!i.pronto) return;
+  (i.marcadores||[]).forEach(mk=>mk.remove()); i.marcadores=[];
+  if(!__satPrefs.cod || i.map.getZoom()<16.8) return;
+  const b=i.map.getBounds(), peq = !__satPrefs.pintura;
+  Object.keys(i.centros||{}).forEach(id=>{
+    const o=i.centros[id]; if(!b.contains(o.c)) return;
+    const el=document.createElement('div'); el.className='sat-rot'+(peq?' peq':'')+(o.sel?' sel':'');
+    el.textContent=(o.sel?'✓ ':'')+o.code;
+    i.marcadores.push(new maplibregl.Marker({element:el, anchor:'center'}).setLngLat(o.c).addTo(i.map));
+  });
+}
+function satAtualiza(m){
+  const i=__satInst[m]; if(!i.map||!i.pronto) return;
+  const fc=satMontaGeo(m);
+  i.map.getSource('quadras').setData(fc);
+  satAtualizaRotulos(m);
+  const cfg=SAT_MODOS[m], msg=document.getElementById(cfg.pfx+'Msg');
+  if(msg) msg.textContent = cfg.dica+' Os números aparecem ao aproximar.'+(i.falt? ' ('+i.falt+' quadra(s) sem posição no satélite.)' : '');
+}
+function satCriaMapa(m, el){
+  const G=SAT_GEO[pivoAtivoId], i=__satInst[m];
+  i.pronto=false;
+  const map = new maplibregl.Map({
+    container:el, center:[G.lon0,G.lat0], zoom:15.2, maxZoom:19.5, maxPitch:65, pitchWithRotate:true, dragRotate:true, attributionControl:{compact:true},
+    style:{ version:8,
+      sources:{ foto:{type:'raster', tiles:[SAT_TILES], tileSize:256, maxzoom:19, attribution:'Imagens © Esri, Maxar, Earthstar Geographics'} },
+      layers:[ {id:'bg',type:'background',paint:{'background-color':'#2a2622'}}, {id:'foto',type:'raster',source:'foto'} ] }
+  });
+  i.map=map; i.pivo=pivoAtivoId; i.marcadores=[]; i.centros={};
+  map.addControl(new maplibregl.NavigationControl({visualizePitch:true, showCompass:true, showZoom:true}),'top-right');
+  const pop=new maplibregl.Popup({closeButton:false, closeOnClick:false, offset:8});
+  map.on('load',()=>{
+    map.addSource('quadras',{type:'geojson', data:{type:'FeatureCollection',features:[]}});
+    map.addLayer({id:'q-fill',type:'fill',source:'quadras',paint:{'fill-color':['get','fill'],'fill-opacity':['get','op']}});
+    map.addLayer({id:'q-line',type:'line',source:'quadras',paint:{'line-color':['get','lc'],'line-width':['get','lw']}});
+    map.addLayer({id:'q-res',type:'line',source:'quadras',filter:['==',['get','res'],1],paint:{'line-color':'#c4b5fd','line-width':2,'line-dasharray':[2,2]}});
+    map.addLayer({id:'q-sel',type:'line',source:'quadras',filter:['==',['get','sel'],1],paint:{'line-color':'#fde047','line-width':3}});
+    map.addLayer({id:'q-edit',type:'line',source:'quadras',filter:['==',['get','edit'],1],paint:{'line-color':'#ff7a00','line-width':3.5}});
+    i.pronto=true; satAplicaFoto(m); satEnquadra(m,false); satAtualiza(m);
+  });
+  map.on('click','q-fill',ev=>{ const f=ev.features&&ev.features[0]; if(f){ pop.remove(); SAT_MODOS[m].clique(f.properties.id); } });
+  map.on('mousemove','q-fill',ev=>{ map.getCanvas().style.cursor='pointer'; const f=ev.features&&ev.features[0]; if(f) pop.setLngLat(ev.lngLat).setText(f.properties.tip).addTo(map); });
+  map.on('mouseleave','q-fill',()=>{ map.getCanvas().style.cursor=''; pop.remove(); });
+  map.on('zoomend',()=>satAtualizaRotulos(m));
+  map.on('moveend',()=>satAtualizaRotulos(m));
+}
+async function renderSat(m){
+  const cfg=SAT_MODOS[m], wrap=document.getElementById(cfg.wrapId); if(!wrap) return;
+  if(!cfg.ativo() || !wrap.offsetParent) return;
+  if(!wrap.dataset.built){ wrap.innerHTML=satHtml(m); wrap.dataset.built='1'; satSincBotoes(); }
+  const p=cfg.pfx, msg=document.getElementById(p+'Msg'), bar=document.getElementById(p+'Bar'), mapEl=document.getElementById(p+'Map'), i=__satInst[m];
+  if(!SAT_GEO[pivoAtivoId]){
+    msg.innerHTML='🛰️ O <b>'+escapeHtml(pivoAtivo().nome)+'</b> ainda não foi georreferenciado no satélite. Por enquanto só o Pivô 3 está disponível — use 🌀 Pivô ou 🔲 Grade.';
     bar.style.display='none'; mapEl.style.display='none'; return;
   }
   bar.style.display=''; mapEl.style.display='';
-  msg.textContent = 'Arraste e dê zoom no mapa. Toque numa quadra para selecionar (mesma seleção das outras visões). Os códigos aparecem ao aproximar.';
-  try{ await satCarregaLeaflet(); }
-  catch(e){ msg.innerHTML = '⚠️ Não consegui carregar o mapa de satélite — precisa de internet. Use 🌀 Pivô ou 🔲 Grade enquanto isso.'; bar.style.display='none'; mapEl.style.display='none'; return; }
-  if(talhaoView!=='sat') return;
-  const ativos = activosTalhoes();
-  const poligonos = satPoligonosPivo(pivoAtivoId, ativos.map(e=>e.talhao||''));
-  if(!__satMap || __satPivo!==pivoAtivoId){
-    if(__satMap){ __satMap.remove(); __satMap=null; }
-    __satMap = L.map(mapEl,{maxZoom:19, zoomSnap:.25, zoomControl:true});
-    __satFoto = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19, attribution:'Imagens © Esri, Maxar, Earthstar Geographics'});
-    if(__satMostraFoto) __satFoto.addTo(__satMap);
-    __satGrp = L.layerGroup().addTo(__satMap);
-    __satRot = L.layerGroup().addTo(__satMap);
-    __satMap.on('zoomend moveend', satAtualizaRotulos);
-    __satPivo = pivoAtivoId; __satPolys = {};
-    satReenquadrar();
+  if(i.map && i.pivo===pivoAtivoId && i.pronto){ satAtualiza(m); setTimeout(()=>{ if(i.map) i.map.resize(); },60); return; }
+  if(i.criando) return;
+  i.criando=true;
+  try{
+    msg.textContent='Carregando o mapa de satélite…';
+    await satCarregaLib();
+    if(!cfg.ativo()){ i.criando=false; return; }
+    if(i.map){ try{ i.map.remove(); }catch(e){} i.map=null; }
+    satCriaMapa(m, mapEl);
+  }catch(e){
+    msg.innerHTML='⚠️ Não consegui abrir o mapa de satélite — precisa de internet (e de um navegador com WebGL). Use 🌀 Pivô ou 🔲 Grade enquanto isso.';
+    bar.style.display='none'; mapEl.style.display='none'; i.map=null;
   }
-  /* redesenha só os polígonos (a visão — zoom/posição — fica como o usuário deixou) */
-  __satGrp.clearLayers(); __satPolys = {};
-  let desenhadas = 0;
-  ativos.forEach(ens=>{
-    const g = poligonos[ens.talhao]; if(!g) return;
-    const pol = L.polygon(g.ll, satEstiloQuadra(ens)).addTo(__satGrp);
-    const ha = ens.area ? String(ens.area).replace('.',',') : '';
-    pol.bindTooltip(escapeHtml(ens.talhao)+(ha?' — '+ha+' ha':'')+(talhaoCulturaLabel(ens)?' — '+escapeHtml(talhaoCulturaLabel(ens)):'')+(ensaioReservado(ens)?' — 🔒 reservada':''), {sticky:true});
-    pol.on('click', ()=>toggleTalhaoTile(ens.id));
-    __satPolys[ens.id] = { c:g.c, code:ens.talhao };
-    desenhadas++;
-  });
-  satAtualizaRotulos();
-  setTimeout(()=>{ if(__satMap) __satMap.invalidateSize(); }, 60);
-  const falt = ativos.length - desenhadas;
-  if(falt>0) msg.textContent += ' ('+falt+' quadra(s) sem posição no satélite.)';
+  i.criando=false;
 }
-
 function switchTalhaoView(view){
   talhaoView = view;
   document.querySelectorAll('.subtab-btn:not(.pivo-tab-btn)').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
@@ -6716,6 +6827,7 @@ function onTalhaoSearch(){
   if(_el && document.activeElement!==_el) _el.value = ''; // autofill do navegador: ignora
   if(talhaoView==='pivo') renderPivo();
   else if(talhaoView==='mapa') renderMapa();
+  else if(talhaoView==='sat') renderSat('app');
 }
 
 function toggleTalhaoTile(id){
