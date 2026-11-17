@@ -894,7 +894,30 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .qi-vazio{font-size:13px;color:#7d6a58;padding:6px 0;}
   .qi-reserva{margin-top:6px;font-size:12px;color:#4a2f86;font-weight:700;}
   /* Aplicação em mais de um pivô (v2.20.0) */
-  .pivo-sel-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 8px;}
+  .pivo-escolha-titulo{font-size:12px;font-weight:800;color:#5a4636;margin:8px 0 4px;}
+  .pivo-tab-badge{display:inline-block;margin-left:6px;background:#ea580c;color:#fff;border-radius:999px;font-size:11px;font-weight:800;padding:1px 7px;line-height:1.5;}
+  .pivo-tab-btn.active .pivo-tab-badge{background:#fff;color:#c2410c;}
+  .sel-rapida{border:1.5px solid #f1d6bb;background:#fffaf4;border-radius:14px;padding:10px 12px;margin:0 0 8px;}
+  .sr-titulo{font-size:13px;font-weight:800;color:#5a4636;margin-bottom:7px;}
+  .sr-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .sr-chip{border:1.5px solid #e6dccd;background:#fff;border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:800;color:#5a4636;cursor:pointer;}
+  .sr-chip small{font-weight:700;opacity:.7;margin-left:4px;}
+  .sr-chip.parcial{border-color:#ea580c;background:#fff3e8;color:#c2410c;}
+  .sr-chip.todos{border-color:#c2410c;background:#ea580c;color:#fff;}
+  .sr-chip.limpar{border-style:dashed;color:#8a7458;background:transparent;}
+  .sr-nota{font-size:11px;color:#8a7458;margin-top:6px;}
+  .ss-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+  .ss-limpar{border:1.5px solid #c2410c;background:#fff;color:#c2410c;border-radius:999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+  .ss-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
+  .ss-chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #f1d6bb;border-radius:999px;padding:4px 6px 4px 11px;font-size:12px;font-weight:800;color:#5a4636;cursor:pointer;}
+  .ss-chip.atual{border-color:#ea580c;background:#fff3e8;}
+  .ss-x{border:0;background:#f4e4d2;color:#8a4a1a;border-radius:50%;width:20px;height:20px;line-height:20px;padding:0;font-size:11px;cursor:pointer;}
+  .ss-det{margin-top:7px;font-weight:600;}
+  .ss-det summary{cursor:pointer;font-weight:800;}
+  .ss-vazio{font-weight:700;opacity:.85;}
+  .fcm-ativo-tag{margin-left:8px;background:#ea580c;color:#fff;border-radius:999px;font-size:10px;font-weight:800;padding:1px 8px;}
+  .filtro-cultmod > summary{cursor:pointer;list-style-position:inside;}
+  .pivo-sel-chips-old{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 8px;}
   .psc-label{font-size:12px;font-weight:800;color:#5a4636;}
   .psc-dica{font-size:11px;color:#8a7458;flex-basis:100%;}
   .pivo-sel-chip{border:1.5px solid #e6dccd;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;color:#5a4636;cursor:pointer;}
@@ -1486,8 +1509,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapa" onclick="toggleFullscreenMapa()" style="white-space:nowrap;">⛶ Tela cheia</button>
       </div>
 
-      <div id="pivoSelChips" class="pivo-sel-chips"></div>
-      <div class="subtabs pivo-tabs">
+      <div class="pivo-escolha-titulo">1 · Escolha o pivô <span class="muted">(o número mostra quantas quadras já estão marcadas nele)</span></div>
+      <div class="subtabs pivo-tabs" id="pivoTabsApp">
         <button class="subtab-btn pivo-tab-btn active" data-pivo="CRISTALINA" onclick="switchPivoAtivo('CRISTALINA')">📍 Pivô 3</button>
         <button class="subtab-btn pivo-tab-btn" data-pivo="PIVO4" onclick="switchPivoAtivo('PIVO4')">📍 Pivô 4</button>
       </div>
@@ -1498,20 +1521,16 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="subtab-btn" data-view="lista" onclick="switchTalhaoView('lista')">☰ Lista</button>
       </div>
 
+      <div id="pivoSelChips" class="sel-rapida"></div>
+
       <div class="sel-summary" id="selSummary">Nenhum talhão selecionado</div>
 
       <input class="searchbar" id="mapaSearch" name="busca_mapaSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar talhão (ex: A230)..." oninput="onTalhaoSearch()">
 
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-        <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('MILHO')">🌽 Selecionar tudo de Milho</button>
-        <button class="btn-ghost btn-sm" onclick="selecionarPorCultura('SOJA')">🌱 Selecionar tudo de Soja</button>
-        <button class="btn-ghost btn-sm" onclick="clearAllTalhoes()">Limpar seleção</button>
-      </div>
-
       <!-- v2.9.0 — a pedido do Flávio: selecionar/filtrar por cultura E modalidade (ex: tudo de Soja >
            Purificação + Preliminar I), e aí marcar só as quadras que quer aplicar. Vale pro pivô aberto. -->
-      <div class="filtro-cultmod" id="filtroCultModBox">
-        <div class="filtro-cultmod-titulo">🎯 Selecionar por cultura e modalidade <span class="muted">· só do pivô aberto (cada pivô tem o seu)</span></div>
+      <details class="filtro-cultmod" id="filtroCultModBox">
+        <summary class="filtro-cultmod-titulo">🎯 Refinar por cultura e modalidade <span class="muted">· ex.: só Soja Purificação — vale só do pivô aberto</span><span id="filtroAtivoTag" class="fcm-ativo-tag" style="display:none;">filtro ativo</span></summary>
         <div class="filtro-cultmod-passo">1 · Cultura <span class="muted" style="font-weight:600;">(pode marcar mais de uma)</span></div>
         <div class="filtro-cultmod-chips" id="filtroCultChips"></div>
         <div id="filtroModWrap" style="display:none;">
@@ -1525,7 +1544,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <div class="muted" id="filtroResumoPivos" style="font-size:12px;margin-top:4px;"></div>
         <div class="muted" id="filtroReservaNota" style="display:none;font-size:12px;margin-top:6px;"></div>
         <label class="filtro-cultmod-esmaecer" id="filtroEsmaecerLbl" style="display:none;"><input type="checkbox" id="filtroEsmaecer" checked onchange="filtroCultModEsmaecerChange(this.checked)"> Esmaecer no mapa o que não é desse filtro (pra tocar só nas quadras que quero)</label>
-      </div>
+      </details>
       </div>
 
       <div class="map-stage">
@@ -1547,7 +1566,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div class="row" style="margin-top:10px;">
         <div class="field" style="max-width:200px;">
           <label>Área total (ha)</label>
-          <input type="number" id="fArea" step="0.01" oninput="onAreaChange()">
+          <input type="number" id="fArea" step="0.01" autocomplete="off" oninput="onAreaChange()">
         </div>
         <div class="field" style="max-width:160px;">
           <label>Vazão (L/ha)</label>
@@ -2032,7 +2051,30 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     <div class="receipt-actions">
       <button class="btn-primary" onclick="downloadReceiptImage()">🖼️ Baixar imagem</button>
       <button class="btn-ghost" onclick="printReceiptPdf()">🖨️ Baixar PDF</button>
+      <button class="btn-ghost" onclick="abrirMsgWhats(currentReceiptApp)">📲 Mensagem p/ aplicador</button>
       <button class="btn-ghost" onclick="closeReceipt()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- v2.28.1 — mensagem pro aplicador SEMPRE disponível (o WhatsApp abre com um toque do próprio usuário,
+     então o navegador não bloqueia como bloqueava a abertura automática) -->
+<div class="modal-overlay hidden" id="msgWhatsOverlay">
+  <div class="receipt-card" style="max-width:460px;">
+    <div class="receipt-head">
+      <div class="titles">
+        <h3>📲 Mensagem para o aplicador</h3>
+        <span id="msgWhatsSub">Revise se quiser e toque em Enviar no WhatsApp</span>
+      </div>
+    </div>
+    <div class="receipt-body">
+      <textarea id="msgWhatsTexto" rows="9" style="width:100%;font:inherit;font-size:14px;line-height:1.45;padding:10px;border:1.5px solid var(--border,#e4d8c8);border-radius:10px;resize:vertical;"></textarea>
+      <div class="muted" id="msgWhatsAviso" style="font-size:12px;margin-top:6px;"></div>
+    </div>
+    <div class="receipt-actions">
+      <button class="btn-primary" onclick="enviarMsgWhats()">💬 Enviar no WhatsApp</button>
+      <button class="btn-ghost" onclick="copiarMsgWhats()">📋 Copiar mensagem</button>
+      <button class="btn-ghost" onclick="fecharMsgWhats()">Fechar</button>
     </div>
   </div>
 </div>
@@ -2157,7 +2199,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.27.1';
+const APP_BUILD_ID = 'v2.28.1';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -2734,6 +2776,7 @@ function onLoginEstacaoChange(id){
   renderPivoTabs();
   atualizaTextosEstacao();
   selectedEnsaios = {};
+  { const fa = document.getElementById('fArea'); if(fa) fa.value=''; }
   selectedTalhaoCad = {};
   talhaoCadEditingId = null;
   talhaoCadSelMode = false;
@@ -2819,6 +2862,7 @@ function trocarEstacaoSemLogin(id){
   renderPivoTabs();
   atualizaTextosEstacao();
   selectedEnsaios = {};
+  { const fa = document.getElementById('fArea'); if(fa) fa.value=''; }
   selectedTalhaoCad = {};
   talhaoCadEditingId = null;
   talhaoCadSelMode = false;
@@ -6635,6 +6679,7 @@ function renderFiltroCultMod(){
   const acoes = document.getElementById('filtroCultModAcoes');
   const esm = document.getElementById('filtroEsmaecerLbl');
   const ativo = filtroCultModAtivo();
+  { const tag = document.getElementById('filtroAtivoTag'); if(tag) tag.style.display = ativo? '' : 'none'; const bx = document.getElementById('filtroCultModBox'); if(bx && ativo) bx.open = true; }
   wrapM.style.display = ativo? '' : 'none';
   acoes.style.display = ativo? '' : 'none';
   esm.style.display = ativo? '' : 'none';
@@ -6675,7 +6720,7 @@ function filtroCultModToggleMod(m){
   refreshTalhaoUI();
 }
 function filtroCultModEsmaecerChange(v){ filtroCultModEsmaecer = !!v; refreshTalhaoUI(); }
-function filtroCultModLimpar(){ filtroCultMod = {culturas:[], mods:[]}; refreshTalhaoUI(); }
+function filtroCultModLimpar(){ delete FILTROS_CULTMOD_POR_PIVO[pivoAtivoId]; refreshTalhaoUI(); }
 function filtroCultModSelecionarTodos(){
   const alvo = filtroCultModTalhoesDoPivo().filter(filtroCultModBate);
   if(!alvo.length){ toast('Nenhum talhão nesse filtro'); return; }
@@ -6718,46 +6763,76 @@ function ensaiosAlvoDoPivo(pid){
   return (DATA.ensaios||[]).filter(e=>e.ativo!==false && (e.pivo||'CRISTALINA')===pid
     && culturaAppAceita(e));
 }
+/* v2.28.0 — SELEÇÃO RÁPIDA (reformulada a pedido do Flávio): primeiro escolhe o pivô (abas), e aqui embaixo os
+   botões valem SÓ pro pivô aberto: tudo do pivô, tudo de Soja, tudo de Milho (e, nas Pistas, as duas juntas).
+   Tocar de novo desmarca. Reservadas ficam de fora (dá pra tocar nelas na mão). */
+function alvoPivoInteiro(pid){ return ensaiosAlvoDoPivo(pid).filter(e=>!e.reservado); }
+function alvoCulturaDoPivo(pid, c){
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && !e.reservado && (e.pivo||'CRISTALINA')===pid
+    && ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===c));
+}
+function toggleSelGrupo(alvo, nomeGrupo){
+  if(!alvo.length){ toast('Nada para selecionar em '+nomeGrupo); return; }
+  const todos = alvo.every(e=>selectedEnsaios[e.id]);
+  alvo.forEach(e=>setTalhaoSelected(e.id, !todos, false));
+  recomputeAreaFromSelection();
+  refreshTalhaoUI();
+  toast(todos ? `${alvo.length} quadra(s) desmarcada(s) — ${nomeGrupo}` : `${alvo.length} quadra(s) selecionada(s) — ${nomeGrupo}`);
+}
+function toggleSelecionarPivoInteiro(pid){ toggleSelGrupo(alvoPivoInteiro(pid), nomePivoPorId(pid)); }
+function selecionarPivoInteiro(){ toggleSelGrupo(alvoPivoInteiro(pivoAtivoId), nomePivoPorId(pivoAtivoId)); }
+function selecionarPorCultura(cultura){
+  toggleSelGrupo(alvoCulturaDoPivo(pivoAtivoId, cultura), `${tituloCultura(cultura)} no ${nomePivoPorId(pivoAtivoId)}`);
+}
+function limparSelecaoPivo(pid){
+  Object.keys(selectedEnsaios).forEach(id=>{ if((selectedEnsaios[id].pivo||'CRISTALINA')===pid) delete selectedEnsaios[id]; });
+  recomputeAreaFromSelection();
+  refreshTalhaoUI();
+}
 function renderPivoSelChips(){
+  atualizaBadgesPivoTabs();
   const box = document.getElementById('pivoSelChips');
   if(!box) return;
-  if(PIVOS.length<2){ box.innerHTML = ''; return; }
-  const btns = PIVOS.map(p=>{
-    const alvo = ensaiosAlvoDoPivo(p.id);
-    const sel = alvo.filter(e=>selectedEnsaios[e.id]).length;
-    const cls = !sel ? '' : (sel===alvo.length ? ' todos' : ' parcial');
-    return `<button type="button" class="pivo-sel-chip${cls}" onclick="toggleSelecionarPivoInteiro('${p.id}')">${p.icone? p.icone+' ':''}${escapeHtml(p.nome)} · ${sel}/${alvo.length}</button>`;
-  }).join('');
-  /* v2.27.0 — Pista do Avião 1 e 2: além de cada uma separada, um botão que marca/desmarca as duas de uma vez. */
-  let btnAmbas = '';
-  if(PIVOS.some(p=>p.id==='PISTA1') && PIVOS.some(p=>p.id==='PISTA2')){
-    const alvoA = ensaiosAlvoDoPivo('PISTA1').concat(ensaiosAlvoDoPivo('PISTA2'));
-    const selA = alvoA.filter(e=>selectedEnsaios[e.id]).length;
-    const clsA = !selA ? '' : (selA===alvoA.length ? ' todos' : ' parcial');
-    btnAmbas = `<button type="button" class="pivo-sel-chip${clsA}" onclick="toggleSelecionarPistaAmbas()">✈️ Pista 1 + Pista 2 (ambas) · ${selA}/${alvoA.length}</button>`;
+  const pid = pivoAtivoId, nome = nomePivoPorId(pid), ehPista = isPistaId(pid);
+  const estado = (sel,tot)=> !sel ? '' : (sel>=tot ? ' todos' : ' parcial');
+  const chip = (onclick, txt, sel, tot, extra)=>`<button type="button" class="sr-chip${extra||estado(sel,tot)}" onclick="${onclick}">${txt}${tot!=null?` <small>${sel}/${tot}</small>`:''}</button>`;
+  const inteiro = alvoPivoInteiro(pid);
+  const selI = inteiro.filter(e=>selectedEnsaios[e.id]).length;
+  let chips = chip('selecionarPivoInteiro()', ehPista ? '☑ Toda a área' : '☑ Todas as quadras', selI, inteiro.length);
+  if(!ehPista){
+    const emoji = {MILHO:'🌽', SOJA:'🌱'};
+    ['SOJA','MILHO'].forEach(c=>{
+      const alvo = alvoCulturaDoPivo(pid, c);
+      if(!alvo.length) return;
+      const sel = alvo.filter(e=>selectedEnsaios[e.id]).length;
+      chips += chip(`selecionarPorCultura('${c}')`, `${emoji[c]} Tudo de ${tituloCultura(c)}`, sel, alvo.length);
+    });
   }
-  box.innerHTML = `<span class="psc-label">Aplicar em:</span>${btns}${btnAmbas}<span class="psc-dica">toque para marcar/desmarcar o pivô inteiro — ou escolha por cultura/modalidade e quadra por quadra em cada aba (cada pivô é independente)</span>`;
+  if(PIVOS.some(p=>p.id==='PISTA1') && PIVOS.some(p=>p.id==='PISTA2') && ehPista){
+    const alvoA = alvoPivoInteiro('PISTA1').concat(alvoPivoInteiro('PISTA2'));
+    const selA = alvoA.filter(e=>selectedEnsaios[e.id]).length;
+    chips += chip('toggleSelecionarPistaAmbas()', '✈️ Pista 1 + Pista 2 (ambas)', selA, alvoA.length);
+  }
+  const nSelPivo = Object.values(selectedEnsaios).filter(x=>(x.pivo||'CRISTALINA')===pid).length;
+  if(nSelPivo) chips += `<button type="button" class="sr-chip limpar" onclick="limparSelecaoPivo('${pid}')">✕ Limpar só o ${escapeHtml(nome)}</button>`;
+  const nRes = filtroCultModNReservadasDoPivo();
+  box.innerHTML = `<div class="sr-titulo">2 · Seleção rápida — <b>${escapeHtml(nome)}</b> <span class="muted">· vale só para este pivô; toque de novo para desmarcar</span></div>
+    <div class="sr-chips">${chips}</div>
+    <div class="sr-nota">Ou toque nas quadras no mapa, uma a uma.${nRes? ` 🔒 ${nRes} reservada${nRes===1?'':'s'} fica${nRes===1?'':'m'} de fora dos botões.`:''}</div>`;
 }
 function toggleSelecionarPistaAmbas(){
-  const alvo = ensaiosAlvoDoPivo('PISTA1').concat(ensaiosAlvoDoPivo('PISTA2'));
-  if(!alvo.length){ toast('Nenhuma área da Pista disponível para essa cultura/filtro'); return; }
-  const todos = alvo.every(e=>selectedEnsaios[e.id]);
-  alvo.forEach(e=>setTalhaoSelected(e.id, !todos, false));
-  recomputeAreaFromSelection();
-  refreshTalhaoUI();
-}
-function toggleSelecionarPivoInteiro(pid){
-  const alvo = ensaiosAlvoDoPivo(pid);
-  if(!alvo.length){ toast('Nenhuma quadra disponível nesse pivô para essa cultura/filtro'); return; }
-  const todos = alvo.every(e=>selectedEnsaios[e.id]);
-  alvo.forEach(e=>setTalhaoSelected(e.id, !todos, false));
-  recomputeAreaFromSelection();
-  refreshTalhaoUI();
+  const alvo = alvoPivoInteiro('PISTA1').concat(alvoPivoInteiro('PISTA2'));
+  toggleSelGrupo(alvo, 'Pista do Avião 1 + 2');
 }
 function updateSelSummary(){
   const box = document.getElementById('selSummary');
   const items = Object.values(selectedEnsaios);
-  if(!items.length){ box.textContent = 'Nenhum talhão selecionado'; return; }
+  const aberto = !!(box.querySelector('details') && box.querySelector('details').open);
+  if(!items.length){
+    box.innerHTML = '<span class="ss-vazio">Nenhum talhão selecionado — escolha o pivô, use a seleção rápida ou toque nas quadras do mapa.</span>';
+    renderPivoSelChips();
+    return;
+  }
   const total = items.reduce((s,x)=>s+(x.area||0),0);
   const cmp = (a,b)=>(a.talhao||'').localeCompare(b.talhao||'', undefined, {numeric:true});
   const det = x=>{
@@ -6765,16 +6840,18 @@ function updateSelSummary(){
     return `${escapeHtml(x.talhao||'')} <span class="sel-summary-cultura">(${escapeHtml(info)})</span>`;
   };
   const pids = [...new Set(items.map(x=>x.pivo||'CRISTALINA'))];
-  const nomes = pids.map(nomePivoPorId);
-  const cab = pids.length>1
-    ? `<b>⚠ Esta aplicação será em ${pids.length} pivôs: ${nomes.map(escapeHtml).join(' + ')}</b> · ${items.length} quadras · ${fmtNum(total)} ha no total`
-    : `${items.length} quadra(s) em ${escapeHtml(nomes[0])} · ${fmtNum(total)} ha total`;
-  const linhas = pids.map(pid=>{
+  const cab = `<div class="ss-head"><div><b>${items.length}</b> quadra(s) · <b>${fmtNum(total)} ha</b>${pids.length>1?` · ⚠ aplicação em ${pids.length} pivôs`:''}</div><button type="button" class="ss-limpar" onclick="clearAllTalhoes()">🧹 Limpar seleção</button></div>`;
+  const chips = pids.map(pid=>{
     const g = items.filter(x=>(x.pivo||'CRISTALINA')===pid);
     const ha = g.reduce((s,x)=>s+(x.area||0),0);
-    return `<b>${escapeHtml(nomePivoPorId(pid))}</b> — ${g.length} quadra(s) selecionada(s) · ${fmtNum(ha)} ha<br>${g.slice().sort(cmp).map(det).join(', ')}`;
+    return `<span class="ss-chip${pid===pivoAtivoId?' atual':''}" onclick="switchPivoAtivo('${pid}')" title="Abrir ${escapeHtml(nomePivoPorId(pid))}">${escapeHtml(nomePivoPorId(pid))} · ${g.length} · ${fmtNum(ha)} ha<button type="button" class="ss-x" title="Tirar este pivô da seleção" onclick="event.stopPropagation();limparSelecaoPivo('${pid}')">✕</button></span>`;
+  }).join('');
+  const linhas = pids.map(pid=>{
+    const g = items.filter(x=>(x.pivo||'CRISTALINA')===pid);
+    return `<b>${escapeHtml(nomePivoPorId(pid))}</b>: ${g.slice().sort(cmp).map(det).join(', ')}`;
   }).join('<br><br>');
-  box.innerHTML = `${cab}<br><br>${linhas}`;
+  box.innerHTML = `${cab}<div class="ss-chips">${chips}</div><details class="ss-det"${aberto?' open':''}><summary>Ver quais quadras</summary>${linhas}</details>`;
+  renderPivoSelChips();
 }
 
 function toggleEnsaio(id, checked){
@@ -6836,6 +6913,19 @@ function renderPivoTabsHtml(){
 }
 function renderPivoTabs(){
   document.querySelectorAll('.pivo-tabs').forEach(el=>{ el.innerHTML = renderPivoTabsHtml(); });
+  atualizaBadgesPivoTabs();
+}
+/* v2.28.0 — cada aba de pivô (na Aplicação) mostra quantas quadras já estão marcadas nela */
+function atualizaBadgesPivoTabs(){
+  const el = document.getElementById('pivoTabsApp'); if(!el) return;
+  const cont = {};
+  Object.values(selectedEnsaios||{}).forEach(x=>{ const k = x.pivo||'CRISTALINA'; cont[k] = (cont[k]||0)+1; });
+  el.querySelectorAll('.pivo-tab-btn').forEach(b=>{
+    const n = cont[b.dataset.pivo]||0;
+    let sp = b.querySelector('.pivo-tab-badge');
+    if(n){ if(!sp){ sp = document.createElement('span'); sp.className='pivo-tab-badge'; b.appendChild(sp); } sp.textContent = n; }
+    else if(sp){ sp.remove(); }
+  });
 }
 function switchPivoAtivo(id){
   esconderQuadraInfo();
@@ -7833,43 +7923,74 @@ function listaComE(arr){
   if(arr.length<=1) return arr.join('');
   return arr.slice(0,-1).join(', ')+' e '+arr[arr.length-1];
 }
-async function notificarOperadorWhatsApp(app){
+function montarMensagemAplicador(app){
   const nome = (app.operador||'').trim().toUpperCase();
-  if(!nome) return;
-  const u = (DATA.users||[]).find(x=>x.nome===nome);
+  const u = nome ? (DATA.users||[]).find(x=>(x.nome||'').toUpperCase()===nome) : null;
   const telefone = u ? formatWhatsAppPhone(u.telefone) : '';
-
   const ensaios = app.ensaiosSel||[];
-  const pivos = [...new Set(ensaios.map(e=>e.pivo).filter(Boolean))].join('/');
   const talhoes = ensaios.map(e=>e.talhao||e.ensaio).filter(Boolean).join(', ');
   const tipoApl = tipoAplicacaoTxt(app);
   const nomesAreas = [...new Set(ensaios.map(e=>e.pivo||'CRISTALINA'))].map(nomePivoPorId);
   const linhas = [
-    `Olá ${app.operador}! 📋 Você tem uma nova aplicação${tipoApl? ' de '+tipoApl : ''} para ${fmtDateBR(app.dataAplicacao)}.`
+    `Olá${app.operador? ' '+app.operador : ''}! 📋 Você tem uma nova aplicação${tipoApl? ' de '+tipoApl : ''} para ${fmtDateBR(app.dataAplicacao)}.`
   ];
   if(nomesAreas.length) linhas.push(`A requisição foi cadastrada para: ${listaComE(nomesAreas)}.`);
   linhas.push(`Cultura: ${app.cultura||'–'}`);
   if(talhoes) linhas.push(`Talhões: ${talhoes}`);
   linhas.push(`Equipamento: ${app.equipamento||'–'}`);
   linhas.push(`Confira os detalhes e confirme no app quando concluir a aplicação.`);
-  const mensagem = linhas.join('\n');
+  return {mensagem: linhas.join('\n'), telefone, semTelefone: !telefone, semOperador: !nome};
+}
+/* v2.28.1 — a mensagem sempre pode ser aberta/copiada nesta janelinha (também pelo botão "📲 Mensagem p/ aplicador"
+   da ficha). Motivo: o navegador bloqueia window.open feito depois de esperar a foto da ficha, e aí a mensagem
+   "não saía" (relato do Flávio em 17/11/2026). Aqui o WhatsApp abre num toque do próprio usuário, que nunca é bloqueado. */
+let msgWhatsAtual = null;
+function abrirMsgWhats(app){
+  if(!app){ toast('Nenhuma ficha aberta'); return; }
+  const m = montarMensagemAplicador(app);
+  msgWhatsAtual = m;
+  document.getElementById('msgWhatsTexto').value = m.mensagem;
+  document.getElementById('msgWhatsAviso').textContent =
+    m.semOperador ? 'Esta aplicação foi registrada sem operador — no WhatsApp você escolhe pra quem mandar.'
+    : (m.semTelefone ? `${app.operador} está sem WhatsApp cadastrado (aba Usuários) — no WhatsApp você escolhe o contato.` : `Vai para ${app.operador} (WhatsApp cadastrado).`);
+  document.getElementById('msgWhatsOverlay').classList.remove('hidden');
+}
+function fecharMsgWhats(){ document.getElementById('msgWhatsOverlay').classList.add('hidden'); }
+function enviarMsgWhats(){
+  const txt = document.getElementById('msgWhatsTexto').value;
+  const tel = msgWhatsAtual && msgWhatsAtual.telefone;
+  window.open(`https://wa.me/${tel||''}?text=${encodeURIComponent(txt)}`, '_blank');
+}
+async function copiarMsgWhats(){
+  const ta = document.getElementById('msgWhatsTexto');
+  try{ await navigator.clipboard.writeText(ta.value); toast('Mensagem copiada ✅'); }
+  catch(e){ ta.select(); try{ document.execCommand('copy'); toast('Mensagem copiada ✅'); }catch(_){ toast('Selecione o texto e copie manualmente'); } }
+}
+async function notificarOperadorWhatsApp(app){
+  try{
+    const m = montarMensagemAplicador(app);
+    if(m.semOperador){ abrirMsgWhats(app); return; }
 
-  const arquivoFoto = await gerarFotoFichaParaCompartilhar(app);
-  if(arquivoFoto){
-    try{
-      await navigator.share({files:[arquivoFoto], text: mensagem, title:'Ficha de aplicação'});
-      return;
-    }catch(e){
-      if(e && e.name==='AbortError') return; // o Flávio cancelou a telinha de compartilhar
-      console.warn('Falha ao compartilhar foto+legenda, caindo pro link de texto do WhatsApp:', e);
+    const arquivoFoto = await gerarFotoFichaParaCompartilhar(app);
+    if(arquivoFoto){
+      try{
+        await navigator.share({files:[arquivoFoto], text: m.mensagem, title:'Ficha de aplicação'});
+        return;
+      }catch(e){
+        if(e && e.name==='AbortError') return; // o Flávio cancelou a telinha de compartilhar
+        console.warn('Falha ao compartilhar foto+legenda, caindo pro link de texto do WhatsApp:', e);
+      }
     }
-  }
 
-  if(telefone){
-    const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-    window.open(url, '_blank');
-  }else{
-    toast(`${app.operador}: sem WhatsApp cadastrado (adicione na aba Usuários pra avisar automaticamente)`);
+    if(m.telefone){
+      const w = window.open(`https://wa.me/${m.telefone}?text=${encodeURIComponent(m.mensagem)}`, '_blank');
+      if(!w) abrirMsgWhats(app);   // pop-up bloqueado: mostra a mensagem com botão de enviar
+    }else{
+      abrirMsgWhats(app);
+    }
+  }catch(err){
+    console.warn('Erro ao montar/enviar a mensagem do aplicador:', err);
+    try{ abrirMsgWhats(app); }catch(_){}
   }
 }
 function registerApplication(){
@@ -7948,7 +8069,7 @@ function registerApplication(){
      só começa depois que ela termina (.finally), porque os dois mexem no mesmo #receiptCard
      (escondem/mostram os botões ".receipt-actions" antes de tirar o "print") — rodando ao
      mesmo tempo, um atrapalharia a foto do outro. */
-  notificarOperadorWhatsApp(app).finally(()=>{
+  notificarOperadorWhatsApp(app).catch(()=>{}).finally(()=>{
     setTimeout(()=>autoGerarFichaPdf(app), 80);
   });
 }
