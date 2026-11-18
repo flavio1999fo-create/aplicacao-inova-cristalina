@@ -616,6 +616,95 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
        toggleDashboard()/closeDashboard() ficaram só como no-op de compatibilidade. */
     .dash-panel{max-width:none;margin:0;}
   }
+  /* ====== v2.32.0 — Dashboard "painel de controle" (visual futurista, a pedido do Flávio) ====== */
+  #tab-dashboard.dash-fx{
+    --d-bg:#0e0b08;--d-card:rgba(255,255,255,.045);--d-line:rgba(255,255,255,.09);--d-tx:#f6eee6;--d-mu:#a99886;
+    --d-or:#ff8a3d;--d-cy:#22d3ee;--d-ok:#34d399;--d-wn:#fbbf24;--d-bd:#f87171;--d-pu:#a78bfa;
+    color:var(--d-tx);border-radius:22px;padding:18px 18px 22px;margin-top:6px;position:relative;overflow:hidden;
+    background:radial-gradient(900px 420px at 8% -10%,rgba(255,138,61,.20),transparent 60%),radial-gradient(760px 380px at 100% 0%,rgba(34,211,238,.13),transparent 55%),linear-gradient(180deg,#15100b,#0b0806);
+    border:1px solid rgba(255,255,255,.07);box-shadow:0 18px 50px rgba(20,10,0,.35);
+  }
+  #tab-dashboard.dash-fx::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:34px 34px;
+    -webkit-mask-image:linear-gradient(180deg,#000,transparent 70%);mask-image:linear-gradient(180deg,#000,transparent 70%);}
+  #tab-dashboard.dash-fx>*{position:relative;}
+  #tab-dashboard.dash-fx .dash-panel-head h2{color:var(--d-tx);}
+  #tab-dashboard.dash-fx .dash-panel-close{background:rgba(255,255,255,.1);color:#fff;}
+  .dfx-head{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-end;margin-bottom:14px;}
+  .dfx-title{margin:0;font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.1;}
+  .dfx-title span{background:linear-gradient(90deg,var(--d-or),#ffd08a 60%,var(--d-cy));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .dfx-sub{font-size:12px;color:var(--d-mu);margin-top:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .dfx-live{width:8px;height:8px;border-radius:50%;background:var(--d-ok);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:dfxPulse 2s infinite;display:inline-block;}
+  @keyframes dfxPulse{70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+  .dfx-per{display:flex;gap:4px;background:rgba(255,255,255,.06);border:1px solid var(--d-line);padding:3px;border-radius:999px;}
+  .dfx-per button{border:none;background:transparent;color:var(--d-mu);font:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;transition:.15s;}
+  .dfx-per button:hover{color:#fff}
+  .dfx-per button.on{background:linear-gradient(135deg,var(--d-or),#e8590c);color:#fff;box-shadow:0 0 16px rgba(255,138,61,.45);}
+  .dfx-sec{display:flex;align-items:center;gap:10px;margin:22px 0 10px;font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--d-or);}
+  .dfx-sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(255,138,61,.5),transparent);}
+  .dfx-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px;}
+  .dfx-c{grid-column:span 12;background:var(--d-card);border:1px solid var(--d-line);border-radius:16px;padding:14px 16px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);min-width:0;}
+  @media(min-width:760px){.dfx-c.s3{grid-column:span 3}.dfx-c.s4{grid-column:span 4}.dfx-c.s5{grid-column:span 5}.dfx-c.s6{grid-column:span 6}.dfx-c.s7{grid-column:span 7}.dfx-c.s8{grid-column:span 8}}
+  .dfx-c h3,.dfx-title,.dfx-sec{font-family:inherit;}
+  .dfx-c h3{margin:0 0 10px;font-size:11.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--d-mu);display:flex;justify-content:space-between;gap:8px;align-items:center;}
+  .dfx-c h3 em{font-style:normal;font-weight:600;letter-spacing:0;text-transform:none;font-size:11px;opacity:.8}
+  .dfx-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;}
+  .dfx-k{position:relative;text-align:left;font:inherit;color:inherit;cursor:pointer;background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border:1px solid var(--d-line);border-radius:16px;padding:14px 14px 12px;overflow:hidden;transition:transform .15s,border-color .15s,box-shadow .15s;}
+  .dfx-k::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--kc,var(--d-or));box-shadow:0 0 12px var(--kc,var(--d-or));}
+  .dfx-k:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.22);box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 0 1px var(--kc,var(--d-or)) inset;}
+  .dfx-k small{display:block;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--d-mu);}
+  .dfx-k b{display:block;font-size:31px;font-weight:800;letter-spacing:-1px;line-height:1.15;margin:4px 0 2px;font-variant-numeric:tabular-nums;color:var(--kc,var(--d-or));text-shadow:0 0 22px color-mix(in srgb,var(--kc,var(--d-or)) 55%,transparent);}
+  .dfx-k b i{font-style:normal;font-size:14px;font-weight:700;color:var(--d-mu);letter-spacing:0;margin-left:4px;text-shadow:none}
+  .dfx-k .sb{font-size:11.5px;color:var(--d-mu);display:flex;gap:6px;align-items:center;flex-wrap:wrap;min-height:16px;}
+  .dfx-k.has-rg{padding-right:84px}
+  .dfx-k .rg{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:62px;height:62px;}
+  .dfx-k.has-sp{padding-bottom:46px}
+  .dfx-k .sp{position:absolute;left:14px;right:14px;bottom:9px;width:calc(100% - 28px);height:28px;opacity:.95;}
+  .dfx-dl{font-weight:800;font-size:11.5px;padding:1px 7px;border-radius:999px;}
+  .dfx-dl.up{background:rgba(52,211,153,.15);color:var(--d-ok)}.dfx-dl.dn{background:rgba(251,191,36,.15);color:var(--d-wn)}.dfx-dl.eq{background:rgba(255,255,255,.08);color:var(--d-mu)}
+  .dfx-ins{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 2px;}
+  .dfx-chip{border:1px solid var(--d-line);background:rgba(255,255,255,.05);color:var(--d-tx);font:inherit;font-size:12.5px;font-weight:600;border-radius:999px;padding:6px 12px;cursor:pointer;display:flex;gap:6px;align-items:center;}
+  .dfx-chip:hover{border-color:rgba(255,255,255,.3)}
+  .dfx-chip.bd{border-color:rgba(248,113,113,.5);background:rgba(248,113,113,.1)}.dfx-chip.wn{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.09)}.dfx-chip.ok{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+  .dfx-hb{display:flex;flex-direction:column;gap:9px;}
+  .dfx-hb .r{display:grid;grid-template-columns:minmax(64px,34%) 1fr auto;gap:8px;align-items:center;font-size:12.5px;}
+  .dfx-hb .lab{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:600}
+  .dfx-hb .trk{height:9px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden;display:flex;}
+  .dfx-hb .fil{height:100%;border-radius:6px;background:linear-gradient(90deg,color-mix(in srgb,var(--c,var(--d-or)) 55%,#000),var(--c,var(--d-or)));box-shadow:0 0 10px color-mix(in srgb,var(--c,var(--d-or)) 60%,transparent);transition:width .9s cubic-bezier(.2,.8,.2,1);}
+  .dfx-hb .val{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--d-tx);font-size:12px}
+  .dfx-hb .val u{text-decoration:none;color:var(--d-mu);font-weight:600;margin-left:3px}
+  .dfx-pre .dfx-hb .fil{width:0!important}
+  .dfx-pre .dfx-ring circle.v{stroke-dashoffset:var(--circ)!important}
+  .dfx-ring circle.v{transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1);}
+  .dfx-donut{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .dfx-donut svg{flex:0 0 auto}
+  .dfx-leg{display:flex;flex-direction:column;gap:6px;font-size:12.5px;flex:1;min-width:120px;}
+  .dfx-leg div{display:flex;gap:7px;align-items:center;justify-content:space-between}
+  .dfx-leg span{display:flex;gap:7px;align-items:center;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dfx-leg i{width:10px;height:10px;border-radius:3px;flex:0 0 auto;background:var(--c);box-shadow:0 0 8px var(--c)}
+  .dfx-leg b{font-variant-numeric:tabular-nums;font-size:12px}
+  .dfx-empty{font-size:12.5px;color:var(--d-mu);padding:6px 0}
+  .dfx-mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+  .dfx-m{background:rgba(255,255,255,.05);border:1px solid var(--d-line);border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:.15s}
+  .dfx-m:hover{border-color:rgba(255,255,255,.25);transform:translateY(-1px)}
+  .dfx-m b{display:block;font-size:22px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;color:var(--kc,var(--d-tx))}
+  .dfx-m span{font-size:11px;color:var(--d-mu);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  .dfx-list{display:flex;flex-direction:column;gap:7px;}
+  .dfx-li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(255,255,255,.04);border:1px solid var(--d-line);border-radius:12px;padding:8px 11px;font-size:12.5px;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+  .dfx-li:hover{border-color:rgba(255,255,255,.25)}
+  .dfx-li .n{font-weight:800;color:var(--d-or);font-variant-numeric:tabular-nums;min-width:34px}
+  .dfx-li .t{min-width:0}.dfx-li .t b{display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dfx-li .t span{color:var(--d-mu);font-size:11.5px}
+  .dfx-st{font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .dfx-st.f{background:rgba(52,211,153,.16);color:var(--d-ok)}.dfx-st.n{background:rgba(248,113,113,.16);color:var(--d-bd)}.dfx-st.p{background:rgba(251,191,36,.16);color:var(--d-wn)}
+  .dfx-heat{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .dfx-heat svg{max-width:100%;height:auto}
+  .dfx-stats{display:flex;flex-direction:column;gap:10px;min-width:150px}
+  .dfx-stats div{font-size:12px;color:var(--d-mu)}.dfx-stats b{display:block;font-size:20px;color:var(--d-tx);font-variant-numeric:tabular-nums}
+  .dfx-note{font-size:11px;color:var(--d-mu);margin-top:8px;opacity:.85}
+  .dfx-chart svg{width:100%;height:auto;display:block}
+  .dfx-chart text{fill:var(--d-mu);font-size:10.5px;font-family:inherit}
+  .dfx-chart .bar{transition:opacity .15s}.dfx-chart .bar:hover{opacity:.8}
+  @media(prefers-reduced-motion:reduce){.dfx-live{animation:none}.dfx-hb .fil,.dfx-ring circle.v{transition:none}}
   .card{
     background:var(--card);border:1px solid rgba(35,22,10,.05);
     border-radius:var(--radius);padding:16px;margin-bottom:14px;
@@ -1303,105 +1392,12 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
 <div class="app-shell">
 
-<aside id="tab-dashboard" class="section dash-panel">
+<aside id="tab-dashboard" class="section dash-panel dash-fx">
   <div class="dash-panel-head">
     <h2>Dashboard</h2>
     <button class="dash-panel-close" onclick="closeDashboard()">✕</button>
   </div>
-  <!-- 30/09/2026 — a pedido do Flávio: Dashboard separado por tópico (Aplicação / Talhões
-       e Áreas / Estoque), em vez de tudo misturado numa lista só de cartões. Cada tópico
-       tem seu próprio resumo (dash-stats) e seus gráficos — ver renderDashboard() no JS
-       pra quem popula cada um. -->
-  <div class="dash-section-label">📋 Aplicação</div>
-  <div class="card">
-    <h2>Resumo</h2>
-    <div class="dash-stats">
-      <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatApps">–</span><span class="dash-stat-label">Aplicações</span></div>
-      <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatMes">–</span><span class="dash-stat-label">Este mês</span></div>
-      <div class="dash-stat" onclick="dashStatGo('historico')" title="Abrir Histórico"><span class="dash-stat-num" id="dashStatArea">–</span><span class="dash-stat-label">Ha aplicados</span></div>
-      <div class="dash-stat warn" onclick="dashStatGo('nova')" title="Abrir Aplicação"><span class="dash-stat-num" id="dashStatConfirmar">–</span><span class="dash-stat-label">Aguardando confirmação</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Aplicações por mês</h2>
-    <div class="bar-chart" id="dashChartMeses"></div>
-  </div>
-
-  <!-- 18/09/2026, a pedido do Flávio: resumo visual de consumo (área aplicada) por mês, por
-       cultura, e histórico de aplicação por talhão — antes só dava pra ver isso abrindo a
-       planilha e olhando linha por linha. Reaproveita os mesmos estilos de barra que já
-       existiam aqui (bar-chart/hbar-chart), só com dados diferentes. Área (ha) foi escolhida
-       como a métrica porque é a única que é igual pra qualquer produto (quantidade de produto
-       não dá pra somar direto: um produto é em L, outro em Kg). -->
-  <div class="card">
-    <h2>Área aplicada por mês (ha)</h2>
-    <div class="bar-chart" id="dashChartAreaMes"></div>
-  </div>
-
-  <div class="card">
-    <h2>Produtos mais utilizados</h2>
-    <div class="hbar-chart" id="dashChartProdutos"></div>
-  </div>
-
-  <div class="card">
-    <h2>Consumo por cultura (área aplicada)</h2>
-    <div class="hbar-chart" id="dashChartCultura"></div>
-  </div>
-
-  <div class="card">
-    <h2>Aplicações por talhão</h2>
-    <div class="hbar-chart" id="dashChartTalhao"></div>
-  </div>
-
-  <!-- 30/09/2026 — a pedido do Flávio: informações dos talhões e dos pivôs (o que está
-       CADASTRADO/PLANTADO hoje), separado do tópico Aplicação acima (que é sobre o que já
-       foi APLICADO). Usa DATA.ensaios direto, somando todos os pivôs/áreas da estação
-       ativa (não só o pivô selecionado na aba Talhões) — ver renderDashboard(). -->
-  <div class="dash-section-label">🌾 Talhões / Áreas</div>
-  <div class="card">
-    <h2>Resumo dos talhões</h2>
-    <div class="dash-stats">
-      <div class="dash-stat" onclick="dashStatGo('talhoes')" title="Abrir Talhões"><span class="dash-stat-num" id="dashStatAreaTotal">–</span><span class="dash-stat-label">Área total (ha)</span></div>
-      <div class="dash-stat" onclick="dashStatGo('talhoes')" title="Abrir Talhões"><span class="dash-stat-num" id="dashStatTalhoesCad">–</span><span class="dash-stat-label">Talhões cadastrados</span></div>
-      <div class="dash-stat" onclick="dashStatGo('talhoes')" title="Abrir Talhões"><span class="dash-stat-num" id="dashStatTalhoesOcupados">–</span><span class="dash-stat-label">Talhões ocupados</span></div>
-      <div class="dash-stat" onclick="dashStatGo('talhoes')" title="Abrir Talhões"><span class="dash-stat-num" id="dashStatTalhoesLivres">–</span><span class="dash-stat-label">Talhões livres</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Área por pivô (ha)</h2>
-    <div class="hbar-chart" id="dashChartAreaPivo"></div>
-  </div>
-
-  <div class="card">
-    <h2>Talhões por pivô (quantidade)</h2>
-    <div class="hbar-chart" id="dashChartTalhoesPorPivo"></div>
-  </div>
-
-  <div class="card">
-    <h2>Área ocupada por cultura (ha)</h2>
-    <div class="hbar-chart" id="dashChartAreaCulturaTalhao"></div>
-  </div>
-
-  <div class="card">
-    <h2>Talhões por cultura (quantidade)</h2>
-    <div class="hbar-chart" id="dashChartTalhoesPorCultura"></div>
-  </div>
-
-  <div class="dash-section-label">📦 Estoque</div>
-  <div class="card">
-    <h2>Resumo do estoque</h2>
-    <div class="dash-stats">
-      <div class="dash-stat" onclick="dashStatGo('estoque')" title="Abrir Estoque"><span class="dash-stat-num" id="dashStatProdutos">–</span><span class="dash-stat-label">Produtos</span></div>
-      <div class="dash-stat warn" onclick="dashStatGo('estoque')" title="Abrir Estoque"><span class="dash-stat-num" id="dashStatBaixo">–</span><span class="dash-stat-label">Estoque baixo</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Estoque baixo</h2>
-    <div id="dashBaixoList" class="dash-alert-list"></div>
-  </div>
+  <div id="dashRoot"></div>
 </aside>
 
 <main>
@@ -2215,7 +2211,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.31.0';
+const APP_BUILD_ID = 'v2.32.0';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -3785,6 +3781,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='dashboard') renderDashboard({anim:true});
     if(btn.dataset.tab==='nova') refreshTalhaoUI();
     if(btn.dataset.tab==='talhoes') refreshTalhaoCadUI();
     if(btn.dataset.tab==='historico') renderHistory();
@@ -3993,233 +3990,277 @@ function renderStats(){
 }
 
 /* ====================== DASHBOARD ====================== */
+/* ====================== DASHBOARD (v2.32.0 — "painel de controle") ======================
+   Pedido do Flávio (nov/2026): deixar o Dashboard mais profissional, mais informativo e futurista,
+   no mesmo espírito do Estoque (indicadores clicáveis, gráficos, alertas). Tudo é calculado aqui
+   a partir de DATA (aplicações, talhões/ensaios e produtos) — nada novo é gravado.
+   O seletor de período (7 dias / 30 dias / 90 dias / 12 meses / tudo) vale pros indicadores,
+   rankings e rosquinhas de Aplicação; o gráfico mensal e o calendário têm janela fixa. */
 const MESES_ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-
-function renderDashboard(){
-  if(!document.getElementById('tab-dashboard')) return;
-  const products = DATA.products||[];
-  const apps = DATA.applications||[];
-
-  const lowItems = products.filter(p=>Number(p.estoqueMinimo)>0 && Number(p.saldo) <= Number(p.estoqueMinimo));
-  const now = new Date();
-  const curMonth = now.getMonth(), curYear = now.getFullYear();
-  const appsMes = apps.filter(a=>{
-    const d = new Date(a.dataAplicacao||a.data);
-    return !isNaN(d) && d.getMonth()===curMonth && d.getFullYear()===curYear;
-  });
-  const areaTotal = apps.reduce((sum,a)=>sum + (Number(a.area)||0), 0);
-
-  document.getElementById('dashStatProdutos').textContent = products.length;
-  document.getElementById('dashStatBaixo').textContent = lowItems.length;
-  document.getElementById('dashStatApps').textContent = apps.length;
-  document.getElementById('dashStatMes').textContent = appsMes.length;
-  document.getElementById('dashStatArea').textContent = fmtNum(areaTotal);
-  document.getElementById('dashStatConfirmar').textContent = aplicacoesPendentesConfirmacao().length;
-
-  /* Aplicações por mês (últimos 6 meses) */
-  const buckets = [];
-  for(let i=5;i>=0;i--){
-    const d = new Date(curYear, curMonth-i, 1);
-    buckets.push({label: MESES_ABREV[d.getMonth()], year:d.getFullYear(), month:d.getMonth(), count:0});
-  }
-  apps.forEach(a=>{
-    const d = new Date(a.dataAplicacao||a.data);
-    if(isNaN(d)) return;
-    const b = buckets.find(x=>x.month===d.getMonth() && x.year===d.getFullYear());
-    if(b) b.count++;
-  });
-  const maxCount = Math.max(1, ...buckets.map(b=>b.count));
-  document.getElementById('dashChartMeses').innerHTML = buckets.map(b=>`
-    <div class="bar-col">
-      <span class="bar-val">${b.count||''}</span>
-      <div class="bar" style="height:${Math.max(2, Math.round((b.count/maxCount)*100))}%"></div>
-      <span class="bar-label">${b.label}</span>
-    </div>`).join('');
-
-  /* 18/09/2026 — Área aplicada por mês (mesmos 6 meses do gráfico de cima, mas somando
-     hectares em vez de contar aplicações; assim dá pra ver não só QUANTAS aplicações
-     rolaram, mas o TAMANHO delas — um mês com poucas aplicações grandes pode ter mais
-     área tratada do que um mês com muitas aplicações pequenas). */
-  const bucketsArea = buckets.map(b=>({...b, area:0}));
-  apps.forEach(a=>{
-    const d = new Date(a.dataAplicacao||a.data);
-    if(isNaN(d)) return;
-    const b = bucketsArea.find(x=>x.month===d.getMonth() && x.year===d.getFullYear());
-    if(b) b.area += (Number(a.area)||0);
-  });
-  const maxArea = Math.max(1, ...bucketsArea.map(b=>b.area));
-  document.getElementById('dashChartAreaMes').innerHTML = bucketsArea.map(b=>`
-    <div class="bar-col">
-      <span class="bar-val">${b.area? fmtNum(b.area):''}</span>
-      <div class="bar" style="height:${Math.max(2, Math.round((b.area/maxArea)*100))}%"></div>
-      <span class="bar-label">${b.label}</span>
-    </div>`).join('');
-
-  /* Produtos mais utilizados (soma de quantidade usada em todas as aplicações) */
-  const usoPorProduto = {};
-  apps.forEach(a=>{
-    (a.produtos||[]).forEach(pr=>{
-      usoPorProduto[pr.nome] = (usoPorProduto[pr.nome]||0) + (Number(pr.qtd)||0);
-    });
-  });
-  const topProdutos = Object.entries(usoPorProduto)
-    .sort((a,b)=>b[1]-a[1])
-    .slice(0,6);
-  const maxUso = Math.max(1, ...topProdutos.map(x=>x[1]));
-  const elProdutos = document.getElementById('dashChartProdutos');
-  if(!topProdutos.length){
-    elProdutos.innerHTML = '<p class="dash-empty">Nenhuma aplicação registrada ainda.</p>';
-  }else{
-    elProdutos.innerHTML = topProdutos.map(([nome,qtd])=>{
-      const prod = products.find(p=>p.nome===nome);
-      const unidade = prod? (prod.unidadeEstoque||'') : '';
-      return `<div class="hbar-row">
-        <div class="hbar-top"><span>${escapeHtml(nome)}</span><span>${fmtNum(qtd)}${unidade?(' '+unidade):''}</span></div>
-        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxUso)*100))}%"></div></div>
-      </div>`;
-    }).join('');
-  }
-
-  /* 18/09/2026 — Consumo por cultura: soma da área aplicada (ha) agrupada pela cultura de
-     cada aplicação (soja, milho etc). De novo usando área (e não quantidade de produto) pra
-     poder comparar culturas diferentes na mesma régua, já que os produtos usados mudam de
-     cultura pra cultura e têm unidades diferentes (L, Kg...). */
-  const areaPorCultura = {};
-  apps.forEach(a=>{
-    const cultura = (a.cultura||'').trim();
-    if(!cultura) return;
-    if(cultura===CULTURA_SOJA_MILHO){
-      /* aplicação conjunta: reparte a área entre Soja e Milho na proporção das quadras selecionadas */
-      const por = {}; let tot = 0;
-      (a.ensaiosSel||[]).forEach(x=>{ const c=(x.cultura||'').toUpperCase(); if(!c) return; const ha=parseFloat(x.area)||0; por[c]=(por[c]||0)+ha; tot+=ha; });
-      if(tot>0){ Object.keys(por).forEach(c=>{ areaPorCultura[c] = (areaPorCultura[c]||0) + (Number(a.area)||0)*por[c]/tot; }); return; }
+const DASH_PER_KEY = 'inova_dash_periodo_v1';
+let dashPeriodo = 30;
+try{ const _p = parseInt(localStorage.getItem(DASH_PER_KEY),10); if([7,30,90,365,0].includes(_p)) dashPeriodo = _p; }catch(e){}
+const DFX_COR = ['#ff8a3d','#22d3ee','#34d399','#a78bfa','#fbbf24','#f472b6','#60a5fa','#94a3b8'];
+function setDashPeriodo(n){
+  dashPeriodo = n; try{ localStorage.setItem(DASH_PER_KEY, String(n)); }catch(e){}
+  renderDashboard({anim:false});
+}
+function dfxDia(a){                       /* data da aplicação como dia local (evita o "dia anterior" do fuso) */
+  const s = a.dataAplicacao || a.data || '';
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+  const d = m ? new Date(+m[1], +m[2]-1, +m[3]) : new Date(s);
+  return isNaN(d) ? null : d;
+}
+function dfxIniDia(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function dfxAddDias(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()+n); }
+function dfxDiffDias(a, b){ return Math.round((dfxIniDia(a)-dfxIniDia(b))/86400000); }
+function dfxFmt1(n){ return (Math.round(n*10)/10).toString().replace('.',','); }
+function dfxDdmm(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
+function dfxDelta(cur, prev){
+  if(!prev) return cur ? '<span class="dfx-dl up">novo</span>' : '';
+  const p = Math.round((cur-prev)/prev*100);
+  if(p===0) return '<span class="dfx-dl eq">= igual</span>';
+  return `<span class="dfx-dl ${p>0?'up':'dn'}">${p>0?'▲':'▼'} ${Math.abs(p)}%</span>`;
+}
+function dfxRing(pct, cor){
+  const R=26, C=2*Math.PI*R, p=Math.max(0,Math.min(100,pct||0));
+  return `<svg class="dfx-ring rg" viewBox="0 0 64 64" style="--circ:${C.toFixed(2)}"><circle cx="32" cy="32" r="${R}" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="6"/><circle class="v" cx="32" cy="32" r="${R}" fill="none" stroke="${cor}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${(C*(1-p/100)).toFixed(2)}" transform="rotate(-90 32 32)" style="filter:drop-shadow(0 0 5px ${cor})"/><text x="32" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="#f6eee6">${pct==null?'–':Math.round(p)+'%'}</text></svg>`;
+}
+function dfxSpark(vals, cor){
+  if(!vals.length) return '';
+  const W=84,H=30,mx=Math.max(1,...vals), st=W/(vals.length-1||1);
+  const pts = vals.map((v,i)=>[i*st, H-3-(v/mx)*(H-8)]);
+  const line = pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const gid = 'dsp'+Math.random().toString(36).slice(2,7);
+  return `<svg class="sp" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cor}" stop-opacity=".45"/><stop offset="1" stop-color="${cor}" stop-opacity="0"/></linearGradient></defs><path d="${line} L${W} ${H} L0 ${H} Z" fill="url(#${gid})"/><path d="${line}" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+function dfxHbars(itens, cor, vazio){
+  if(!itens.length) return `<div class="dfx-empty">${vazio||'Sem dados no período.'}</div>`;
+  const mx = Math.max(1e-9, ...itens.map(i=>i.v));
+  return `<div class="dfx-hb">`+itens.map(i=>`<div class="r" title="${escapeHtml(i.tip||i.lab)}"><span class="lab">${escapeHtml(i.lab)}</span><span class="trk"><span class="fil" style="width:${Math.max(3,Math.round(i.v/mx*100))}%;--c:${i.cor||cor||'#ff8a3d'}"></span></span><span class="val">${i.txt}</span></div>`).join('')+`</div>`;
+}
+function dfxDonut(fatias, centro){
+  const tot = fatias.reduce((s,f)=>s+f.v,0);
+  if(!tot) return '<div class="dfx-empty">Sem dados no período.</div>';
+  const R=38, C=2*Math.PI*R; let off=0;
+  const arcs = fatias.filter(f=>f.v>0).map(f=>{
+    const len=C*f.v/tot; const el=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="${f.cor}" stroke-width="13" stroke-dasharray="${Math.max(0,len-1.2).toFixed(2)} ${(C-len+1.2).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 50 50)" style="filter:drop-shadow(0 0 4px ${f.cor})"><title>${escapeHtml(f.lab)}: ${f.txt||fmtNum(f.v)}</title></circle>`;
+    off+=len; return el;
+  }).join('');
+  const leg = fatias.filter(f=>f.v>0).map(f=>`<div><span><i style="--c:${f.cor}"></i>${escapeHtml(f.lab)}</span><b>${f.txt||fmtNum(f.v)}</b></div>`).join('');
+  return `<div class="dfx-donut"><svg viewBox="0 0 100 100" width="116" height="116">${arcs}<text x="50" y="49" text-anchor="middle" font-size="15" font-weight="800" fill="#f6eee6">${centro!=null?centro:fmtNum(tot)}</text><text x="50" y="61" text-anchor="middle" font-size="7.5" fill="#a99886">total</text></svg><div class="dfx-leg">${leg}</div></div>`;
+}
+function dfxMeses(apps, hoje){
+  const bk=[];
+  for(let i=11;i>=0;i--){ const d=new Date(hoje.getFullYear(), hoje.getMonth()-i, 1); bk.push({m:d.getMonth(), y:d.getFullYear(), n:0, ha:0}); }
+  apps.forEach(a=>{ const d=dfxDia(a); if(!d) return; const b=bk.find(x=>x.m===d.getMonth()&&x.y===d.getFullYear()); if(b){ b.n++; b.ha+=Number(a.area)||0; } });
+  const W=640,H=200,pl=8,pr=8,pt=18,pb=24, iw=(W-pl-pr)/12, mxH=Math.max(1,...bk.map(b=>b.ha)), mxN=Math.max(1,...bk.map(b=>b.n));
+  const bars = bk.map((b,i)=>{
+    const h=Math.max(b.ha?3:0,(b.ha/mxH)*(H-pt-pb)), x=pl+i*iw+iw*.2, w=iw*.6, y=H-pb-h;
+    return `<g><rect class="bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="url(#dfxBarG)"><title>${MESES_ABREV[b.m]}/${b.y}: ${fmtNum(Math.round(b.ha*10)/10)} ha · ${b.n} aplicaç${b.n===1?'ão':'ões'}</title></rect>${b.ha?`<text x="${(x+w/2).toFixed(1)}" y="${(y-4).toFixed(1)}" text-anchor="middle" font-size="9.5" style="fill:#f6eee6;font-weight:700">${fmtNum(Math.round(b.ha))}</text>`:''}<text x="${(x+w/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${MESES_ABREV[b.m]}</text></g>`;
+  }).join('');
+  const pts = bk.map((b,i)=>[pl+i*iw+iw/2, H-pb-(b.n/mxN)*(H-pt-pb-10)-4]);
+  const line = pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const dots = pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.2" fill="#0e0b08" stroke="#22d3ee" stroke-width="2"><title>${bk[i].n} aplicaç${bk[i].n===1?'ão':'ões'}</title></circle>`).join('');
+  return `<div class="dfx-chart"><svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="dfxBarG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffa45c"/><stop offset="1" stop-color="#e8590c" stop-opacity=".55"/></linearGradient></defs><line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" stroke="rgba(255,255,255,.12)"/>${bars}<path d="${line}" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round" style="filter:drop-shadow(0 0 4px #22d3ee)"/>${dots}</svg></div><div class="dfx-note"><span style="color:#ff8a3d">■</span> hectares aplicados &nbsp; <span style="color:#22d3ee">●</span> nº de aplicações</div>`;
+}
+function dfxCalendario(apps, hoje){
+  const sem=17, ini=dfxAddDias(hoje, -(sem*7-1) - hoje.getDay()+ (6-0));  /* colunas = semanas (dom→sáb) terminando na semana atual */
+  const start = dfxAddDias(dfxAddDias(hoje, -hoje.getDay()), -(sem-1)*7);
+  const map={};
+  apps.forEach(a=>{ const d=dfxDia(a); if(!d) return; const k=d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); const o=map[k]||(map[k]={n:0,ha:0}); o.n++; o.ha+=Number(a.area)||0; });
+  const mx=Math.max(1,...Object.values(map).map(o=>o.n)); const S=13, G=3; let cells='', meses='', ultM=-1;
+  for(let c=0;c<sem;c++){
+    const d0=dfxAddDias(start,c*7);
+    if(d0.getMonth()!==ultM){ const _long = ultM===-1 || c-(window.__calUltC||-9)>=3; ultM=d0.getMonth(); if(_long){ window.__calUltC=c; meses+=`<text x="${34+c*(S+G)}" y="10">${MESES_ABREV[ultM]}</text>`; } }
+    for(let r=0;r<7;r++){
+      const d=dfxAddDias(start,c*7+r); if(d>hoje) continue;
+      const o=map[d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()];
+      const al = o? (0.28+0.72*o.n/mx) : 0;
+      cells+=`<rect x="${34+c*(S+G)}" y="${16+r*(S+G)}" width="${S}" height="${S}" rx="3.5" fill="${o?`rgba(255,138,61,${al.toFixed(2)})`:'rgba(255,255,255,.06)'}" ${o?'style="filter:drop-shadow(0 0 3px rgba(255,138,61,.5))"':''}><title>${dfxDdmm(d)}: ${o?o.n+' aplicaç'+(o.n===1?'ão':'ões')+' · '+fmtNum(Math.round(o.ha*10)/10)+' ha':'sem aplicação'}</title></rect>`;
     }
-    areaPorCultura[cultura] = (areaPorCultura[cultura]||0) + (Number(a.area)||0);
+  }
+  const dias=['D','S','T','Q','Q','S','S'].map((t,i)=>i%2?`<text x="8" y="${16+i*(S+G)+10}">${t}</text>`:'').join('');
+  const W=34+sem*(S+G), H=16+7*(S+G);
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="dfx-chart" style="width:100%;max-width:${W*1.6}px">${meses}${dias}${cells}</svg>`;
+}
+function dashAnimar(root){
+  root.querySelectorAll('[data-to]').forEach(el=>{
+    const to=parseFloat(el.dataset.to), dec=parseInt(el.dataset.dec||'0',10), fin=el.dataset.fin||el.textContent;
+    if(isNaN(to)) return; const t0=performance.now(), dur=900;
+    const step=t=>{ const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3), v=to*e; el.firstChild.nodeValue = dec? dfxFmt1(v) : String(Math.round(v)); if(k<1) requestAnimationFrame(step); else el.firstChild.nodeValue=fin; };
+    requestAnimationFrame(step);
   });
-  const topCulturas = Object.entries(areaPorCultura).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const maxAreaCultura = Math.max(1, ...topCulturas.map(x=>x[1]));
-  const elCultura = document.getElementById('dashChartCultura');
-  if(!topCulturas.length){
-    elCultura.innerHTML = '<p class="dash-empty">Nenhuma aplicação registrada ainda.</p>';
-  }else{
-    elCultura.innerHTML = topCulturas.map(([cultura,area])=>`<div class="hbar-row">
-        <div class="hbar-top"><span>${escapeHtml(cultura)}</span><span>${fmtNum(area)} ha</span></div>
-        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((area/maxAreaCultura)*100))}%"></div></div>
-      </div>`).join('');
-  }
+}
+function dfxK(tab, cor, rot, valor, to, dec, unid, sub, extra){
+  const fin = (typeof valor==='number')? (dec? fmtNum(valor) : String(valor)) : valor;
+  return `<button type="button" class="dfx-k${extra&&extra.indexOf('class="dfx-ring')>=0?' has-rg':''}${extra&&extra.indexOf('class="sp"')>=0?' has-sp':''}" style="--kc:${cor}" onclick="dashStatGo('${tab}')"><small>${rot}</small><b ${to!=null?`data-to="${to}" data-dec="${dec||0}" data-fin="${escapeHtml(fin)}"`:''}>${escapeHtml(fin)}${unid?`<i>${unid}</i>`:''}</b><div class="sb">${sub||''}</div>${extra||''}</button>`;
+}
+function dfxM(tab, cor, num, rot){ return `<button type="button" class="dfx-m" style="--kc:${cor}" onclick="dashStatGo('${tab}')"><b>${num}</b><span>${rot}</span></button>`; }
 
-  /* 18/09/2026 — Aplicações por talhão: conta em quantas aplicações cada talhão apareceu
-     (uma mesma aplicação pode cobrir mais de um talhão em ensaiosSel, então cada talhão
-     conta uma vez por aplicação em que ele entrou, não uma vez por linha do array). Isso
-     dá uma visão rápida de quais talhões são os mais "visitados" com aplicação, sem precisar
-     abrir o histórico e contar na mão. */
-  const contagemPorTalhao = {};
-  apps.forEach(a=>{
-    (a.ensaiosSel||[]).forEach(e=>{
-      const nome = (e.ensaio||'').trim();
-      if(!nome) return;
-      contagemPorTalhao[nome] = (contagemPorTalhao[nome]||0) + 1;
-    });
+function renderDashboard(opts){
+  const root = document.getElementById('dashRoot'); if(!root) return;
+  opts = opts || {};
+  const hoje = dfxIniDia(new Date());
+  const products = DATA.products||[], apps = DATA.applications||[];
+
+  /* ---------- Aplicações ---------- */
+  const comData = apps.map(a=>({a, d:dfxDia(a)})).filter(x=>x.d);
+  const noPer = (x, off)=>{ if(!dashPeriodo) return off===0; const dias=dashPeriodo, ini=dfxAddDias(hoje, -dias*(off+1)+1), fim=dfxAddDias(hoje, -dias*off); return x.d>=ini && x.d<=fim; };
+  const atual = comData.filter(x=>noPer(x,0)).map(x=>x.a), anterior = dashPeriodo? comData.filter(x=>noPer(x,1)).map(x=>x.a) : [];
+  const somaHa = l=>l.reduce((s,a)=>s+(Number(a.area)||0),0);
+  const haAtual = somaHa(atual), haAnt = somaHa(anterior);
+  const stOf = a=> (a.statusExecucao==='feita'||a.statusExecucao==='nao_feita')? a.statusExecucao : 'pendente';
+  const nF = atual.filter(a=>stOf(a)==='feita').length, nN = atual.filter(a=>stOf(a)==='nao_feita').length, nP = atual.filter(a=>stOf(a)==='pendente').length;
+  const taxaExec = (nF+nN)? Math.round(nF/(nF+nN)*100) : null;
+  const pend = apps.filter(a=>stOf(a)==='pendente').map(a=>({a,d:dfxDia(a)})).filter(x=>x.d).sort((x,y)=>x.d-y.d);
+  const pendMaisAntiga = pend.length? dfxDiffDias(hoje, pend[0].d) : 0;
+  const semanas = (n)=>{ const out=[]; for(let i=n-1;i>=0;i--){ const ini=dfxAddDias(hoje,-7*(i+1)+1), fim=dfxAddDias(hoje,-7*i); const l=comData.filter(x=>x.d>=ini&&x.d<=fim); out.push({n:l.length, ha:somaHa(l.map(x=>x.a))}); } return out; };
+  const sem12 = semanas(12);
+
+  /* ---------- Talhões ---------- */
+  const ens = (DATA.ensaios||[]).filter(e=>e.ativo!==false);
+  const ocup = ens.filter(e=>(e.cultura||'').trim());
+  const reserv = ens.filter(e=>e.reservado);
+  const haTot = ens.reduce((s,e)=>s+(Number(e.area)||0),0), haOcup = ocup.reduce((s,e)=>s+(Number(e.area)||0),0);
+  const pctOcup = ens.length? Math.round(ocup.length/ens.length*100) : null;
+  const chaveQ = (pv,t)=>(pv||'CRISTALINA')+'|'+(t||'');
+  const ultApp = {}; comData.forEach(x=>(x.a.ensaiosSel||[]).forEach(q=>{ const k=chaveQ(q.pivo,q.talhao||q.ensaio); if(!ultApp[k]||x.d>ultApp[k]) ultApp[k]=x.d; }));
+  const semAplic = ocup.filter(e=>{ const u=ultApp[chaveQ(e.pivo,e.talhao||e.ensaio)]; return !u || dfxDiffDias(hoje,u)>30; });
+
+  /* ---------- Estoque ---------- */
+  const nProd = products.length, comSaldo = products.filter(p=>Number(p.saldo)>0).length;
+  const baixos = products.filter(p=>situacaoProduto(p)==='low'), zerados = products.filter(p=>{const s=situacaoProduto(p); return s==='zero'||s==='neg';});
+  const semIa = products.filter(p=>!p.ia).length;
+  const crit = baixos.length + zerados.length;
+
+  /* ============ HTML ============ */
+  const est = estacaoAtiva();
+  const hh = new Date(); const hora = String(hh.getHours()).padStart(2,'0')+':'+String(hh.getMinutes()).padStart(2,'0');
+  const perLbl = dashPeriodo===7?'7 dias':dashPeriodo===30?'30 dias':dashPeriodo===90?'90 dias':dashPeriodo===365?'12 meses':'todo o período';
+  const pers = [[7,'7 dias'],[30,'30 dias'],[90,'90 dias'],[365,'12 meses'],[0,'Tudo']];
+  let h = `<div class="dfx-head"><div><h2 class="dfx-title">Painel de <span>controle</span></h2><div class="dfx-sub"><i class="dfx-live"></i> ${escapeHtml(est.nome||'')} · atualizado às ${hora}</div></div>
+    <div class="dfx-per" role="group" aria-label="Período">${pers.map(([n,l])=>`<button type="button" class="${dashPeriodo===n?'on':''}" onclick="setDashPeriodo(${n})">${l}</button>`).join('')}</div></div>`;
+
+  /* destaques */
+  const ins=[];
+  if(pend.length) ins.push(`<button type="button" class="dfx-chip bd" onclick="dashStatGo('nova')">⏳ ${pend.length} aplicaç${pend.length===1?'ão aguarda':'ões aguardam'} confirmação${pendMaisAntiga>0?' · a mais antiga há '+pendMaisAntiga+' dia'+(pendMaisAntiga===1?'':'s'):''}</button>`);
+  if(zerados.length) ins.push(`<button type="button" class="dfx-chip bd" onclick="dashStatGo('estoque')">📦 ${zerados.length} produto${zerados.length===1?'':'s'} zerado${zerados.length===1?'':'s'} ou negativo${zerados.length===1?'':'s'}</button>`);
+  if(baixos.length) ins.push(`<button type="button" class="dfx-chip wn" onclick="dashStatGo('estoque')">⚠️ ${baixos.length} produto${baixos.length===1?'':'s'} abaixo do mínimo</button>`);
+  if(semAplic.length) ins.push(`<button type="button" class="dfx-chip wn" onclick="dashStatGo('talhoes')">🌱 ${semAplic.length} quadra${semAplic.length===1?'':'s'} plantada${semAplic.length===1?'':'s'} sem aplicação há mais de 30 dias</button>`);
+  if(!ins.length) ins.push(`<span class="dfx-chip ok">✅ Tudo em dia: nada pendente nem em alerta</span>`);
+  h += `<div class="dfx-ins">${ins.join('')}</div>`;
+
+  /* KPIs principais */
+  h += `<div class="dfx-sec">Visão geral · ${perLbl}</div><div class="dfx-kpis">`
+    + dfxK('historico','#ff8a3d','Aplicações',atual.length,atual.length,0,'', dashPeriodo? dfxDelta(atual.length,anterior.length)+'<span>vs período anterior</span>' : '<span>desde o início</span>', dfxSpark(sem12.map(s=>s.n),'#ff8a3d'))
+    + dfxK('historico','#22d3ee','Hectares aplicados',Math.round(haAtual*10)/10,Math.round(haAtual*10)/10,1,'ha', dashPeriodo? dfxDelta(haAtual,haAnt)+'<span>vs período anterior</span>' : '<span>desde o início</span>', dfxSpark(sem12.map(s=>s.ha),'#22d3ee'))
+    + dfxK('nova', pend.length?'#fbbf24':'#34d399','Aguardando confirmação',pend.length,pend.length,0,'', pend.length? '<span>mais antiga há '+pendMaisAntiga+' dia'+(pendMaisAntiga===1?'':'s')+'</span>' : '<span>nenhuma pendente</span>')
+    + dfxK('historico','#34d399','Execução confirmada', taxaExec==null?'–':taxaExec+'%', null,0,'', '<span>'+nF+' feita'+(nF===1?'':'s')+' · '+nN+' não feita'+(nN===1?'':'s')+'</span>', dfxRing(taxaExec,'#34d399'))
+    + dfxK('talhoes','#a78bfa','Ocupação das áreas', pctOcup==null?'–':pctOcup+'%', null,0,'', '<span>'+ocup.length+' de '+ens.length+' quadras plantadas</span>', dfxRing(pctOcup,'#a78bfa'))
+    + dfxK('estoque', crit?'#f87171':'#34d399','Estoque em alerta', crit, crit,0,'', '<span>'+baixos.length+' baixo'+(baixos.length===1?'':'s')+' · '+zerados.length+' zerado'+(zerados.length===1?'':'s')+' · de '+nProd+'</span>')
+    + `</div>`;
+
+  /* ---- Aplicação ---- */
+  h += `<div class="dfx-sec">Aplicação</div><div class="dfx-grid">`;
+  h += `<div class="dfx-c s8"><h3>Atividade · últimos 12 meses <em>área aplicada e nº de aplicações</em></h3>${dfxMeses(apps,hoje)}</div>`;
+  h += `<div class="dfx-c s4"><h3>Status das aplicações <em>${perLbl}</em></h3>${dfxDonut([{lab:'Feitas',v:nF,cor:'#34d399',txt:String(nF)},{lab:'Não feitas',v:nN,cor:'#f87171',txt:String(nN)},{lab:'Aguardando',v:nP,cor:'#fbbf24',txt:String(nP)}], String(atual.length))}</div>`;
+  /* cultura */
+  const haCult={}; atual.forEach(a=>{
+    const c=(a.cultura||'').trim(); if(!c) return;
+    if(c===CULTURA_SOJA_MILHO){ const por={}; let tot=0; (a.ensaiosSel||[]).forEach(x=>{const k=(x.cultura||'').toUpperCase(); if(!k) return; const v=parseFloat(x.area)||0; por[k]=(por[k]||0)+v; tot+=v;}); if(tot>0){ Object.keys(por).forEach(k=>{ haCult[k]=(haCult[k]||0)+(Number(a.area)||0)*por[k]/tot; }); return; } }
+    haCult[c]=(haCult[c]||0)+(Number(a.area)||0);
   });
-  const topTalhoes = Object.entries(contagemPorTalhao).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const maxContagemTalhao = Math.max(1, ...topTalhoes.map(x=>x[1]));
-  const elTalhao = document.getElementById('dashChartTalhao');
-  if(!topTalhoes.length){
-    elTalhao.innerHTML = '<p class="dash-empty">Nenhuma aplicação registrada ainda.</p>';
-  }else{
-    elTalhao.innerHTML = topTalhoes.map(([talhao,qtd])=>`<div class="hbar-row">
-        <div class="hbar-top"><span>${escapeHtml(talhao)}</span><span>${qtd} aplicaç${qtd===1?'ão':'ões'}</span></div>
-        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxContagemTalhao)*100))}%"></div></div>
-      </div>`).join('');
-  }
+  const culList = Object.entries(haCult).sort((x,y)=>y[1]-x[1]).slice(0,6);
+  h += `<div class="dfx-c s4"><h3>Área por cultura <em>${perLbl}</em></h3>${dfxDonut(culList.map(([c,v],i)=>({lab:tituloCultura(c),v,cor:DFX_COR[i%DFX_COR.length],txt:fmtNum(Math.round(v*10)/10)+' ha'})), fmtNum(Math.round(culList.reduce((s,x)=>s+x[1],0)))+' ha')}</div>`;
+  const contar = (campo)=>{ const m={}; atual.forEach(a=>{ const k=(a[campo]||'').trim(); if(!k) return; const o=m[k]||(m[k]={n:0,ha:0}); o.n++; o.ha+=Number(a.area)||0; }); return Object.entries(m).sort((x,y)=>y[1].n-x[1].n||y[1].ha-x[1].ha).slice(0,6).map(([k,o])=>({lab:k,v:o.n,txt:o.n+' <u>apl. · '+fmtNum(Math.round(o.ha*10)/10)+' ha</u>'})); };
+  h += `<div class="dfx-c s4"><h3>Operadores <em>${perLbl}</em></h3>${dfxHbars(contar('operador'),'#22d3ee')}</div>`;
+  h += `<div class="dfx-c s4"><h3>Equipamentos <em>${perLbl}</em></h3>${dfxHbars(contar('equipamento'),'#a78bfa')}</div>`;
+  /* produtos */
+  const uso={}; atual.forEach(a=>(a.produtos||[]).forEach(pr=>{ uso[pr.nome]=(uso[pr.nome]||0)+(Number(pr.qtd)||0); }));
+  const topProd = Object.entries(uso).sort((x,y)=>y[1]-x[1]).slice(0,8).map(([nome,q],i)=>{ const p=products.find(x=>x.nome===nome); return {lab:nome,v:q,txt:fmtNum(Math.round(q*100)/100)+'<u>'+escapeHtml(p&&p.unidadeEstoque||'')+'</u>',cor:'#ff8a3d'}; });
+  h += `<div class="dfx-c s6"><h3>Produtos mais utilizados <em>${perLbl}</em></h3>${dfxHbars(topProd,'#ff8a3d')}</div>`;
+  const cq={}; atual.forEach(a=>(a.ensaiosSel||[]).forEach(q=>{ const k=(q.ensaio||q.talhao||'').trim(); if(k) cq[k]=(cq[k]||0)+1; }));
+  const topQ = Object.entries(cq).sort((x,y)=>y[1]-x[1]).slice(0,8).map(([k,n])=>({lab:k,v:n,txt:n+'<u>aplicaç'+(n===1?'ão':'ões')+'</u>'}));
+  h += `<div class="dfx-c s6"><h3>Quadras mais aplicadas <em>${perLbl}</em></h3>${dfxHbars(topQ,'#34d399')}</div>`;
+  /* listas */
+  const recentes = comData.slice().sort((x,y)=>y.d-x.d||(Number(y.a.serie)||0)-(Number(x.a.serie)||0)).slice(0,6);
+  const stChip = a=>{ const s=stOf(a); return `<span class="dfx-st ${s==='feita'?'f':s==='nao_feita'?'n':'p'}">${s==='feita'?'Feita':s==='nao_feita'?'Não feita':'Aguardando'}</span>`; };
+  h += `<div class="dfx-c s6"><h3>Últimas aplicações <button type="button" class="dfx-chip" style="padding:3px 10px;font-size:11px" onclick="dashStatGo('historico')">ver histórico →</button></h3>`
+    + (recentes.length? `<div class="dfx-list">`+recentes.map(({a,d})=>`<button type="button" class="dfx-li" onclick="dashStatGo('historico')"><span class="n">#${escapeHtml(String(a.serie||''))}</span><span class="t"><b>${escapeHtml(tituloCultura(a.cultura||'—'))} · ${fmtNum(Number(a.area)||0)} ha</b><span>${dfxDdmm(d)} · ${(a.produtos||[]).length} produto${(a.produtos||[]).length===1?'':'s'}${a.operador?' · '+escapeHtml(a.operador):''}</span></span>${stChip(a)}</button>`).join('')+`</div>` : '<div class="dfx-empty">Nenhuma aplicação registrada ainda.</div>') + `</div>`;
+  h += `<div class="dfx-c s6"><h3>Aguardando confirmação <em>mais antigas primeiro</em></h3>`
+    + (pend.length? `<div class="dfx-list">`+pend.slice(0,6).map(({a,d})=>{ const n=dfxDiffDias(hoje,d); return `<button type="button" class="dfx-li" onclick="dashStatGo('nova')"><span class="n">#${escapeHtml(String(a.serie||''))}</span><span class="t"><b>${escapeHtml(tituloCultura(a.cultura||'—'))} · ${fmtNum(Number(a.area)||0)} ha</b><span>${dfxDdmm(d)}${a.operador?' · '+escapeHtml(a.operador):''}</span></span><span class="dfx-st ${n>=3?'n':'p'}">há ${n} dia${n===1?'':'s'}</span></button>`; }).join('')+`</div>` : '<div class="dfx-empty">✅ Nenhuma aplicação aguardando confirmação.</div>') + `</div>`;
+  /* calendário */
+  const media = atual.length? haAtual/atual.length : 0;
+  const ult = comData.length? comData.reduce((m,x)=>x.d>m?x.d:m, comData[0].d) : null;
+  const diasPer = dashPeriodo || (comData.length? Math.max(1,dfxDiffDias(hoje, comData.reduce((m,x)=>x.d<m?x.d:m, comData[0].d))+1) : 1);
+  h += `<div class="dfx-c"><h3>Calendário de aplicações <em>últimas 17 semanas · cada quadradinho é um dia</em></h3><div class="dfx-heat">${dfxCalendario(apps,hoje)}<div class="dfx-stats"><div>Média por aplicação<b>${fmtNum(Math.round(media*10)/10)} ha</b></div><div>Ritmo no período<b>${dfxFmt1(atual.length/(diasPer/7))} / semana</b></div><div>Última aplicação<b>${ult? (dfxDiffDias(hoje,ult)===0?'hoje':'há '+dfxDiffDias(hoje,ult)+' dia'+(dfxDiffDias(hoje,ult)===1?'':'s')) : '–'}</b></div></div></div></div>`;
+  h += `</div>`;
 
-  /* 30/09/2026 — a pedido do Flávio: tópico "Talhões / Áreas" do Dashboard — o que está
-     CADASTRADO/PLANTADO hoje nos talhões (área total, área e talhões por pivô, área e
-     talhões por cultura), diferente do tópico Aplicação acima que é sobre o que já foi
-     APLICADO. Soma DATA.ensaios de todos os pivôs/áreas da estação ativa (não só o pivô
-     selecionado na aba Talhões), pra dar uma visão geral. */
-  const ensaiosAtivos = (DATA.ensaios||[]).filter(e=>e.ativo!==false);
-  const areaTotalTalhoes = ensaiosAtivos.reduce((s,e)=>s+(Number(e.area)||0), 0);
-  const talhoesOcupados = ensaiosAtivos.filter(e=>(e.cultura||'').trim()).length;
-  const talhoesLivres = ensaiosAtivos.length - talhoesOcupados;
+  /* ---- Talhões ---- */
+  h += `<div class="dfx-sec">Talhões / Áreas</div><div class="dfx-mini">`
+    + dfxM('talhoes','#ff8a3d',fmtNum(Math.round(haTot*10)/10)+' ha','Área total')
+    + dfxM('talhoes','#f6eee6',ens.length,'Quadras cadastradas')
+    + dfxM('talhoes','#a78bfa',ocup.length,'Plantadas')
+    + dfxM('talhoes','#34d399',ens.length-ocup.length,'Livres')
+    + dfxM('talhoes','#fbbf24',reserv.length,'Reservadas')
+    + dfxM('talhoes','#22d3ee',fmtNum(Math.round(haOcup*10)/10)+' ha','Área plantada')
+    + `</div><div class="dfx-grid" style="margin-top:12px">`;
+  /* ocupação por pivô (empilhada) */
+  const porPivo={}; ens.forEach(e=>{ const k=e.pivo||'CRISTALINA'; const o=porPivo[k]||(porPivo[k]={ocup:0,res:0,liv:0,ha:0}); o.ha+=Number(e.area)||0; if(e.reservado) o.res++; else if((e.cultura||'').trim()) o.ocup++; else o.liv++; });
+  const pvList = Object.entries(porPivo).sort((x,y)=>y[1].ha-x[1].ha);
+  h += `<div class="dfx-c s6"><h3>Ocupação por pivô / área <em>nº de quadras</em></h3>`
+    + (pvList.length? `<div class="dfx-hb">`+pvList.map(([pid,o])=>{ const t=o.ocup+o.res+o.liv||1; const seg=(n,c,l)=>n?`<span class="fil" style="width:${(n/t*100).toFixed(1)}%;--c:${c};border-radius:0" title="${l}: ${n}"></span>`:''; return `<div class="r" style="grid-template-columns:minmax(80px,30%) 1fr auto"><span class="lab">${escapeHtml(pivoLabel(pid))}</span><span class="trk">${seg(o.ocup,'#a78bfa','Plantadas')}${seg(o.res,'#fbbf24','Reservadas')}${seg(o.liv,'#34d399','Livres')}</span><span class="val">${o.ocup+o.res}/${t}<u>${fmtNum(Math.round(o.ha*10)/10)} ha</u></span></div>`; }).join('')+`</div><div class="dfx-note"><span style="color:#a78bfa">■</span> plantadas &nbsp; <span style="color:#fbbf24">■</span> reservadas &nbsp; <span style="color:#34d399">■</span> livres</div>` : '<div class="dfx-empty">Nenhuma quadra cadastrada ainda.</div>') + `</div>`;
+  /* cultura e modalidade */
+  const hac={}; ocup.forEach(e=>{ const c=(e.cultura||'').trim(); hac[c]=(hac[c]||0)+(Number(e.area)||0); });
+  const cList = Object.entries(hac).sort((x,y)=>y[1]-x[1]).slice(0,6);
+  h += `<div class="dfx-c s3"><h3>Área plantada por cultura</h3>${dfxDonut(cList.map(([c,v],i)=>({lab:tituloCultura(c),v,cor:DFX_COR[i%DFX_COR.length],txt:fmtNum(Math.round(v*10)/10)+' ha'})), fmtNum(Math.round(haOcup))+' ha')}</div>`;
+  const mods={}; ocup.forEach(e=>{ const m=(e.modalidade||'').trim()||'Sem modalidade'; const o=mods[m]||(mods[m]={n:0,ha:0}); o.n++; o.ha+=Number(e.area)||0; });
+  const mList = Object.entries(mods).sort((x,y)=>y[1].ha-x[1].ha).slice(0,6).map(([m,o])=>({lab:m,v:o.ha,txt:fmtNum(Math.round(o.ha*10)/10)+'<u>ha · '+o.n+'</u>'}));
+  h += `<div class="dfx-c s3"><h3>Modalidades <em>ha · quadras</em></h3>${dfxHbars(mList,'#22d3ee','Nenhuma quadra plantada.')}</div>`;
+  /* idade dos plantios */
+  const faixas=[['0–30 dias',0,30],['31–60 dias',31,60],['61–90 dias',61,90],['91–120 dias',91,120],['+120 dias',121,99999]]; const idade=faixas.map(f=>({lab:f[0],v:0,min:f[1],max:f[2]})); let semData=0;
+  ocup.forEach(e=>{ const p=(e.plantios||[])[0]; const ds=p&&p.dataPlantio; const m=ds&&/^(\d{4})-(\d{2})-(\d{2})/.exec(ds); if(!m){ semData++; return; } const n=dfxDiffDias(hoje,new Date(+m[1],+m[2]-1,+m[3])); if(n<0){ semData++; return; } const f=idade.find(x=>n>=x.min&&n<=x.max); if(f) f.v++; });
+  const idItens = idade.filter(x=>x.v).map((x,i)=>({lab:x.lab,v:x.v,txt:x.v+'<u>quadras</u>',cor:['#34d399','#22d3ee','#a78bfa','#fbbf24','#f87171'][idade.indexOf(x)]}));
+  if(semData) idItens.push({lab:'Sem data',v:semData,txt:semData+'<u>quadras</u>',cor:'#64748b'});
+  h += `<div class="dfx-c s6"><h3>Idade dos plantios <em>dias desde o plantio</em></h3>${dfxHbars(idItens,'#34d399','Nenhuma quadra plantada.')}</div>`;
+  /* sem aplicação */
+  const saPv={}; semAplic.forEach(e=>{ const k=e.pivo||'CRISTALINA'; saPv[k]=(saPv[k]||0)+1; });
+  const saItens = Object.entries(saPv).sort((x,y)=>y[1]-x[1]).map(([k,n])=>({lab:pivoLabel(k),v:n,txt:n+'<u>de '+ocup.filter(e=>(e.pivo||'CRISTALINA')===k).length+'</u>',cor:'#fbbf24'}));
+  h += `<div class="dfx-c s6"><h3>Plantadas sem aplicação há +30 dias <em>${semAplic.length} quadra${semAplic.length===1?'':'s'}</em></h3>${dfxHbars(saItens,'#fbbf24','✅ Todas as quadras plantadas receberam aplicação nos últimos 30 dias.')}</div>`;
+  h += `</div>`;
 
-  document.getElementById('dashStatAreaTotal').textContent = fmtNum(areaTotalTalhoes);
-  document.getElementById('dashStatTalhoesCad').textContent = ensaiosAtivos.length;
-  document.getElementById('dashStatTalhoesOcupados').textContent = talhoesOcupados;
-  document.getElementById('dashStatTalhoesLivres').textContent = talhoesLivres;
+  /* ---- Estoque ---- */
+  h += `<div class="dfx-sec">Estoque</div><div class="dfx-mini">`
+    + dfxM('estoque','#f6eee6',nProd,'Produtos')
+    + dfxM('estoque','#34d399',comSaldo,'Com saldo')
+    + dfxM('estoque','#fbbf24',baixos.length,'Abaixo do mínimo')
+    + dfxM('estoque','#f87171',zerados.length,'Zerados / negativos')
+    + dfxM('estoque','#22d3ee',semIa,'Sem ing. ativo')
+    + `</div><div class="dfx-grid" style="margin-top:12px">`;
+  const arms = (typeof getArmazensDisponiveis==='function')? getArmazensDisponiveis() : [];
+  const fat = arms.map((a,i)=>({lab:armLabelCurto(a),v:products.filter(p=>(saldoNoArmazem(p,a.cod)||0)>0).length,cor:DFX_COR[i%DFX_COR.length]})).filter(f=>f.v>0).map(f=>({...f,txt:String(f.v)}));
+  h += `<div class="dfx-c s4"><h3>Produtos com saldo por armazém</h3>${fat.length? dfxDonut(fat, String(comSaldo)) : '<div class="dfx-empty">Sem armazéns cadastrados.</div>'}</div>`;
+  const cls={}; products.forEach(p=>{ const c=classeCanon(p.classe); cls[c]=(cls[c]||0)+1; });
+  h += `<div class="dfx-c s4"><h3>Produtos por classe</h3>${dfxHbars(Object.entries(cls).sort((x,y)=>y[1]-x[1]).slice(0,7).map(([c,n],i)=>({lab:c,v:n,txt:String(n),cor:DFX_COR[i%DFX_COR.length]})),'#ff8a3d','Nenhum produto cadastrado.')}</div>`;
+  /* previsão de duração */
+  const ini90 = dfxAddDias(hoje,-89), cons={}; comData.forEach(x=>{ if(x.d<ini90) return; (x.a.produtos||[]).forEach(pr=>{ cons[pr.nome]=(cons[pr.nome]||0)+(Number(pr.qtd)||0); }); });
+  const prev = products.map(p=>{ const q=cons[p.nome]||0, s=Number(p.saldo)||0; return q>0? {p, dias:s>0? Math.round(s/(q/90)) : 0} : null; }).filter(Boolean).sort((x,y)=>x.dias-y.dias).slice(0,7);
+  h += `<div class="dfx-c s4"><h3>Duração estimada <em>pelo consumo dos últimos 90 dias</em></h3>${dfxHbars(prev.map(x=>({lab:x.p.nome,v:Math.min(120,Math.max(x.dias,1)),txt:(x.dias>=365?'+1 ano':x.dias+' dias'),cor:x.dias<30?'#f87171':x.dias<60?'#fbbf24':'#34d399',tip:x.p.nome+': '+fmtNum(x.p.saldo)+' '+(x.p.unidadeEstoque||'')})),'#34d399','Sem consumo registrado nos últimos 90 dias.')}<div class="dfx-note">Barra cheia = 120 dias ou mais. Vermelho: menos de 30 dias.</div></div>`;
+  const lowS = baixos.concat(zerados.filter(p=>!baixos.includes(p))).sort((x,y)=>(Number(x.saldo)/Math.max(1,Number(x.estoqueMinimo)||1))-(Number(y.saldo)/Math.max(1,Number(y.estoqueMinimo)||1))).slice(0,8);
+  h += `<div class="dfx-c s6"><h3>Atenção: abaixo do mínimo, zerados e negativos <em>${crit} no total</em></h3>${dfxHbars(lowS.map(p=>{ const m=Number(p.estoqueMinimo)||0, s=Number(p.saldo)||0; return {lab:p.nome,v:m>0?Math.max(0,s)/m*100:Math.max(0,s),txt:fmtNum(s)+'<u>'+escapeHtml(p.unidadeEstoque||'')+(m>0?' · mín. '+fmtNum(m):'')+'</u>',cor:s<=0?'#f87171':'#fbbf24',tip:p.nome}; }),'#fbbf24','✅ Nenhum produto em alerta.')}</div>`;
+  const tops = products.filter(p=>Number(p.saldo)>0).sort((x,y)=>(Number(y.saldo)||0)-(Number(x.saldo)||0)).slice(0,8);
+  h += `<div class="dfx-c s6"><h3>Maiores saldos</h3>${dfxHbars(tops.map(p=>({lab:p.nome,v:Number(p.saldo),txt:fmtNum(p.saldo)+'<u>'+escapeHtml(p.unidadeEstoque||'')+'</u>',cor:'#22d3ee'})),'#22d3ee','Nenhum produto com saldo.')}</div>`;
+  h += `</div>`;
 
-  const areaPorPivoMap = {}, talhoesPorPivoMap = {};
-  ensaiosAtivos.forEach(e=>{
-    const pid = e.pivo || 'CRISTALINA';
-    areaPorPivoMap[pid] = (areaPorPivoMap[pid]||0) + (Number(e.area)||0);
-    talhoesPorPivoMap[pid] = (talhoesPorPivoMap[pid]||0) + 1;
-  });
-
-  const listaAreaPivo = Object.entries(areaPorPivoMap).sort((a,b)=>b[1]-a[1]);
-  const maxAreaPivo = Math.max(1, ...listaAreaPivo.map(x=>x[1]));
-  const elAreaPivo = document.getElementById('dashChartAreaPivo');
-  if(!listaAreaPivo.length){
-    elAreaPivo.innerHTML = '<p class="dash-empty">Nenhum talhão cadastrado ainda.</p>';
-  }else{
-    elAreaPivo.innerHTML = listaAreaPivo.map(([pid,area])=>`<div class="hbar-row">
-        <div class="hbar-top"><span>${escapeHtml(pivoLabel(pid))}</span><span>${fmtNum(area)} ha</span></div>
-        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((area/maxAreaPivo)*100))}%"></div></div>
-      </div>`).join('');
-  }
-
-  const listaTalhoesPivo = Object.entries(talhoesPorPivoMap).sort((a,b)=>b[1]-a[1]);
-  const maxTalhoesPivo = Math.max(1, ...listaTalhoesPivo.map(x=>x[1]));
-  const elTalhoesPivo = document.getElementById('dashChartTalhoesPorPivo');
-  if(!listaTalhoesPivo.length){
-    elTalhoesPivo.innerHTML = '<p class="dash-empty">Nenhum talhão cadastrado ainda.</p>';
-  }else{
-    elTalhoesPivo.innerHTML = listaTalhoesPivo.map(([pid,qtd])=>`<div class="hbar-row">
-        <div class="hbar-top"><span>${escapeHtml(pivoLabel(pid))}</span><span>${qtd} talh${qtd===1?'ão':'ões'}</span></div>
-        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxTalhoesPivo)*100))}%"></div></div>
-      </div>`).join('');
-  }
-
-  const areaPorCulturaTalhaoMap = {}, talhoesPorCulturaMap = {};
-  ensaiosAtivos.forEach(e=>{
-    const cultura = (e.cultura||'').trim() || 'LIVRE';
-    areaPorCulturaTalhaoMap[cultura] = (areaPorCulturaTalhaoMap[cultura]||0) + (Number(e.area)||0);
-    talhoesPorCulturaMap[cultura] = (talhoesPorCulturaMap[cultura]||0) + 1;
-  });
-
-  const listaAreaCulturaTalhao = Object.entries(areaPorCulturaTalhaoMap).sort((a,b)=>b[1]-a[1]);
-  const maxAreaCulturaTalhao = Math.max(1, ...listaAreaCulturaTalhao.map(x=>x[1]));
-  const elAreaCulturaTalhao = document.getElementById('dashChartAreaCulturaTalhao');
-  if(!listaAreaCulturaTalhao.length){
-    elAreaCulturaTalhao.innerHTML = '<p class="dash-empty">Nenhum talhão cadastrado ainda.</p>';
-  }else{
-    elAreaCulturaTalhao.innerHTML = listaAreaCulturaTalhao.map(([cultura,area])=>`<div class="hbar-row">
-        <div class="hbar-top"><span>${escapeHtml(tituloCultura(cultura))}</span><span>${fmtNum(area)} ha</span></div>
-        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((area/maxAreaCulturaTalhao)*100))}%"></div></div>
-      </div>`).join('');
-  }
-
-  const listaTalhoesCultura = Object.entries(talhoesPorCulturaMap).sort((a,b)=>b[1]-a[1]);
-  const maxTalhoesCultura = Math.max(1, ...listaTalhoesCultura.map(x=>x[1]));
-  const elTalhoesCultura = document.getElementById('dashChartTalhoesPorCultura');
-  if(!listaTalhoesCultura.length){
-    elTalhoesCultura.innerHTML = '<p class="dash-empty">Nenhum talhão cadastrado ainda.</p>';
-  }else{
-    elTalhoesCultura.innerHTML = listaTalhoesCultura.map(([cultura,qtd])=>`<div class="hbar-row">
-        <div class="hbar-top"><span>${escapeHtml(tituloCultura(cultura))}</span><span>${qtd} talh${qtd===1?'ão':'ões'}</span></div>
-        <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(3, Math.round((qtd/maxTalhoesCultura)*100))}%"></div></div>
-      </div>`).join('');
-  }
-
-  /* Estoque baixo */
-  const elBaixo = document.getElementById('dashBaixoList');
-  if(!lowItems.length){
-    elBaixo.innerHTML = '<p class="dash-empty">Nenhum produto com estoque baixo.</p>';
-  }else{
-    elBaixo.innerHTML = lowItems
-      .sort((a,b)=>(Number(a.saldo)/Math.max(1,Number(a.estoqueMinimo))) - (Number(b.saldo)/Math.max(1,Number(b.estoqueMinimo))))
-      .slice(0,8)
-      .map(p=>`<div class="dash-alert-item"><span>${escapeHtml(p.nome)}</span><span>${fmtNum(p.saldo)} ${escapeHtml(p.unidadeEstoque||'')}</span></div>`)
-      .join('');
+  /* ---------- aplica ---------- */
+  const visivel = !!root.offsetParent;
+  const anim = opts.anim && visivel && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  root.classList.toggle('dfx-pre', !!anim);
+  root.innerHTML = h;
+  if(anim){
+    root.querySelectorAll('[data-to]').forEach(el=>{ el.firstChild.nodeValue = '0'; });
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ root.classList.remove('dfx-pre'); dashAnimar(root); }));
   }
 }
 
