@@ -2215,7 +2215,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.30.0';
+const APP_BUILD_ID = 'v2.31.0';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -6483,10 +6483,24 @@ function confirmarExecucaoAplicacao(appId, feito){
    eixo e as linhas 101..132 de ~20,3 m saindo do eixo; A/D ao norte, B/C ao sul (B tem a
    linha extra B100/B200/B300). Foi aprovado visualmente pelo Flávio; ajuste fino depois, com
    os números que ele mandar. Usa os MESMOS dados/seleção/cores das outras visões. */
+const SAT_PISTA_CONT = {"PISTA1":[[-47.480317,-16.151394],[-47.480195,-16.151499],[-47.480103,-16.151538],[-47.47997,-16.151527],[-47.479739,-16.151434],[-47.479434,-16.15134],[-47.478013,-16.150806],[-47.477399,-16.150543],[-47.476998,-16.150408],[-47.476645,-16.150261],[-47.476255,-16.150137],[-47.475365,-16.149754],[-47.475015,-16.149639],[-47.473393,-16.149035],[-47.472695,-16.148801],[-47.472564,-16.148728],[-47.47255,-16.148693],[-47.472558,-16.148664],[-47.472582,-16.148642],[-47.472677,-16.148624],[-47.472749,-16.148639],[-47.473459,-16.148892],[-47.473696,-16.148999],[-47.474495,-16.149246],[-47.474914,-16.149356],[-47.475526,-16.149499],[-47.476522,-16.149762],[-47.477664,-16.150041],[-47.478132,-16.150171],[-47.478452,-16.150221],[-47.479472,-16.150493],[-47.479597,-16.150507],[-47.480139,-16.150634],[-47.480278,-16.150695],[-47.480366,-16.150802],[-47.480441,-16.150949],[-47.480453,-16.151038],[-47.480439,-16.151173],[-47.480317,-16.151394]],"PISTA2":[[-47.480182,-16.151979],[-47.480175,-16.152],[-47.480186,-16.152007],[-47.480209,-16.152017],[-47.480206,-16.152057],[-47.480193,-16.152109],[-47.48018,-16.152176],[-47.480164,-16.152241],[-47.480124,-16.152374],[-47.480058,-16.152734],[-47.479939,-16.152993],[-47.479856,-16.153281],[-47.479805,-16.153306],[-47.479109,-16.153038],[-47.478062,-16.152662],[-47.47748,-16.152427],[-47.476494,-16.152057],[-47.47597,-16.15185],[-47.475917,-16.151806],[-47.476054,-16.151502],[-47.476044,-16.151476],[-47.476019,-16.151457],[-47.475984,-16.15144],[-47.475978,-16.151434],[-47.475971,-16.151435],[-47.476002,-16.151428],[-47.476008,-16.151443],[-47.476021,-16.151468],[-47.476025,-16.151465],[-47.476041,-16.15143],[-47.476073,-16.151338],[-47.476099,-16.151225],[-47.476198,-16.151034],[-47.476192,-16.15099],[-47.476153,-16.150935],[-47.475589,-16.150716],[-47.475431,-16.150673],[-47.47492,-16.150462],[-47.474031,-16.150122],[-47.473521,-16.149953],[-47.473178,-16.14981],[-47.47294,-16.149721],[-47.472871,-16.149707],[-47.472816,-16.149674],[-47.472794,-16.149638],[-47.472768,-16.149467],[-47.47276,-16.149351],[-47.472816,-16.149124],[-47.472846,-16.14909],[-47.472893,-16.14908],[-47.472949,-16.149091],[-47.473356,-16.14926],[-47.473457,-16.149287],[-47.474534,-16.149699],[-47.474802,-16.149788],[-47.477894,-16.150975],[-47.478186,-16.151097],[-47.479876,-16.151726],[-47.480117,-16.151844],[-47.480168,-16.151905],[-47.480192,-16.151969],[-47.480197,-16.152037],[-47.480198,-16.152102],[-47.480185,-16.152156],[-47.480182,-16.151979]]};  /* contornos dos KMLs das pistas ([lon,lat]) */
 const SAT_GEO = {
-  CRISTALINA: { lat0:-16.194542904961484, lon0:-47.472659583632584, R:656.5,
-    phi:31.7, W:20.3, L:192, pitch:200, uN:25, uS:13, g:{A:16,B:-4.3,C:16,D:16}, du:0, dv:0 }
+  CRISTALINA: { tipo:'circ', lat0:-16.194542904961484, lon0:-47.472659583632584, R:656.5,
+    phi:31.7, W:20.3, L:192, pitch:200, uN:25, uS:13, g:{A:16,B:-4.3,C:16,D:16}, du:0, dv:0 },
+  /* Pistas do Avião: as quadras do croqui (metros, norte pra cima, origem lat0/lon0 — a mesma usada ao ler os KMLs) viram lat/lon direto */
+  PISTA1: { tipo:'svg', lat0:-16.150629163449672, lon0:-47.47670664152794, contorno:'PISTA1' },
+  PISTA2: { tipo:'svg', lat0:-16.150629163449672, lon0:-47.47670664152794, contorno:'PISTA2' }
 };
+function satBbox(pivoId){
+  const G=SAT_GEO[pivoId]; if(!G) return null;
+  if(G.tipo==='svg'){
+    const pts=SAT_PISTA_CONT[G.contorno]; let w=1e9,e=-1e9,so=1e9,n=-1e9;
+    pts.forEach(p=>{ w=Math.min(w,p[0]); e=Math.max(e,p[0]); so=Math.min(so,p[1]); n=Math.max(n,p[1]); });
+    return [[w,so],[e,n]];
+  }
+  const K=111320, KX=K*Math.cos(G.lat0*Math.PI/180);
+  return [[G.lon0-G.R/KX, G.lat0-G.R/K],[G.lon0+G.R/KX, G.lat0+G.R/K]];
+}
 function satClipPoly(poly, cp){ /* Sutherland–Hodgman contra polígono convexo anti-horário */
   let out = poly;
   for(let i=0;i<cp.length;i++){
@@ -6505,6 +6519,22 @@ function satClipPoly(poly, cp){ /* Sutherland–Hodgman contra polígono convexo
 /* devolve {code -> [[lat,lon],...]} para o pivô (null se ainda não georreferenciado) */
 function satPoligonosPivo(pivoId, codigos){
   const G = SAT_GEO[pivoId]; if(!G) return null;
+  if(G.tipo==='svg'){
+    const piv = PIVOS.find(p=>p.id===pivoId), qs = (piv && piv.svg && piv.svg.quadras) || [];
+    const Kd=6371008.8*Math.PI/180, KXd=Kd*Math.cos(G.lat0*Math.PI/180), res={};
+    const want=new Set(codigos);
+    qs.forEach(c=>{
+      if(!want.has(c.code)) return;
+      const pts=c.pts.slice(0,-1);                      /* tira o ponto repetido do fim */
+      if(pts.length<3) return;
+      let A=0,cx=0,cy=0;
+      for(let i=0;i<pts.length;i++){ const a=pts[i], b=pts[(i+1)%pts.length], cr=a[0]*b[1]-b[0]*a[1]; A+=cr; cx+=(a[0]+b[0])*cr; cy+=(a[1]+b[1])*cr; }
+      const ctr = Math.abs(A)>1e-6 ? [cx/(3*A), cy/(3*A)] : pts[0];
+      const toLL=p=>[G.lat0+p[1]/Kd, G.lon0+p[0]/KXd];
+      res[c.code]={ ll:pts.map(toLL), c:toLL(ctr) };
+    });
+    return res;
+  }
   const K=111320, KX=K*Math.cos(G.lat0*Math.PI/180), ph=G.phi*Math.PI/180;
   const circ=[]; for(let i=0;i<180;i++){ const a=i/180*2*Math.PI; circ.push([G.R*Math.cos(a), G.R*Math.sin(a)]); }
   const toLL=(v,u)=>{ const E=-u*Math.sin(ph)+v*Math.cos(ph), N=u*Math.cos(ph)+v*Math.sin(ph); return [G.lat0+N/K, G.lon0+E/KX]; };
@@ -6621,9 +6651,8 @@ function satAcao(m,a){
   map.easeTo({bearing:al.b, pitch:al.p, duration:450});
 }
 function satEnquadra(m,anima){
-  const i=__satInst[m], G=SAT_GEO[pivoAtivoId]; if(!i.map||!G) return;
-  const K=111320, KX=K*Math.cos(G.lat0*Math.PI/180);
-  i.map.fitBounds([[G.lon0-G.R/KX, G.lat0-G.R/K],[G.lon0+G.R/KX, G.lat0+G.R/K]], {padding:12, duration:anima?600:0, bearing:i.map.getBearing(), pitch:i.map.getPitch()});
+  const i=__satInst[m], bb=satBbox(pivoAtivoId); if(!i.map||!bb) return;
+  i.map.fitBounds(bb, {padding:12, duration:anima?600:0, bearing:i.map.getBearing(), pitch:i.map.getPitch()});
 }
 function satMontaGeo(m){
   const cfg=SAT_MODOS[m], i=__satInst[m];
@@ -6691,6 +6720,10 @@ function satCriaMapa(m, el){
   const pop=new maplibregl.Popup({closeButton:false, closeOnClick:false, offset:8});
   map.on('load',()=>{
     map.addSource('quadras',{type:'geojson', data:{type:'FeatureCollection',features:[]}});
+    if(G.tipo==='svg'){   /* contorno das áreas (KML): a do pivô aberto mais forte, a outra pista bem fraquinha */
+      map.addSource('contorno',{type:'geojson', data:{type:'FeatureCollection', features:Object.keys(SAT_PISTA_CONT).map(k=>({type:'Feature', properties:{own:k===G.contorno?1:0}, geometry:{type:'Polygon', coordinates:[SAT_PISTA_CONT[k]]}}))}});
+      map.addLayer({id:'c-line',type:'line',source:'contorno',paint:{'line-color':'#22d3ee','line-width':['case',['==',['get','own'],1],2,1],'line-opacity':['case',['==',['get','own'],1],.9,.35],'line-dasharray':[3,2]}});
+    }
     map.addLayer({id:'q-fill',type:'fill',source:'quadras',paint:{'fill-color':['get','fill'],'fill-opacity':['get','op']}});
     map.addLayer({id:'q-line',type:'line',source:'quadras',paint:{'line-color':['get','lc'],'line-width':['get','lw']}});
     map.addLayer({id:'q-res',type:'line',source:'quadras',filter:['==',['get','res'],1],paint:{'line-color':'#c4b5fd','line-width':2,'line-dasharray':[2,2]}});
@@ -6710,7 +6743,7 @@ async function renderSat(m){
   if(!wrap.dataset.built){ wrap.innerHTML=satHtml(m); wrap.dataset.built='1'; satSincBotoes(); }
   const p=cfg.pfx, msg=document.getElementById(p+'Msg'), bar=document.getElementById(p+'Bar'), mapEl=document.getElementById(p+'Map'), i=__satInst[m];
   if(!SAT_GEO[pivoAtivoId]){
-    msg.innerHTML='🛰️ O <b>'+escapeHtml(pivoAtivo().nome)+'</b> ainda não foi georreferenciado no satélite. Por enquanto só o Pivô 3 está disponível — use 🌀 Pivô ou 🔲 Grade.';
+    msg.innerHTML='🛰️ O <b>'+escapeHtml(pivoAtivo().nome)+'</b> ainda não foi georreferenciado no satélite. Por enquanto estão no satélite o Pivô 3 e as Pistas do Avião — use 🌀 Pivô ou 🔲 Grade.';
     bar.style.display='none'; mapEl.style.display='none'; return;
   }
   bar.style.display=''; mapEl.style.display='';
