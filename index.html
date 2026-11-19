@@ -1334,6 +1334,55 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .est-hb .trk{height:12px;background:#f1e8da;border-radius:6px;overflow:hidden;}
   .est-hb .fil{height:100%;background:linear-gradient(90deg,#fb923c,var(--orange-dark));border-radius:6px;}
   .est-hb .val{font-weight:800;font-size:12px;white-space:nowrap;}
+  .dup-modo{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;font-size:13px;}
+  .dup-modo label{display:flex;gap:7px;align-items:flex-start;cursor:pointer;}
+  .dup-modo input,.dup-g input{width:auto;margin:2px 0 0;flex:0 0 auto;}
+  .dup-g{border:1.5px solid var(--border);border-radius:12px;padding:9px 11px;margin-bottom:8px;background:var(--card);}
+  .dup-g.off{opacity:.55;}
+
+  .sol-sub{display:flex;gap:8px;margin:0 0 12px;}
+  .sol-sub button{flex:1;border:1.5px solid var(--border);background:var(--card);border-radius:12px;padding:10px 8px;font-weight:800;font-size:13.5px;color:#4a3626;cursor:pointer;}
+  .sol-sub button.on{background:linear-gradient(145deg,#c2410c,#ea580c);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(234,88,12,.3);}
+  .sol-badge{display:inline-block;min-width:18px;background:#fff;color:#c2410c;border-radius:999px;padding:0 6px;font-size:11px;margin-left:4px;}
+  .sol-badge:empty{display:none;}
+  .sol-aviso{background:#fff7e6;border:1.5px solid #f5c26b;border-radius:10px;padding:8px 10px;font-size:12.5px;margin:8px 0;}
+  .sol-card{border:1.5px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:10px;background:var(--card);}
+  .sol-nm{font-weight:800;font-size:15px;color:#2b1a0e;}
+  .sol-sub-ia,.sol-card .sol-sub{font-size:12px;color:#7d6a58;margin-top:1px;}
+  .sol-tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 4px;}
+  .sol-tag{border-radius:999px;padding:1px 9px;font-size:11.5px;font-weight:800;background:#f3ece4;color:#4a3626;}
+  .sol-tag.cod{background:#e7f1ff;color:#1d4ed8;font-family:Consolas,Menlo,monospace;}
+  .sol-tag.nocod{background:#fee4e2;color:#b42318;}
+  .sol-tag.un{background:var(--orange-light);color:var(--orange-dark);}
+  .sol-arm{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:7px 0;border-top:1px dashed #e4d6c6;}
+  .sol-arm .info{flex:1 1 110px;min-width:0;display:flex;flex-direction:column;}
+  .sol-arm .lab{font-weight:800;font-size:13px;}
+  .sol-arm .sal{font-size:12.5px;color:#2f7d32;font-weight:700;}
+  .sol-arm input{width:84px;margin:0;text-align:right;}
+  .sol-no{flex-basis:100%;font-size:11.5px;color:var(--orange-dark);font-weight:700;}
+  .sol-edit{margin-top:4px;font-size:12px;}
+  .sol-edit summary{cursor:pointer;color:#7d6a58;}
+  .sol-edit-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .sol-edit-row label{flex:1;min-width:140px;font-size:11.5px;color:#7d6a58;}
+  .sol-edit-row input{margin:2px 0 0;}
+  .sol-bloq{margin-top:12px;border:1.5px dashed #cbbba8;border-radius:12px;padding:8px 12px;background:#f6f1ec;color:#7d6a58;}
+  .sol-bloq summary{cursor:pointer;font-weight:800;font-size:13px;}
+  .sol-bl{display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:12.5px;opacity:.75;}
+  .sol-cart{border:2px solid #ea580c;}
+  .sol-gh{margin:10px 0 2px;background:var(--orange-light);color:var(--orange-dark);border-radius:8px;padding:4px 10px;font-weight:900;font-size:12.5px;}
+  .sol-it{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #eee3d6;}
+  .sol-it .i1{flex:1;min-width:0;}
+  .sol-it .i2{display:flex;align-items:center;gap:4px;font-weight:800;font-size:12.5px;}
+  .sol-it .i2 input{width:78px;margin:0;text-align:right;}
+  .sol-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .sol-btns .btn-primary{flex:1;min-width:170px;}
+  .est-card.bloq{opacity:.62;background:#f6f1ec;}
+  #solFichaCard{background:#fff;}
+  .dup-g .gh{display:flex;gap:8px;align-items:center;font-weight:800;font-size:13.5px;cursor:pointer;}
+  .dup-g .op{display:flex;gap:8px;align-items:flex-start;padding:5px 0 0 24px;font-size:12.5px;cursor:pointer;}
+  .dup-g .op small{color:#7d6a58;display:block;font-size:11.5px;}
+  .dup-g .fim{padding:6px 0 0 24px;font-size:12px;color:var(--orange-dark);font-weight:700;}
+  .dup-tag{display:inline-block;background:var(--orange-light);color:var(--orange-dark);border-radius:999px;padding:0 7px;font-size:10.5px;font-weight:800;margin-left:4px;}
   .est-resumo{margin:6px 0;font-size:12.5px;}
   .est-grupo{margin:12px 0 6px;padding:7px 10px;background:var(--orange-light);border-radius:10px;font-weight:800;color:var(--orange-dark);font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
   .est-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;}
@@ -1404,6 +1453,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
   <!-- ESTOQUE -->
   <section id="tab-estoque" class="section active">
+    <div class="sol-sub"><button type="button" class="on" data-v="estoque" onclick="setEstoqueSub('estoque')">📦 Estoque</button><button type="button" data-v="solic" onclick="setEstoqueSub('solic')">📝 Solicitação ao armazém <span class="sol-badge" id="solBadge"></span></button></div>
+    <div id="estoqueMain">
     <div class="card">
       <h2>Estoque de produtos</h2>
       <input class="searchbar" id="estoqueSearch" name="busca_estoqueSearch_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar produto, classe ou ingrediente ativo...">
@@ -1452,14 +1503,22 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div class="empty" id="estoqueEmpty" style="display:none;">Nenhum produto encontrado.</div>
       <div id="produtoEditor" style="display:none; margin-top:12px;"></div>
     </div>
+    <div class="card" id="dupCard">
+      <h2>Produtos duplicados</h2>
+      <p class="muted" id="dupInfo" style="margin:0 0 8px;">Procura produtos cadastrados duas vezes com nomes parecidos (o nome antigo digitado à mão e o nome completo que veio da planilha do ERP).</p>
+      <button type="button" class="btn-primary" onclick="abrirUnificar()">🔎 Ver duplicados e unificar</button>
+    </div>
     <div class="card">
       <h2>Atualizar estoque (planilha do ERP)</h2>
       <p class="muted">Envie a planilha exportada do ERP (colunas DESCRICAO, quantidade/DEMANDA INOVA, CODIGO_ARMAZEM/DESCRICAO_ARMAZEM, UNIDADE_MEDIDA...). O app encontra cada produto pelo nome (DESCRICAO), soma o saldo por armazém e mostra o total e o detalhe de cada armazém na lista acima, do lado do saldo. Se o mesmo produto aparecer em mais de uma planilha (armazéns diferentes), o saldo de cada armazém fica guardado separado, sem substituir o outro.</p>
-      <input type="file" id="erpStockFile" accept=".xlsx,.xls,.csv">
+      <input type="file" id="erpStockFile" accept=".xlsx,.xls,.csv" multiple>
+      <div class="muted" style="font-size:12px;margin-top:4px;">Dá para escolher as duas planilhas de uma vez (Inova armazém 25 e Agrícola armazém 04). A planilha de controle da Agrícola (coluna RESTAM, sem coluna de armazém) entra sozinha no armazém 04 e traz só o que tem saldo.</div>
       <div class="field" style="margin-top:8px;">
         <label>Armazém (só se a planilha não tiver a coluna CODIGO_ARMAZEM)</label>
         <input id="erpArmazemOverride" placeholder="Ex: 04">
       </div>
+      <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:13px;cursor:pointer;"><input type="checkbox" id="erpZerarAusentes" style="width:auto;margin:2px 0 0;flex:0 0 auto;"><span>Zerar o saldo dos produtos que <b>não vieram na planilha</b> (nos armazéns que estão nela) — use quando o ERP só lista o que tem estoque</span></label>
+      <label style="display:flex;gap:8px;align-items:flex-start;margin-top:8px;font-size:13px;cursor:pointer;"><input type="checkbox" id="erpOficial" style="width:auto;margin:2px 0 0;flex:0 0 auto;"><span><b>Estas planilhas são o estoque oficial:</b> zerar também todo produto que não está em <b>nenhuma</b> delas (inclusive os sem armazém). Marque só quando enviar as planilhas de <b>todos</b> os armazéns (Inova 25 + Agrícola 04) juntas. Quem ficar sem estoque continua na lista, mas travado para solicitação.</span></label>
       <button class="btn-primary btn-block" style="margin-top:8px;" onclick="importEstoqueERP()">Atualizar estoque a partir da planilha</button>
       <div id="erpStockResult" class="muted" style="margin-top:8px;white-space:pre-line;"></div>
     </div>
@@ -1475,6 +1534,32 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <div class="field"><label>Estoque mínimo</label><input id="npMin" type="number" step="0.001" value="0"></div>
       </div>
       <button class="btn-primary btn-block" id="btnAddProduct" onclick="addProduct()">Adicionar produto ao catálogo</button>
+    </div>
+    </div><!-- /estoqueMain -->
+    <div id="solicMain" style="display:none;">
+      <div class="card">
+        <h2>Solicitação ao armazém</h2>
+        <p class="muted" style="margin:0 0 8px;">Procure o produto, veja em qual armazém tem estoque, digite quantos litros/kg você precisa e toque em “＋ Adicionar”. No fim, gere a foto para mandar ao administrativo lançar no Proteus. Esta solicitação <b>não baixa</b> o estoque do app.</p>
+        <div id="solAvisoDup" class="sol-aviso" style="display:none;"></div>
+        <input class="searchbar" id="solBusca" name="busca_solBusca_x" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" placeholder="Buscar produto, ingrediente ativo ou código..." oninput="solRender()">
+        <div id="solArmChips" class="armazem-filtro"></div>
+        <div class="est-resumo muted" id="solResumo"></div>
+        <div id="solLista"></div>
+      </div>
+      <div class="card sol-cart" id="solCartCard">
+        <h2>📝 Minha solicitação</h2>
+        <div id="solCarrinho"></div>
+        <div class="row" style="margin-top:10px;">
+          <div class="field"><label>Solicitante</label><input id="solSolicitante" type="text" autocomplete="off" oninput="solSetSolicitante(this.value)"></div>
+          <div class="field"><label>Data</label><input id="solData" type="date" onchange="solSetData(this.value)"></div>
+        </div>
+        <div class="field"><label>Observação (opcional)</label><textarea id="solObs" rows="2" placeholder="Ex: retirar amanhã cedo, pivô 3..." oninput="solSetObs(this.value)"></textarea></div>
+        <div class="sol-btns">
+          <button type="button" class="btn-primary" id="solBtnFoto" onclick="solGerarFicha()">📷 Gerar foto da solicitação</button>
+          <button type="button" class="btn-ghost" id="solBtnTexto" onclick="solCopiarTexto()">📋 Copiar texto</button>
+          <button type="button" class="btn-ghost" id="solBtnLimpar" onclick="solLimpar()">🗑 Limpar lista</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -2091,6 +2176,44 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   </div>
 </div>
 
+<div class="modal-overlay hidden" id="solFichaOverlay">
+  <div class="receipt-card" style="max-width:640px;">
+    <div id="solFichaCard"></div>
+    <div id="solFichaAviso" class="muted" style="padding:0 18px;font-size:12.5px;color:#b42318;"></div>
+    <div class="receipt-actions">
+      <button class="btn-primary" onclick="solCompartilharFoto()">📤 Compartilhar</button>
+      <button class="btn-ghost" onclick="solBaixarFoto()">⬇ Baixar imagem</button>
+      <button class="btn-ghost" onclick="solCopiarTexto()">📋 Copiar texto</button>
+      <button class="btn-ghost" onclick="solFecharFicha()">Fechar</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay hidden" id="dupOverlay">
+  <div class="receipt-card" style="max-width:680px;">
+    <div class="receipt-head">
+      <div class="titles">
+        <h3>🔎 Unificar produtos duplicados</h3>
+        <span id="dupSub">Marque os pares, escolha qual nome fica e confirme</span>
+      </div>
+    </div>
+    <div class="receipt-body">
+      <div class="dup-modo">
+        <b>Saldo do produto unificado</b>
+        <label><input type="radio" name="dupModo" value="erp" checked onchange="dupRender()"> Usar o saldo do ERP <span class="muted">(recomendado — é o que a planilha atualiza)</span></label>
+        <label><input type="radio" name="dupModo" value="somar" onchange="dupRender()"> Somar os saldos dos dois</label>
+      </div>
+      <div id="dupLista"></div>
+      <div class="muted" style="font-size:12px;margin-top:8px;">O nome que sair vira “apelido” do que ficar: as próximas planilhas do ERP continuam encontrando o produto, e as aplicações antigas passam a usar o nome que ficou. Dá pra desfazer logo depois.</div>
+      <div id="dupResultado" style="margin-top:8px;"></div>
+    </div>
+    <div class="receipt-actions">
+      <button class="btn-primary" id="dupBtnOk" onclick="dupExecutar()">✅ Unificar selecionados</button>
+      <button class="btn-ghost" id="dupBtnUndo" style="display:none" onclick="dupDesfazer()">↩ Desfazer</button>
+      <button class="btn-ghost" onclick="fecharUnificar()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Área usada apenas na impressão/PDF -->
 <div id="printArea"></div>
 
@@ -2211,7 +2334,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.32.0';
+const APP_BUILD_ID = 'v2.33.0';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -2783,6 +2906,8 @@ function onLoginEstacaoChange(id){
   enforceCulturas();
   enforcePivo4Ensaios();
   ensureRecomendacoesSeed();
+  try{ migrarEstoqueV233(); }catch(e){}
+  solCarrinho = []; solForm = {solicitante:'', data:'', obs:''}; solCarregar();
   ensureUsersSeed();
   setPivosParaEstacaoAtiva();
   renderPivoTabs();
@@ -3475,6 +3600,7 @@ async function syncNow(opts){
       if(remote.ensaios) DATA.ensaios = remote.ensaios;
       if(remote.users) DATA.users = remote.users;
       if(remote.limpezas) DATA.limpezas = remote.limpezas;
+      try{ if(migrarEstoqueV233()){ saveData(); fbPushEstoque(); } }catch(e){}
     }
     ensureUserPerfis();
     ensurePlantiosAllEnsaios();
@@ -4376,7 +4502,7 @@ function classeCanon(c){
 function armLabelCurto(a){
   const junto=(a.cod+' '+(a.desc||'')).toUpperCase();
   if(/\bINOVA\b/.test(junto)) return 'Inova ('+a.cod+')';
-  if(/AGRICOLA|AGRÍCOLA/.test(junto)) return 'Agrícola';
+  if(/AGRICOLA|AGRÍCOLA/.test(junto)) return 'Agrícola'+(/^\d+$/.test(a.cod)? ' ('+a.cod+')' : '');
   return a.desc? a.desc.replace(/^Armazém\s*/i,'') : a.cod;
 }
 function saldoNoArmazem(p,cod){
@@ -4494,9 +4620,9 @@ function cartaoEstoqueHtml(p){
   const maxA=Math.max(1,...arms.map(e=>Math.abs(Number(e.saldo)||0)));
   const armHtml=arms.length? `<div class="est-arm">${arms.map((e,i)=>`<div class="row1"><span>${escapeHtml(armLabelCurto({cod:e.armazem,desc:e.armazemDesc}))}</span><span class="trk"><span class="fil" style="display:block;width:${Math.max(2,Math.round(100*Math.abs(Number(e.saldo)||0)/maxA))}%;background:${(Number(e.saldo)||0)<0?'#e03131':COR_GRAF[i%COR_GRAF.length]}"></span></span><b>${fmtNum(e.saldo)}</b></div>`).join('')}</div>`:'';
   const m=Number(p.estoqueMinimo)||0;
-  return `<div class="est-card ${st==='low'?'low':''} ${st==='neg'?'neg':''}">
-    <div class="nm">${escapeHtml(p.nome)}</div>
-    <div class="sub">${escapeHtml(classeCanon(p.classe))}${p.ia? ' · '+escapeHtml(p.ia):''}</div>
+  return `<div class="est-card ${st==='low'?'low':''} ${st==='neg'?'neg':''} ${produtoSemEstoque(p)?'bloq':''}">
+    <div class="nm">${produtoSemEstoque(p)?'🔒 ':''}${escapeHtml(p.nome)}</div>
+    <div class="sub">${escapeHtml(classeCanon(p.classe))}${p.ia? ' · '+escapeHtml(p.ia):''}${p.codigo? ' · cód. '+escapeHtml(p.codigo):''}${p.embalagem? ' · 📦 '+escapeHtml(p.embalagem):''}</div>
     <div><span class="big">${fmtNum(p.saldo)} <small>${un}</small></span> <span class="est-st ${st}">${ST_TXT[st]}</span>${m>0? ` <span class="muted" style="font-size:11px">mín. ${fmtNum(m)}</span>`:''}</div>
     ${armHtml}
     <div class="est-acoes"><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="editSaldo(this.dataset.n)">Ajustar</button><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="abrirProdutoEditor(this.dataset.n)">✎ Editar</button></div>
@@ -4515,12 +4641,14 @@ function tabelaEstoqueHtml(grupos){
     }
     gr.itens.forEach(p=>{
       const st=situacaoProduto(p);
-      linhas+=`<tr class="${st==='low'?'low':''} ${st==='neg'?'neg':''}"><td><b>${escapeHtml(p.nome)}</b>${p.ia?`<div class="muted" style="font-size:11px">${escapeHtml(p.ia)}</div>`:''}</td><td>${escapeHtml(classeCanon(p.classe))}</td><td>${escapeHtml(p.unidadeEstoque||'')}</td>${arms.map(a=>{const v=saldoNoArmazem(p,a.cod);return v===null?`<td class="n dim">–</td>`:`<td class="n" ${v<0?'style="color:#c92a2a;font-weight:800"':''}>${fmtNum(v)}</td>`;}).join('')}<td class="n"><b>${fmtNum(p.saldo)}</b></td><td class="n">${Number(p.estoqueMinimo)>0?fmtNum(p.estoqueMinimo):'–'}</td><td><span class="est-st ${st}">${ST_TXT[st]}</span></td><td style="white-space:nowrap"><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="editSaldo(this.dataset.n)">Ajustar</button> <button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="abrirProdutoEditor(this.dataset.n)">✎</button></td></tr>`;
+      linhas+=`<tr class="${st==='low'?'low':''} ${st==='neg'?'neg':''}"><td><b>${produtoSemEstoque(p)?'🔒 ':''}${escapeHtml(p.nome)}</b>${(p.ia||p.codigo)?`<div class="muted" style="font-size:11px">${escapeHtml(p.ia||'')}${p.ia&&p.codigo?' · ':''}${p.codigo?'cód. '+escapeHtml(p.codigo):''}</div>`:''}</td><td>${escapeHtml(classeCanon(p.classe))}</td><td>${escapeHtml(p.unidadeEstoque||'')}</td>${arms.map(a=>{const v=saldoNoArmazem(p,a.cod);return v===null?`<td class="n dim">–</td>`:`<td class="n" ${v<0?'style="color:#c92a2a;font-weight:800"':''}>${fmtNum(v)}</td>`;}).join('')}<td class="n"><b>${fmtNum(p.saldo)}</b></td><td class="n">${Number(p.estoqueMinimo)>0?fmtNum(p.estoqueMinimo):'–'}</td><td><span class="est-st ${st}">${ST_TXT[st]}</span></td><td style="white-space:nowrap"><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="editSaldo(this.dataset.n)">Ajustar</button> <button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="abrirProdutoEditor(this.dataset.n)">✎</button></td></tr>`;
     });
   });
   return `<div class="est-tabwrap"><table class="est-tab"><thead>${head}</thead><tbody>${linhas}</tbody></table></div>`;
 }
 function renderEstoque(){
+  try{ renderDupCard(); }catch(e){}
+  try{ if(estoqueSubAtual==='solic') solRender(); else solRenderCarrinho(); }catch(e){ console.warn('solicitação:', e); }
   renderArmazemFiltroChips();
   renderEstoqueKpis();
   renderEstoqueChips();
@@ -4604,6 +4732,10 @@ function renderProdutoEditor(){
       <div class="field"><label>Ingrediente ativo</label><input type="text" id="peIa" value="${escapeHtml(p.ia||'')}" placeholder="Ex: GLIFOSATO"></div>
       <div class="field"><label>Finalidade</label><input type="text" id="peFinalidade" value="${escapeHtml(p.finalidade||'')}"></div>
     </div>
+    <div class="row">
+      <div class="field"><label>Código do produto (ERP / Proteus)</label><input type="text" id="peCodigo" value="${escapeHtml(p.codigo||'')}" placeholder="Ex: 4101000076"></div>
+      <div class="field"><label>Embalagem</label><input type="text" id="peEmb" value="${escapeHtml(p.embalagem||'')}" placeholder="Ex: Galão 20 L, Saco 25 kg"></div>
+    </div>
     <button type="button" class="btn-primary btn-sm" style="margin-top:8px;" onclick="salvarProdutoEditor()">💾 Salvar</button>
   </div>`;
 }
@@ -4615,6 +4747,8 @@ function salvarProdutoEditor(){
     p.grupoQuimico = document.getElementById('peGrupo').value.trim();
     p.ia = document.getElementById('peIa').value.trim();
     p.finalidade = document.getElementById('peFinalidade').value.trim();
+    p.codigo = document.getElementById('peCodigo').value.trim();
+    p.embalagem = document.getElementById('peEmb').value.trim();
     saveData();
     fbPushEstoque();
     renderEstoque();
@@ -4692,43 +4826,46 @@ function parseBrNumber(v){
   const n = parseFloat(s);
   return isNaN(n)? null : n;
 }
-async function importEstoqueERP(){
-  requireAdmin(async ()=>{
-    const input = document.getElementById('erpStockFile');
-    const resultEl = document.getElementById('erpStockResult');
-    const file = input.files && input.files[0];
-    if(!file){ toast('Escolha o arquivo da planilha primeiro'); return; }
-    resultEl.textContent = '⏳ Lendo planilha...';
-    try{
-      await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
-      const buf = await file.arrayBuffer();
-      const wb = XLSX.read(buf, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-      const armOverride = (document.getElementById('erpArmazemOverride').value||'').toString().trim();
+function erpNormKey(k){ return (k||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+function erpMapaLinha(row){ const m={}; for(const k in row){ m[erpNormKey(k)] = row[k]; } return m; }
+function aplicarLinhasERP(rows, armOverride, zerarAusentes, ctx){
+  migrarEstoqueV233();
+  {
       const nomesAntes = DATA.products.map(p=>p.nome);
-      let atualizados = 0;
+      let atualizados = 0, negativos = 0, codigosNovos = 0;
       const criados = [];
       const possiveisDuplicados = [];
+      const vistos = new Set(), armsPlanilha = new Set();
       rows.forEach(row=>{
-        const descricao = (row['DESCRICAO'] ?? row['Descricao'] ?? row['descricao'] ?? '').toString().trim();
+        const R = erpMapaLinha(row);
+        const pega = (...ks)=>{ for(const k of ks){ const v=R[k]; if(v!==undefined && v!==null && v!=='') return v; } return ''; };
+        const descricao = pega('DESCRICAO').toString().replace(/\s+/g,' ').trim();
         if(!descricao) return;
-        const qtd = parseBrNumber(row['quantidade'] ?? row['QUANTIDADE'] ?? row['Quantidade'] ?? row['DEMANDA INOVA'] ?? row['Demanda Inova'] ?? row['demanda inova']);
-        const armCodPlanilha = (row['CODIGO_ARMAZEM'] ?? row['codigo_armazem'] ?? '').toString().trim();
-        const armCod = armCodPlanilha || armOverride;
-        const armDesc = (row['DESCRICAO_ARMAZEM'] ?? row['descricao_armazem'] ?? '').toString().trim();
-        const unidade = (row['UNIDADE_MEDIDA'] ?? row['unidade_medida'] ?? row['UNI. MEDIDA'] ?? row['uni. medida'] ?? '').toString().trim();
-        const classeGuess = (row['GRUPO PRODUTO'] ?? row['DESCRICAO_GRUPO_PRODUTO'] ?? '').toString().trim();
+        /* v2.33.0 — planilha de controle da Agrícola: o saldo atual é a coluna RESTAM e o armazém é o 04 */
+        const temRestam = (R['RESTAM']!==undefined);
+        let qtd = temRestam? parseBrNumber(R['RESTAM']) : parseBrNumber(pega('QUANTIDADE','DEMANDAINOVA'));
+        if(temRestam){ if(qtd===null) qtd = 0; if(qtd<0){ qtd = 0; negativos++; } }
+        const armCodPlanilha = pega('CODIGOARMAZEM').toString().trim();
+        const armCod = armCodPlanilha || armOverride || (temRestam? ARM_AGRICOLA_COD : '');
+        const armDesc = pega('DESCRICAOARMAZEM').toString().trim() || (armCod? (ARM_DESC_PADRAO[armCod]||'') : '');
+        const unidade = pega('UNIDADEMEDIDA','UNIMEDIDA').toString().trim();
+        const classeGuess = pega('GRUPOPRODUTO','DESCRICAOGRUPOPRODUTO').toString().trim();
+        const codigoERP = pega('CODIGO').toString().trim();
+        if(armCod) armsPlanilha.add(armCod);
         const alvo = normNomeProduto(descricao);
         /* v2.22.1 — aliases: nome alternativo vindo do ERP (ex.: ERP manda "STENDIMAX 2", o produto é "XTENDIMAX 2") */
         const prod = DATA.products.find(p=> normNomeProduto(p.nome)===alvo) || DATA.products.find(p=> Array.isArray(p.aliases) && p.aliases.some(al=> normNomeProduto(al)===alvo));
         if(prod){
           upsertArmazemSaldo(prod, armCod, armDesc, qtd);
+          vistos.add(prod);
           if(unidade) prod.unidadeEstoque = unidade;
+          if(codigoERP && prod.codigo!==codigoERP){ prod.codigo = codigoERP; codigosNovos++; }
           atualizados++;
         } else {
           const novo = {
             nome: descricao,
+            codigo: codigoERP,
+            embalagem: '',
             classe: classeGuess,
             finalidade: '',
             grupoQuimico: '',
@@ -4745,29 +4882,558 @@ async function importEstoqueERP(){
             estoquePorArmazem: armCod? [{armazem: armCod, armazemDesc: armDesc||'', saldo: qtd!==null? qtd : 0}] : []
           };
           DATA.products.push(novo);
+          vistos.add(novo);
           criados.push(descricao);
           const parecido = nomesAntes.find(n=> possivelDuplicado(n, descricao));
           if(parecido) possiveisDuplicados.push(`"${descricao}" (novo) parece com "${parecido}" (já existia) — confira se não é o mesmo produto`);
         }
       });
+      /* v2.33.0 — produtos que têm saldo nesse(s) armazém(ns) no app mas NÃO vieram na planilha: o ERP só lista o que tem estoque,
+         então provavelmente zeraram. Antes ficavam com o saldo velho pra sempre. Agora aparecem na mensagem e, se o Flávio marcar
+         "Zerar os que não vieram", o saldo deles nesse armazém vai pra 0. */
+      const ausentes = [];
+      DATA.products.forEach(p=>{
+        if(vistos.has(p)) return;
+        armsPlanilha.forEach(ac=>{
+          const e = (p.estoquePorArmazem||[]).find(z=>z.armazem===ac);
+          if(e && Number(e.saldo)!==0) ausentes.push({p, ac, antes:Number(e.saldo), desc:e.armazemDesc||''});
+        });
+      });
+      if(zerarAusentes) ausentes.forEach(x=>upsertArmazemSaldo(x.p, x.ac, x.desc, 0));
+      if(ctx && ctx.vistos) vistos.forEach(p=>ctx.vistos.add(p));
       saveData();
       fbPushEstoque();
       renderEstoque();
       refreshProductDatalist();
-      let msg = `✅ ${atualizados} produto(s) atualizado(s) — saldo somado por armazém.`;
+      let msg = `✅ ${atualizados} produto(s) atualizado(s) — saldo somado por armazém${armsPlanilha.size? ' ('+Array.from(armsPlanilha).join(', ')+')':''}.`;
+      if(codigosNovos) msg += `\n🏷 ${codigosNovos} código(s) de produto atualizado(s) a partir da planilha.`;
+      if(negativos) msg += `\nℹ️ ${negativos} produto(s) estavam com saldo negativo na planilha (saída sem entrada) e ficaram com 0.`;
       if(criados.length){
         msg += `\n🆕 ${criados.length} produto(s) novo(s) cadastrado(s) automaticamente (não existiam no catálogo, confira a classe deles depois):\n- ` + criados.join('\n- ');
       }
       if(possiveisDuplicados.length){
         msg += `\n🔎 Possíveis duplicados, confira:\n- ` + possiveisDuplicados.join('\n- ');
       }
-      resultEl.textContent = msg;
+      if(ausentes.length){
+        const lista = ausentes.map(x=>`${x.p.nome} (armazém ${x.ac}: ${fmtNum(x.antes)} ${x.p.unidadeEstoque||''})`).join('\n- ');
+        msg += zerarAusentes
+          ? `\n🧹 ${ausentes.length} produto(s) não vieram na planilha e tiveram o saldo desse armazém zerado:\n- ` + lista
+          : `\n⚠️ ${ausentes.length} produto(s) têm saldo no app nesse armazém, mas NÃO vieram na planilha (o saldo continua o antigo). Se já acabaram, marque “Zerar os que não vieram na planilha” e importe de novo:\n- ` + lista;
+      }
+      return msg;
+  }
+}
+function zerarForaDasPlanilhas(vistos){
+  const lista = [];
+  DATA.products.forEach(p=>{
+    if(vistos.has(p)) return;
+    const eps = Array.isArray(p.estoquePorArmazem)? p.estoquePorArmazem : [];
+    const tinha = (Number(p.saldo)||0)!==0 || eps.some(e=>(Number(e.saldo)||0)!==0);
+    if(!tinha) return;
+    lista.push(`${p.nome} (${fmtNum(p.saldo)} ${p.unidadeEstoque||''})`);
+    eps.forEach(e=>{ e.saldo = 0; });
+    p.saldo = 0;
+  });
+  if(lista.length){ saveData(); fbPushEstoque(); renderEstoque(); }
+  return lista;
+}
+async function importEstoqueERP(){
+  requireAdmin(async ()=>{
+    const input = document.getElementById('erpStockFile');
+    const resultEl = document.getElementById('erpStockResult');
+    const files = Array.from(input.files||[]);
+    if(!files.length){ toast('Escolha o arquivo da planilha primeiro'); return; }
+    resultEl.textContent = '⏳ Lendo planilha...';
+    try{
+      await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+      const armOverride = files.length===1? (document.getElementById('erpArmazemOverride').value||'').toString().trim() : '';
+      const oficial = !!(document.getElementById('erpOficial')||{}).checked;
+      const zerarAusentes = oficial || !!(document.getElementById('erpZerarAusentes')||{}).checked;
+      const ctx = {vistos:new Set()};
+      const msgs = [];
+      for(const file of files){
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, {type:'array'});
+        let rows = null;
+        for(const nome of wb.SheetNames){
+          const r = XLSX.utils.sheet_to_json(wb.Sheets[nome], {defval:''});
+          if(r.length && Object.keys(r[0]).some(k=>erpNormKey(k)==='DESCRICAO')){ rows = r; break; }
+        }
+        if(!rows){ msgs.push('⚠️ '+file.name+': não achei a coluna DESCRICAO, arquivo ignorado.'); continue; }
+        msgs.push((files.length>1? '📄 '+file.name+'\n' : '') + aplicarLinhasERP(rows, armOverride, zerarAusentes, ctx));
+      }
+      if(oficial && ctx.vistos.size){
+        const z = zerarForaDasPlanilhas(ctx.vistos);
+        msgs.push(z.length? `🧹 ${z.length} produto(s) não estão em nenhuma planilha e ficaram SEM ESTOQUE (travados para solicitação):\n- `+z.join('\n- ') : '🧹 Nenhum outro produto tinha saldo para zerar.');
+      }
+      resultEl.textContent = msgs.join('\n\n');
       toast('Estoque atualizado a partir da planilha');
     }catch(e){
       console.warn('Erro importando planilha ERP:', e);
       resultEl.textContent = '🔴 Erro ao ler a planilha: '+(e.message||e);
       toast('Erro ao processar a planilha');
     }
+  });
+}
+
+
+/* ====================== SOLICITAÇÃO AO ARMAZÉM + CÓDIGO/EMBALAGEM (v2.33.0) ======================
+   Pedido do Flávio (nov/2026): quem precisar de produto (ele, o Silvano...) procura o produto aqui, vê em qual
+   armazém tem estoque, escolhe quantos litros/kg quer, junta vários produtos e gera uma FOTO (ou texto) pra mandar
+   pro administrativo lançar no Proteus. Por isso cada produto tem UM cadastro só, com o código do ERP e a embalagem.
+   Regra do estoque: a verdade são as planilhas (25 Inova e 04 Agrícola). O que não vem nelas = sem estoque e fica
+   TRAVADO (continua na lista, mas não dá pra solicitar). A solicitação NÃO baixa o estoque do app. */
+const CODIGOS_ERP = {"03-35-06": "4201000001", "03-35-06SUPER": "4201000021", "46-00-00UREIA": "4201000011", "AGCNFULL": "4202000525", "ALADE": "4103000108", "AMINOARGININE": "4202000331", "APROACHPOWER": "4103000104", "ARES": "4105000011", "BLINDADOTOV": "4103000126", "BOUVERIZWP": "4110000155", "CALCARIODOLOMITICO": "4301000002", "CALLISTO480SC": "4101000076", "CELLERATE": "4202000342", "CLORPIRIFOS48ECGHARDA": "4102000194", "CONCORDE": "4202000065", "DUALGOLD960EC": "4101000004", "ENGEOPLENOSC": "4102000061", "ENLISTCOLEX-D": "4101000167", "EXALT120SC": "4102000032", "FLEX250SL": "4101000035", "FOXXPROSC": "4103000084", "FUNGINIL500SC": "4103000096", "INFLUX": "4102000143", "KCLGRANULADO": "4201000006", "MACCLEN": "4105000022", "MAPPURIFICADO": "4202000041", "MATCH50EC": "4102000016", "METARRIZPLUSWP": "4110000154", "NATIVOSL": "4103000051", "NITRATODEMAGNESIO": "4202000264", "NITRATODEPOTASSIO": "4202000104", "OCHIMA": "4105000007", "PERITO970SG": "4102000064", "ROUNDUPTRANSORBR": "4101000083", "SONDA": "4101000108", "STENDIMAX2": "4101000194", "SUPERSIMPLES20": "4201000077", "ULEXITA10%GRANULADO": "4201000083", "UREIAPROTEGIDA": "4201000048", "V12NI": "4202000248", "VERTIMEC84SC": "4102000073", "WILPHOS480": "4102000191", "XTENDPROTECTCOPACK": "4101000155", "ZAPPQI620SL": "4101000048"};
+const ARM_DESC_PADRAO = {'25':'AR. INSUMOS INOVA','04':'Armazém Agrícola (04)'};
+const ARM_AGRICOLA_COD = '04';
+function migrarEstoqueV233(){
+  let mudou = false;
+  (DATA.products||[]).forEach(p=>{
+    /* armazém da Agrícola passa a ser o código 04 (antes era a chave 'AGRICOLA') */
+    const ehAgri = v => /^AGR[IÍ]COLA$/i.test((v||'').toString().trim());
+    if(Array.isArray(p.estoquePorArmazem)){
+      p.estoquePorArmazem.forEach(e=>{ if(ehAgri(e.armazem)){ e.armazem = ARM_AGRICOLA_COD; e.armazemDesc = ARM_DESC_PADRAO['04']; mudou = true; } });
+      const vistos = new Map(), lim = [];
+      p.estoquePorArmazem.forEach(e=>{
+        if(vistos.has(e.armazem)){ const o = vistos.get(e.armazem); o.saldo = (Number(o.saldo)||0) + (Number(e.saldo)||0); mudou = true; }
+        else { vistos.set(e.armazem, e); lim.push(e); }
+      });
+      if(lim.length !== p.estoquePorArmazem.length) p.estoquePorArmazem = lim;
+    }
+    if(ehAgri(p.armazem)){ p.armazem = ARM_AGRICOLA_COD; p.armazemDesc = ARM_DESC_PADRAO['04']; mudou = true; }
+    /* código do ERP (planilha produtos.xlsx) — só preenche quando ainda está vazio */
+    if(!p.codigo){
+      let c = CODIGOS_ERP[normNomeProduto(p.nome)];
+      if(!c && Array.isArray(p.aliases)){ for(const al of p.aliases){ c = CODIGOS_ERP[normNomeProduto(al)]; if(c) break; } }
+      if(c){ p.codigo = c; mudou = true; }
+    }
+  });
+  return mudou;
+}
+function produtoSemEstoque(p){ return !((Number(p.saldo)||0) > 0); }
+
+/* ---- sub-abas do Estoque ---- */
+let estoqueSubAtual = 'estoque';
+function setEstoqueSub(v){
+  estoqueSubAtual = (v==='solic')? 'solic' : 'estoque';
+  const a = document.getElementById('estoqueMain'), b = document.getElementById('solicMain');
+  if(a) a.style.display = estoqueSubAtual==='estoque'? '' : 'none';
+  if(b) b.style.display = estoqueSubAtual==='solic'? '' : 'none';
+  document.querySelectorAll('.sol-sub button').forEach(x=>x.classList.toggle('on', x.dataset.v===estoqueSubAtual));
+  if(estoqueSubAtual==='solic') solRender();
+}
+
+/* ---- estado da solicitação (fica guardado no aparelho até enviar/limpar) ---- */
+let solCarrinho = [];            /* [{nome, arm, armDesc, qtd}] */
+let solArmFiltro = null;         /* null = todos | código do armazém */
+let solForm = {solicitante:'', data:'', obs:''};
+let __solView = [];              /* produtos da tela (índice usado nos botões) */
+function solKey(){ return 'inova_solic_v1_'+estacaoAtivaId; }
+function solSalvar(){
+  try{ localStorage.setItem(solKey(), JSON.stringify({itens:solCarrinho, f:solForm})); }catch(e){}
+}
+function solCarregar(){
+  try{
+    const o = JSON.parse(localStorage.getItem(solKey())||'null');
+    if(o){ solCarrinho = Array.isArray(o.itens)? o.itens : []; solForm = Object.assign({solicitante:'',data:'',obs:''}, o.f||{}); }
+  }catch(e){}
+}
+function solHoje(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function solDataBR(iso){ const m=(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/); return m? m[3]+'/'+m[2]+'/'+m[1] : (iso||''); }
+function solUn(p){
+  let u = (p.unidadeEstoque||'').toString().trim();
+  if(!u){ const d=(p.unidadeDose||'').toString().trim(); const m=d.match(/^(kg|l|lt|g)\b/i); u = m? m[1] : ''; }
+  if(/^(l|lt|lts|litro|litros)$/i.test(u)) return 'L';
+  if(/^(kg|kgs|quilo|quilos|kilo|kilos)$/i.test(u)) return 'KG';
+  return u.toUpperCase();
+}
+function solEntradas(p){
+  /* onde esse produto tem estoque: [{arm, desc, saldo}] — só os com saldo > 0 */
+  const eps = (Array.isArray(p.estoquePorArmazem)? p.estoquePorArmazem : []).filter(e=>e.armazem);
+  let out = eps.map(e=>({arm:e.armazem, desc:e.armazemDesc||'', saldo:Number(e.saldo)||0}));
+  if(!out.length && (Number(p.saldo)||0)>0) out = [{arm:'', desc:'Sem armazém definido', saldo:Number(p.saldo)||0}];
+  return out.filter(e=>e.saldo>0);
+}
+function solArmRotulo(arm, desc){ return arm? armLabelCurto({cod:arm, desc:desc||''}) : (desc||'Sem armazém'); }
+function solArmTitulo(arm, desc){ const r=solArmRotulo(arm,desc); return (arm && r.indexOf('('+arm+')')<0)? r+' · armazém '+arm : r; }
+function solNoCarrinho(nome, arm){ return solCarrinho.find(i=>i.nome===nome && (i.arm||'')===(arm||'')); }
+function solSetSolicitante(v){ solForm.solicitante = v; solSalvar(); }
+function solSetData(v){ solForm.data = v; solSalvar(); }
+function solSetObs(v){ solForm.obs = v; solSalvar(); }
+function solSetArm(v){ solArmFiltro = (solArmFiltro===v)? null : v; solRender(); }
+
+function solAdd(i, k){
+  const p = __solView[i]; if(!p) return;
+  const ent = solEntradas(p)[k]; if(!ent) return;
+  const el = document.getElementById('solq-'+i+'-'+k);
+  const q = parseBrNumber(el? el.value : '');
+  if(q===null || !(q>0)){ toast('Digite a quantidade que você quer'); if(el) el.focus(); return; }
+  const jaTem = solNoCarrinho(p.nome, ent.arm);
+  const total = q + (jaTem? Number(jaTem.qtd)||0 : 0);
+  if(total > ent.saldo + 1e-9){
+    toast(`Só tem ${fmtNum(ent.saldo)} ${solUn(p)} no armazém ${solArmRotulo(ent.arm, ent.desc)}`);
+    return;
+  }
+  if(jaTem) jaTem.qtd = Math.round(total*1000)/1000;
+  else solCarrinho.push({nome:p.nome, arm:ent.arm, armDesc:ent.desc, qtd:Math.round(q*1000)/1000});
+  solSalvar(); solRender();
+  toast('Adicionado: '+p.nome);
+}
+function solRemover(j){ solCarrinho.splice(j,1); solSalvar(); solRender(); }
+function solEditQtd(j, v){
+  const it = solCarrinho[j]; if(!it) return;
+  const p = DATA.products.find(x=>x.nome===it.nome);
+  const q = parseBrNumber(v);
+  const ent = p? solEntradas(p).find(e=>(e.arm||'')===(it.arm||'')) : null;
+  if(q===null || !(q>0)){ solRender(); toast('Quantidade inválida'); return; }
+  if(ent && q > ent.saldo + 1e-9){ solRender(); toast(`Só tem ${fmtNum(ent.saldo)} ${solUn(p)} nesse armazém`); return; }
+  it.qtd = q; solSalvar(); solRender();
+}
+function solLimpar(){
+  if(solCarrinho.length && !confirm('Limpar toda a lista da solicitação?')) return;
+  solCarrinho = []; solForm.obs = ''; solSalvar(); solRender();
+}
+function solSetCampo(i, campo, v){
+  requireAdmin(()=>{
+    const p = __solView[i]; if(!p) return;
+    p[campo] = (v||'').toString().trim();
+    saveData(); fbPushEstoque();
+    toast(campo==='codigo'? 'Código salvo' : 'Embalagem salva');
+    solRender();
+  });
+}
+function solItemInfo(it){
+  const p = DATA.products.find(x=>x.nome===it.nome) || {nome:it.nome};
+  return {p, cod:(p.codigo||'').toString().trim(), emb:(p.embalagem||'').toString().trim(), ia:(p.ia||'').toString().trim(), un:solUn(p)};
+}
+
+function solRender(){
+  const host = document.getElementById('solLista'); if(!host) return;
+  /* produtos que sumiram ou ficaram sem estoque saem da lista */
+  solCarrinho = solCarrinho.filter(it=>DATA.products.some(p=>p.nome===it.nome));
+  const q = (document.getElementById('solBusca').value||'').toLowerCase().trim();
+  const qn = normNomeProduto(q);
+  const base = DATA.products.filter(p=>{
+    if(!q) return true;
+    return (p.nome||'').toLowerCase().includes(q) || normNomeProduto(p.nome).includes(qn) || (p.ia||'').toLowerCase().includes(q) || (p.codigo||'').toString().includes(q);
+  }).sort((a,b)=>(a.nome||'').localeCompare(b.nome||'','pt-BR'));
+  const disp = [], bloq = [];
+  base.forEach(p=>{
+    const ents = solEntradas(p).filter(e=> solArmFiltro===null || e.arm===solArmFiltro);
+    if(ents.length) disp.push(p); else if(produtoSemEstoque(p) || solArmFiltro!==null) bloq.push(p);
+  });
+  /* chips de armazém */
+  const arms = getArmazensDisponiveis();
+  const chips = [`<button type="button" class="armazem-chip${solArmFiltro===null?' active':''}" onclick="solSetArm(null)">Todos</button>`]
+    .concat(arms.map(a=>`<button type="button" class="armazem-chip${solArmFiltro===a.cod?' active':''}" data-a="${escapeHtml(a.cod)}" onclick="solSetArm(this.dataset.a)">${escapeHtml(armLabelCurto(a))}</button>`));
+  document.getElementById('solArmChips').innerHTML = chips.join('');
+  /* aviso de duplicados (um cadastro por produto) */
+  const nd = (typeof dupGrupos==='function')? dupGrupos().length : 0;
+  const av = document.getElementById('solAvisoDup');
+  av.style.display = nd? '' : 'none';
+  if(nd) av.innerHTML = `⚠️ Há <b>${nd}</b> produto${nd===1?'':'s'} cadastrado${nd===1?'':'s'} em duplicidade. Como o administrativo usa o código no Proteus, o ideal é ter um cadastro só. <button type="button" class="btn-ghost btn-sm" onclick="abrirUnificar()">Unificar agora</button>`;
+  __solView = disp;
+  const adm = isAdmin();
+  const cardsHtml = disp.map((p,i)=>{
+    const ents = solEntradas(p).filter(e=> solArmFiltro===null || e.arm===solArmFiltro);
+    const todas = solEntradas(p);
+    const un = solUn(p);
+    const cod = (p.codigo||'').toString().trim(), emb = (p.embalagem||'').toString().trim();
+    const tags = [
+      cod? `<span class="sol-tag cod">cód. ${escapeHtml(cod)}</span>` : `<span class="sol-tag nocod">sem código</span>`,
+      un? `<span class="sol-tag un">${escapeHtml(un==='L'?'Litro (L)':un==='KG'?'Quilo (KG)':un)}</span>` : '',
+      emb? `<span class="sol-tag emb">📦 ${escapeHtml(emb)}</span>` : ''
+    ].join('');
+    const linhas = ents.map(e=>{
+      const k = todas.findIndex(x=>x.arm===e.arm);
+      const no = solNoCarrinho(p.nome, e.arm);
+      return `<div class="sol-arm"><div class="info"><span class="lab">${escapeHtml(solArmRotulo(e.arm,e.desc))}</span><span class="sal">tem ${fmtNum(e.saldo)} ${escapeHtml(un)}</span></div>
+        <input type="text" inputmode="decimal" autocomplete="off" placeholder="qtd" id="solq-${i}-${k}" onkeydown="if(event.key==='Enter'){solAdd(${i},${k});}">
+        <button type="button" class="btn-primary btn-sm" onclick="solAdd(${i},${k})">＋ Adicionar</button>${no? `<span class="sol-no">na lista: ${fmtNum(no.qtd)} ${escapeHtml(un)}</span>`:''}</div>`;
+    }).join('');
+    const edit = adm? `<details class="sol-edit"><summary>✎ código / embalagem</summary>
+        <div class="sol-edit-row"><label>Código (Proteus)<input type="text" value="${escapeHtml(cod)}" placeholder="Ex: 4101000076" onchange="solSetCampo(${i},'codigo',this.value)"></label>
+        <label>Embalagem<input type="text" value="${escapeHtml(emb)}" placeholder="Ex: Galão 20 L, Saco 25 kg" onchange="solSetCampo(${i},'embalagem',this.value)"></label></div></details>` : '';
+    return `<div class="sol-card"><div class="sol-top"><div class="sol-nm">${escapeHtml(p.nome)}</div>${p.ia||p.classe? `<div class="sol-sub">${escapeHtml(p.ia||'')}${p.ia&&p.classe?' · ':''}${escapeHtml(p.classe? classeCanon(p.classe):'')}</div>`:''}<div class="sol-tags">${tags}</div></div>${linhas}${edit}</div>`;
+  }).join('');
+  const bloqHtml = bloq.length? `<details class="sol-bloq"><summary>🔒 Sem estoque (${bloq.length}) — não dá para solicitar</summary>${bloq.map(p=>`<div class="sol-bl"><span>🔒 ${escapeHtml(p.nome)}</span><span class="muted">${p.codigo? 'cód. '+escapeHtml(p.codigo) : ''}</span></div>`).join('')}</details>` : '';
+  host.innerHTML = (cardsHtml || `<div class="empty" style="display:block;">Nenhum produto com estoque encontrado${q?' para essa busca':''}.</div>`) + bloqHtml;
+  document.getElementById('solResumo').textContent = `${disp.length} produto(s) com estoque` + (bloq.length? ` · ${bloq.length} sem estoque (travados)` : '');
+  solRenderCarrinho();
+}
+
+function solGrupos(){
+  /* agrupa a lista por armazém, na ordem em que aparecem */
+  const m = new Map();
+  solCarrinho.forEach((it,j)=>{ const k = it.arm||''; if(!m.has(k)) m.set(k,{arm:k, desc:it.armDesc||'', itens:[]}); m.get(k).itens.push({it,j}); });
+  return Array.from(m.values()).sort((a,b)=> (a.arm||'zz').localeCompare(b.arm||'zz'));
+}
+function solRenderCarrinho(){
+  const el = document.getElementById('solCarrinho'); if(!el) return;
+  const n = solCarrinho.length;
+  document.getElementById('solBadge').textContent = n? String(n) : '';
+  const f = solForm;
+  if(!f.solicitante) f.solicitante = (currentUser && currentUser.nome) || '';
+  if(!f.data) f.data = solHoje();
+  const sol = document.getElementById('solSolicitante'), dt = document.getElementById('solData'), ob = document.getElementById('solObs');
+  if(sol && sol.value!==f.solicitante && document.activeElement!==sol) sol.value = f.solicitante;
+  if(dt && dt.value!==f.data) dt.value = f.data;
+  if(ob && ob.value!==f.obs && document.activeElement!==ob) ob.value = f.obs;
+  if(!n){ el.innerHTML = '<div class="muted" style="padding:6px 0;">Nada na lista ainda. Procure um produto acima e toque em “＋ Adicionar”.</div>'; ['solBtnFoto','solBtnTexto','solBtnLimpar'].forEach(id=>{ const b=document.getElementById(id); if(b) b.disabled = true; }); return; }
+  ['solBtnFoto','solBtnTexto','solBtnLimpar'].forEach(id=>{ const b=document.getElementById(id); if(b) b.disabled = false; });
+  el.innerHTML = solGrupos().map(g=>`<div class="sol-gh">${escapeHtml(solArmRotulo(g.arm,g.desc))}</div>`+g.itens.map(({it,j})=>{
+    const x = solItemInfo(it);
+    return `<div class="sol-it"><div class="i1"><b>${escapeHtml(it.nome)}</b><div class="muted" style="font-size:11.5px;">${x.cod? 'cód. '+escapeHtml(x.cod) : '<span style="color:#b42318;font-weight:700;">sem código</span>'}${x.emb? ' · 📦 '+escapeHtml(x.emb) : ''}</div></div>
+      <div class="i2"><input type="text" inputmode="decimal" value="${escapeHtml(String(it.qtd).replace('.',','))}" onchange="solEditQtd(${j},this.value)"><span>${escapeHtml(x.un)}</span></div>
+      <button type="button" class="btn-ghost btn-sm" title="Tirar da lista" onclick="solRemover(${j})">✕</button></div>`;
+  }).join('')).join('');
+}
+
+/* ---- texto copiável ---- */
+function solTexto(){
+  const est = estacaoAtiva();
+  const L = [];
+  L.push('*SOLICITAÇÃO AO ARMAZÉM* — '+est.nome.replace('Estação ','')+' ('+est.cidade+')');
+  L.push('Solicitante: '+(solForm.solicitante||'—')+'  |  Data: '+solDataBR(solForm.data||solHoje()));
+  solGrupos().forEach(g=>{
+    L.push('');
+    L.push('📦 '+solArmTitulo(g.arm,g.desc).toUpperCase());
+    g.itens.forEach(({it},n)=>{
+      const x = solItemInfo(it);
+      L.push((n+1)+') '+(x.cod? '['+x.cod+'] ' : '[sem código] ')+it.nome+' — '+fmtNum(it.qtd)+' '+x.un+(x.emb? ' ('+x.emb+')' : ''));
+    });
+  });
+  if(solForm.obs && solForm.obs.trim()) { L.push(''); L.push('Obs.: '+solForm.obs.trim()); }
+  L.push(''); L.push('Total: '+solCarrinho.length+' item(ns)');
+  return L.join('\n');
+}
+function solCopiarTexto(){
+  if(!solCarrinho.length){ toast('A lista está vazia'); return; }
+  const t = solTexto();
+  const fallback = ()=>{ const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast('Texto copiado'); }catch(e){ toast('Não consegui copiar'); } ta.remove(); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>toast('Texto copiado — é só colar no WhatsApp')).catch(fallback);
+  else fallback();
+}
+
+/* ---- foto (ficha) ---- */
+function solFichaHtml(){
+  const est = estacaoAtiva();
+  const logo = (document.querySelector('header.app .logo')||{}).src || '';
+  const agora = new Date();
+  const hora = String(agora.getHours()).padStart(2,'0')+':'+String(agora.getMinutes()).padStart(2,'0');
+  let nTotal = 0;
+  const blocos = solGrupos().map(g=>{
+    const linhas = g.itens.map(({it},n)=>{
+      const x = solItemInfo(it); nTotal++;
+      return `<tr>
+        <td style="padding:8px 6px;border-bottom:1px solid #eadfd3;font-family:Consolas,Menlo,monospace;font-weight:800;font-size:13px;color:${x.cod?'#2b1a0e':'#b42318'};white-space:nowrap;vertical-align:top;">${x.cod? escapeHtml(x.cod) : 'SEM CÓDIGO'}</td>
+        <td style="padding:8px 6px;border-bottom:1px solid #eadfd3;vertical-align:top;"><div style="font-weight:800;font-size:14px;color:#2b1a0e;">${escapeHtml(it.nome)}</div>${x.ia? `<div style="font-size:11px;color:#7d6a58;">${escapeHtml(x.ia)}</div>`:''}</td>
+        <td style="padding:8px 6px;border-bottom:1px solid #eadfd3;text-align:right;white-space:nowrap;vertical-align:top;"><span style="font-weight:900;font-size:16px;color:#c2410c;">${fmtNum(it.qtd)}</span> <span style="font-weight:800;font-size:12px;color:#2b1a0e;">${escapeHtml(x.un)}</span></td>
+        <td style="padding:8px 6px;border-bottom:1px solid #eadfd3;font-size:12px;color:#4a3626;vertical-align:top;">${x.emb? escapeHtml(x.emb) : '<span style="color:#b9a894;">—</span>'}</td>
+      </tr>`;
+    }).join('');
+    return `<div style="margin-top:12px;background:#fdebd8;border-radius:8px;padding:6px 10px;font-weight:900;font-size:13px;color:#9a3412;">📦 ${escapeHtml(solArmTitulo(g.arm,g.desc).toUpperCase())}</div>
+      <table style="width:100%;border-collapse:collapse;margin-top:2px;"><thead><tr style="font-size:10.5px;color:#7d6a58;text-transform:uppercase;letter-spacing:.4px;"><th style="text-align:left;padding:4px 6px;">Código</th><th style="text-align:left;padding:4px 6px;">Produto</th><th style="text-align:right;padding:4px 6px;">Quantidade</th><th style="text-align:left;padding:4px 6px;">Embalagem</th></tr></thead><tbody>${linhas}</tbody></table>`;
+  }).join('');
+  return `<div style="background:linear-gradient(145deg,#241009,#8a3d10);color:#fff;padding:16px 18px;display:flex;align-items:center;">
+      ${logo? `<img src="${logo}" style="height:34px;margin-right:12px;display:block;">` : ''}
+      <div style="flex:1;"><div style="font-size:17px;font-weight:900;letter-spacing:.3px;">SOLICITAÇÃO AO ARMAZÉM</div><div style="font-size:11.5px;opacity:.9;">Inova Genética · ${escapeHtml(est.cidade)}</div></div>
+    </div>
+    <div style="padding:12px 18px 6px;background:#fff;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;color:#2b1a0e;"><tr>
+        <td style="padding:2px 0;"><span style="color:#7d6a58;">Solicitante</span><br><b style="font-size:15px;">${escapeHtml(solForm.solicitante||'—')}</b></td>
+        <td style="padding:2px 0;text-align:right;"><span style="color:#7d6a58;">Data</span><br><b style="font-size:15px;">${escapeHtml(solDataBR(solForm.data||solHoje()))}</b> <span style="color:#7d6a58;">${hora}</span></td>
+      </tr></table>
+      ${blocos}
+      ${solForm.obs && solForm.obs.trim()? `<div style="margin-top:12px;border:1.5px dashed #d8c7b3;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#2b1a0e;"><b>Observação:</b> ${escapeHtml(solForm.obs.trim()).replace(/\n/g,'<br>')}</div>`:''}
+      <div style="margin-top:12px;padding:8px 0 10px;border-top:2px solid #2b1a0e;display:flex;justify-content:space-between;font-size:12.5px;color:#2b1a0e;"><b>Total: ${nTotal} item(ns)</b><span style="color:#7d6a58;">Lançar no Proteus</span></div>
+    </div>`;
+}
+function solGerarFicha(){
+  if(!solCarrinho.length){ toast('A lista está vazia'); return; }
+  const semCod = solCarrinho.filter(it=>!solItemInfo(it).cod).length;
+  document.getElementById('solFichaCard').innerHTML = solFichaHtml();
+  document.getElementById('solFichaAviso').textContent = semCod? `⚠️ ${semCod} item(ns) sem código — o administrativo vai precisar achar pelo nome.` : '';
+  document.getElementById('solFichaOverlay').classList.remove('hidden');
+}
+function solFecharFicha(){ document.getElementById('solFichaOverlay').classList.add('hidden'); }
+async function solFichaBlob(){
+  if(typeof html2canvas==='undefined') throw new Error('sem html2canvas');
+  const card = document.getElementById('solFichaCard');
+  const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
+  return await new Promise(res=>canvas.toBlob(res,'image/png'));
+}
+function solNomeArquivo(){ return 'solicitacao_armazem_'+(solForm.data||solHoje())+'.png'; }
+async function solBaixarFoto(){
+  try{
+    const blob = await solFichaBlob(); if(!blob) throw new Error('imagem vazia');
+    const a = document.createElement('a'); a.download = solNomeArquivo(); a.href = URL.createObjectURL(blob); document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+    toast('Foto salva');
+  }catch(e){ toast('Erro ao gerar a foto: '+(e.message||e)); }
+}
+async function solCompartilharFoto(){
+  try{
+    const blob = await solFichaBlob(); if(!blob) throw new Error('imagem vazia');
+    const file = new File([blob], solNomeArquivo(), {type:'image/png'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:'Solicitação ao armazém'});
+    } else { await solBaixarFoto(); }
+  }catch(e){ if(e && e.name==='AbortError') return; toast('Não deu pra compartilhar: '+(e.message||e)); }
+}
+
+
+/* ====================== UNIFICAR PRODUTOS DUPLICADOS (v2.33.0) ======================
+   Pedido do Flávio (nov/2026): o mesmo produto aparecia com dois nomes — o nome curto, digitado à
+   mão nas primeiras aplicações (tem o histórico), e o nome completo que veio da planilha do ERP
+   (tem o saldo por armazém). Aqui o app acha esses pares sozinho (um nome começa com o outro,
+   mesma unidade e sem ingrediente ativo diferente), deixa o Flávio escolher qual nome fica e junta:
+   o nome que sai vira "apelido" (aliases) do que fica — assim a próxima planilha do ERP continua
+   achando o produto —, as aplicações antigas passam pro nome que ficou e o saldo vem do ERP (ou
+   soma, se ele preferir). Só mexe na estação ativa. Fica um "Desfazer" logo depois. */
+function dupNN(s){ return (s||'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+function dupGrupos(){
+  const P = DATA.products||[], pai = P.map((_,i)=>i);
+  const raiz = i=>{ while(pai[i]!==i){ pai[i]=pai[pai[i]]; i=pai[i]; } return i; };
+  for(let i=0;i<P.length;i++) for(let j=i+1;j<P.length;j++){
+    const x=dupNN(P[i].nome), y=dupNN(P[j].nome); if(!x||!y) continue;
+    const [c,l] = x.length<=y.length? [x,y]:[y,x];
+    if(!(c===l || (c.length>=3 && l.startsWith(c)))) continue;
+    const ia=dupNN(P[i].ia), ib=dupNN(P[j].ia); if(ia&&ib&&ia!==ib) continue;
+    const ua=dupNN(P[i].unidadeEstoque), ub=dupNN(P[j].unidadeEstoque); if(ua&&ub&&ua!==ub) continue;
+    const ca=(P[i].codigo||'').toString().trim(), cb=(P[j].codigo||'').toString().trim(); if(ca&&cb&&ca!==cb) continue; /* códigos diferentes no ERP = produtos diferentes */
+    pai[raiz(i)] = raiz(j);
+  }
+  const m = {}; P.forEach((p,i)=>{ (m[raiz(i)] = m[raiz(i)]||[]).push(p); });
+  return Object.values(m).filter(g=>g.length>1);
+}
+function dupUsos(nome){ return (DATA.applications||[]).filter(a=>(a.produtos||[]).some(x=>x.nome===nome)).length; }
+function dupNArm(p){ return Array.isArray(p.estoquePorArmazem)? p.estoquePorArmazem.length : 0; }
+let __dupEstado = [];        /* [{nomes:[...], fica:'NOME', usar:true}] */
+let __dupUndo = null;
+function renderDupCard(){
+  const el = document.getElementById('dupInfo'); if(!el) return;
+  const n = dupGrupos().length;
+  el.innerHTML = n? `🔎 <b>${n} possíve${n===1?'l':'is'} duplicado${n===1?'':'s'}</b> encontrado${n===1?'':'s'}: o mesmo produto com dois nomes (o nome antigo e o nome do ERP). Toque em “Ver duplicados” para conferir e juntar.` : '✅ Nenhum produto duplicado encontrado.';
+}
+function abrirUnificar(){
+  requireAdmin(()=>{
+    __dupEstado = dupGrupos().map(g=>{
+      const ordem = g.slice().sort((a,b)=> dupNArm(b)-dupNArm(a) || (b.nome||'').length-(a.nome||'').length);
+      return { nomes:g.map(p=>p.nome), fica:ordem[0].nome, usar:true };
+    });
+    document.getElementById('dupResultado').innerHTML = '';
+    document.getElementById('dupBtnUndo').style.display = (__dupUndo? '' : 'none');
+    document.getElementById('dupBtnOk').style.display = '';
+    document.getElementById('dupOverlay').classList.remove('hidden');
+    dupRender();
+  });
+}
+function fecharUnificar(){ document.getElementById('dupOverlay').classList.add('hidden'); }
+function dupModo(){ const r=document.querySelector('input[name=dupModo]:checked'); return r? r.value : 'erp'; }
+function dupSaldoFinal(prods, modo){
+  const fonte = prods.slice().sort((x,y)=>dupNArm(y)-dupNArm(x))[0];
+  return modo==='somar'? prods.reduce((s,p)=>s+(Number(p.saldo)||0),0) : (Number(fonte.saldo)||0);
+}
+function dupRender(){
+  const el = document.getElementById('dupLista'); if(!el) return;
+  const modo = dupModo();
+  if(!__dupEstado.length){ el.innerHTML = '<div class="empty">✅ Nenhum produto duplicado encontrado.</div>'; document.getElementById('dupBtnOk').style.display='none'; return; }
+  el.innerHTML = __dupEstado.map((g,gi)=>{
+    const prods = g.nomes.map(n=>DATA.products.find(p=>p.nome===n)).filter(Boolean);
+    const un = escapeHtml((prods[0]&&prods[0].unidadeEstoque)||'');
+    const ops = prods.map(p=>{
+      const arms = Array.isArray(p.estoquePorArmazem)? p.estoquePorArmazem.filter(e=>e.armazem).map(e=>e.armazem+': '+fmtNum(e.saldo)).join(' · ') : '';
+      return `<label class="op"><input type="radio" name="dupFica${gi}" ${g.fica===p.nome?'checked':''} onchange="dupSetFica(${gi},${JSON.stringify(p.nome).replace(/"/g,'&quot;')})"><span><b>Fica “${escapeHtml(p.nome)}”</b>${dupNArm(p)?'<span class="dup-tag">ERP</span>':''}<small>saldo ${fmtNum(p.saldo)} ${un} · ${dupUsos(p.nome)} aplicaç${dupUsos(p.nome)===1?'ão':'ões'}${arms?' · armazém '+escapeHtml(arms):''}</small></span></label>`;
+    }).join('');
+    return `<div class="dup-g ${g.usar?'':'off'}"><label class="gh"><input type="checkbox" ${g.usar?'checked':''} onchange="dupSetUsar(${gi},this.checked)"> ${prods.map(p=>escapeHtml(p.nome)).join('  +  ')}</label>${ops}<div class="fim">Saldo depois de unificar: ${fmtNum(Math.round(dupSaldoFinal(prods,modo)*1000)/1000)} ${un}</div></div>`;
+  }).join('');
+  const n = __dupEstado.filter(g=>g.usar).length;
+  const b = document.getElementById('dupBtnOk'); b.textContent = '✅ Unificar selecionados ('+n+')'; b.disabled = !n;
+}
+function dupSetFica(gi, nome){ __dupEstado[gi].fica = nome; dupRender(); }
+function dupSetUsar(gi, v){ __dupEstado[gi].usar = !!v; dupRender(); }
+function dupMesclar(keepNome, outrosNomes, modo){
+  const keep = DATA.products.find(p=>p.nome===keepNome);
+  const outros = outrosNomes.map(n=>DATA.products.find(p=>p.nome===n)).filter(Boolean);
+  if(!keep || !outros.length) return [];
+  const todos = [keep].concat(outros);
+  const fonte = todos.slice().sort((x,y)=>dupNArm(y)-dupNArm(x))[0];
+  const saldosAntes = todos.map(p=>p.nome+': '+fmtNum(p.saldo)).join('; ');
+  /* descrição: o que estiver vazio no que fica é preenchido com o do outro */
+  ['classe','finalidade','grupoQuimico','ia','dose','unidadeDose','vencimento','codigo','embalagem'].forEach(c=>{
+    if(keep[c]===undefined || keep[c]===null || keep[c]==='') { const o = outros.find(p=>p[c]!==undefined && p[c]!==null && p[c]!==''); if(o) keep[c]=o[c]; }
+  });
+  keep.estoqueMinimo = Math.max(...todos.map(p=>Number(p.estoqueMinimo)||0));
+  /* estoque: junta os armazéns dos dois cadastros (se os dois têm o mesmo armazém, vale o do ERP ou a soma) */
+  const mapaArm = new Map();
+  [fonte].concat(todos.filter(p=>p!==fonte)).forEach(p=>{
+    (Array.isArray(p.estoquePorArmazem)? p.estoquePorArmazem : []).forEach(e=>{
+      if(!e.armazem) return;
+      if(!mapaArm.has(e.armazem)) mapaArm.set(e.armazem, {armazem:e.armazem, armazemDesc:e.armazemDesc||'', saldo:Number(e.saldo)||0});
+      else if(modo==='somar') mapaArm.get(e.armazem).saldo = Math.round((mapaArm.get(e.armazem).saldo + (Number(e.saldo)||0))*1000)/1000;
+    });
+  });
+  if(mapaArm.size){
+    keep.estoquePorArmazem = Array.from(mapaArm.values());
+    keep.armazem = keep.estoquePorArmazem[0].armazem; keep.armazemDesc = keep.estoquePorArmazem[0].armazemDesc||'';
+    keep.saldo = keep.estoquePorArmazem.reduce((s,e)=>s+(Number(e.saldo)||0),0);
+    if(modo==='somar'){ const extra = todos.filter(p=>!(Array.isArray(p.estoquePorArmazem) && p.estoquePorArmazem.some(e=>e.armazem))).reduce((s,p)=>s+(Number(p.saldo)||0),0); if(extra) ajustarSaldoTotal(keep, extra); }
+    if(fonte.unidadeEstoque) keep.unidadeEstoque = fonte.unidadeEstoque;
+  } else {
+    if(fonte!==keep){
+      keep.estoquePorArmazem = []; keep.armazem = ''; keep.armazemDesc = '';
+      keep.saldo = Number(fonte.saldo)||0;
+      if(fonte.unidadeEstoque) keep.unidadeEstoque = fonte.unidadeEstoque;
+    }
+    if(modo==='somar'){
+      const extra = todos.filter(p=>p!==fonte).reduce((s,p)=>s+(Number(p.saldo)||0),0);
+      ajustarSaldoTotal(keep, extra);
+    }
+  }
+  /* apelidos + observação */
+  const al = new Set(Array.isArray(keep.aliases)? keep.aliases : []);
+  outros.forEach(p=>{ al.add(p.nome); (p.aliases||[]).forEach(x=>al.add(x)); });
+  al.delete(keep.nome); keep.aliases = Array.from(al);
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  keep.obs = ((keep.obs||'').replace(/Cadastrado automaticamente pela importação da planilha do ERP[^.]*\.?\s*/,'') + ' Unificado em '+hoje+' (antes: '+saldosAntes+').').trim();
+  /* aplicações antigas passam a usar o nome que ficou */
+  const nomesOut = new Set(outros.map(p=>p.nome)), alteradas = [];
+  (DATA.applications||[]).forEach(a=>{
+    let ch = false;
+    (a.produtos||[]).forEach(pr=>{ if(nomesOut.has(pr.nome)){ pr.nome = keep.nome; ch = true; } });
+    if(ch) alteradas.push(a);
+  });
+  DATA.products = DATA.products.filter(p=>!outros.includes(p));
+  return alteradas;
+}
+function dupExecutar(){
+  requireAdmin(()=>{
+    const modo = dupModo(), sel = __dupEstado.filter(g=>g.usar); if(!sel.length) return;
+    __dupUndo = { products: JSON.parse(JSON.stringify(DATA.products)), apps: (DATA.applications||[]).map(a=>({id:a.id, produtos:JSON.parse(JSON.stringify(a.produtos||[]))})) };
+    try{ localStorage.setItem('inova_bkp_unificar_'+estacaoAtivaId, JSON.stringify({em:new Date().toISOString(), products:__dupUndo.products})); }catch(e){}
+    const mudadas = new Map(); let unif = 0;
+    sel.forEach(g=>{ const outros = g.nomes.filter(n=>n!==g.fica); dupMesclar(g.fica, outros, modo).forEach(a=>mudadas.set(a.id,a)); unif += outros.length; });
+    saveData(); fbPushEstoque();
+    mudadas.forEach(a=>fbPushApplication(a));
+    try{ renderEstoque(); renderStats(); refreshProductDatalist(); }catch(e){ console.warn(e); }
+    __dupEstado = dupGrupos().map(g=>({nomes:g.map(p=>p.nome), fica:g.slice().sort((a,b)=>dupNArm(b)-dupNArm(a)||(b.nome||'').length-(a.nome||'').length)[0].nome, usar:true}));
+    document.getElementById('dupResultado').innerHTML = `<div class="reserva-box" style="margin:0">✅ ${unif} produto${unif===1?'':'s'} unificado${unif===1?'':'s'} · ${mudadas.size} aplicaç${mudadas.size===1?'ão':'ões'} com o nome atualizado. Se algo não ficou como você queria, toque em “Desfazer”.</div>`;
+    document.getElementById('dupBtnUndo').style.display = '';
+    dupRender(); toast('Produtos unificados');
+  });
+}
+function dupDesfazer(){
+  requireAdmin(()=>{
+    if(!__dupUndo){ toast('Nada para desfazer'); return; }
+    DATA.products = __dupUndo.products;
+    const mapa = new Map(__dupUndo.apps.map(x=>[x.id,x.produtos])), tocadas = [];
+    (DATA.applications||[]).forEach(a=>{ if(mapa.has(a.id) && JSON.stringify(a.produtos)!==JSON.stringify(mapa.get(a.id))){ a.produtos = mapa.get(a.id); tocadas.push(a); } });
+    __dupUndo = null;
+    saveData(); fbPushEstoque(); tocadas.forEach(a=>fbPushApplication(a));
+    try{ renderEstoque(); renderStats(); refreshProductDatalist(); }catch(e){ console.warn(e); }
+    abrirUnificar(); document.getElementById('dupResultado').innerHTML = '<div class="muted">↩ Desfeito: os produtos e as aplicações voltaram como estavam.</div>';
+    document.getElementById('dupBtnUndo').style.display = 'none'; toast('Unificação desfeita');
   });
 }
 
@@ -10359,6 +11025,8 @@ function init(){
   enforceCulturas();
   enforcePivo4Ensaios();
   ensureRecomendacoesSeed();
+  try{ if(migrarEstoqueV233()) saveData(); }catch(e){ console.warn('migração estoque:', e); }
+  solCarregar();
   ensureUsersSeed();
   restoreSessionIfValid();
   renderUserChip();
