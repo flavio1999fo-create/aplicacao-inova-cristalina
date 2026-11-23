@@ -991,6 +991,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .sr-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .sr-chip{border:1.5px solid #e6dccd;background:#fff;border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:800;color:#5a4636;cursor:pointer;}
   .sr-chip small{font-weight:700;opacity:.7;margin-left:4px;}
+  .sr-grupo{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex-basis:100%;}
+  .sr-chip.sub{padding:5px 11px;font-size:12px;border-style:dashed;}
   .sr-chip.parcial{border-color:#ea580c;background:#fff3e8;color:#c2410c;}
   .sr-chip.todos{border-color:#c2410c;background:#ea580c;color:#fff;}
   .sr-chip.limpar{border-style:dashed;color:#8a7458;background:transparent;}
@@ -2334,7 +2336,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.33.0';
+const APP_BUILD_ID = 'v2.33.1';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -7800,6 +7802,15 @@ function selecionarPivoInteiro(){ toggleSelGrupo(alvoPivoInteiro(pivoAtivoId), n
 function selecionarPorCultura(cultura){
   toggleSelGrupo(alvoCulturaDoPivo(pivoAtivoId, cultura), `${tituloCultura(cultura)} no ${nomePivoPorId(pivoAtivoId)}`);
 }
+/* v2.33.1 — seleção rápida por modalidade dentro de cada cultura (Soja: Progênies, VCU...; Milho: ...), só do pivô aberto */
+function alvoModDoPivo(pid, c, m){
+  return (DATA.ensaios||[]).filter(e=>e.ativo!==false && !e.reservado && (e.pivo||'CRISTALINA')===pid
+    && ensaiosEmCampo(e).some(p=>(p.cultura||'').toUpperCase()===c && (p.modalidade||'')===m));
+}
+function selecionarPorMod(chave){
+  const i = chave.indexOf('|'), c = chave.slice(0,i), m = chave.slice(i+1);
+  toggleSelGrupo(alvoModDoPivo(pivoAtivoId, c, m), `${m} de ${tituloCultura(c)} no ${nomePivoPorId(pivoAtivoId)}`);
+}
 function limparSelecaoPivo(pid){
   Object.keys(selectedEnsaios).forEach(id=>{ if((selectedEnsaios[id].pivo||'CRISTALINA')===pid) delete selectedEnsaios[id]; });
   recomputeAreaFromSelection();
@@ -7821,7 +7832,18 @@ function renderPivoSelChips(){
       const alvo = alvoCulturaDoPivo(pid, c);
       if(!alvo.length) return;
       const sel = alvo.filter(e=>selectedEnsaios[e.id]).length;
-      chips += chip(`selecionarPorCultura('${c}')`, `${emoji[c]} Tudo de ${tituloCultura(c)}`, sel, alvo.length);
+      let grupo = chip(`selecionarPorCultura('${c}')`, `${emoji[c]} Tudo de ${tituloCultura(c)}`, sel, alvo.length);
+      const mods = [];
+      alvo.forEach(e=>ensaiosEmCampo(e).forEach(pl=>{ if((pl.cultura||'').toUpperCase()===c && pl.modalidade && !mods.includes(pl.modalidade)) mods.push(pl.modalidade); }));
+      const ordem = (MODALIDADES_POR_CULTURA[c]||[]).filter(m=>mods.includes(m));
+      mods.forEach(m=>{ if(!ordem.includes(m)) ordem.push(m); });
+      ordem.forEach(m=>{
+        const am = alvoModDoPivo(pid, c, m);
+        if(!am.length) return;
+        const sm = am.filter(e=>selectedEnsaios[e.id]).length;
+        grupo += `<button type="button" class="sr-chip sub${estado(sm,am.length)}" data-k="${escapeHtml(c+'|'+m)}" onclick="selecionarPorMod(this.dataset.k)">Tudo de ${escapeHtml(m)} <small>${sm}/${am.length}</small></button>`;
+      });
+      chips += `<div class="sr-grupo">${grupo}</div>`;
     });
   }
   if(PIVOS.some(p=>p.id==='PISTA1') && PIVOS.some(p=>p.id==='PISTA2') && ehPista){
