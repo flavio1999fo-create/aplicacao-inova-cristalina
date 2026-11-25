@@ -666,6 +666,22 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .dfx-chip{border:1px solid var(--d-line);background:rgba(255,255,255,.05);color:var(--d-tx);font:inherit;font-size:12.5px;font-weight:600;border-radius:999px;padding:6px 12px;cursor:pointer;display:flex;gap:6px;align-items:center;}
   .dfx-chip:hover{border-color:rgba(255,255,255,.3)}
   .dfx-chip.bd{border-color:rgba(248,113,113,.5);background:rgba(248,113,113,.1)}.dfx-chip.wn{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.09)}.dfx-chip.ok{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+  .dfx-pv{display:flex;gap:14px;align-items:center;}
+  .dfx-pv .dfx-ring{width:96px;height:96px;flex:none;position:static;transform:none;}
+  .dfx-pv .inf{flex:1;min-width:0;}
+  .dfx-pv .big{font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.1;}
+  .dfx-pv .big small{font-size:12px;font-weight:600;color:var(--d-mu);letter-spacing:0;margin-left:4px;}
+  .dfx-pv .stk{display:flex;height:10px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.07);margin:9px 0 7px;}
+  .dfx-pv .stk span{height:100%;}
+  .dfx-pv .lg{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11.5px;color:var(--d-mu);}
+  .dfx-pv .lg b{color:var(--d-tx);font-weight:800;}
+  .dfx-pv .lg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:var(--c);}
+  .dfx-pv .qd{font-size:12px;color:var(--d-mu);margin-top:6px;}
+  .dfx-pv .qd b{color:var(--d-tx);}
+  .dfx-tr .r{grid-template-columns:minmax(96px,36%) 1fr auto;}
+  .dfx-tr .trk span{display:flex;height:100%;border-radius:6px;overflow:hidden;}
+  .dfx-tr .trk span i{display:block;height:100%;}
+  .dfx-tr .r.sem{cursor:pointer;} .dfx-tr .r.sem .lab{color:#fbbf24;}
   .dfx-hb{display:flex;flex-direction:column;gap:9px;}
   .dfx-hb .r{display:grid;grid-template-columns:minmax(64px,34%) 1fr auto;gap:8px;align-items:center;font-size:12.5px;}
   .dfx-hb .lab{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:600}
@@ -991,6 +1007,11 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .sr-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .sr-chip{border:1.5px solid #e6dccd;background:#fff;border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:800;color:#5a4636;cursor:pointer;}
   .sr-chip small{font-weight:700;opacity:.7;margin-left:4px;}
+  .parc-box{background:#eef6ff;border:1px solid #b6d4fe;color:#0b4a8f;border-radius:10px;padding:8px 11px;margin:2px 0 8px;font-size:13px;line-height:1.4;text-align:left;}
+  .trait-badge{display:inline-block;background:#fee4e2;color:#b42318;border-radius:999px;padding:0 7px;font-size:11px;font-weight:800;margin-left:2px;}
+  .trait-g{border:1.5px solid var(--border);border-radius:12px;padding:9px 11px;margin-bottom:8px;background:var(--card);}
+  .trait-gh{font-size:13.5px;margin-bottom:2px;}
+  .trait-g select{margin-top:6px;}
   .sr-grupo{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex-basis:100%;}
   .sr-chip.sub{padding:5px 11px;font-size:12px;border-style:dashed;}
   .sr-chip.parcial{border-color:#ea580c;background:#fff3e8;color:#c2410c;}
@@ -1409,6 +1430,124 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .est-tab tr.low td{background:#fffaf0}.est-tab tr.neg td{background:#fff5f5}
   .est-tab td.dim{color:#b9ad9f}
   .est-tab .gr td{background:var(--orange-light);font-weight:800;color:var(--orange-dark);cursor:pointer;}
+  /* ====================== CROQUI FUTURISTA — CELULAR (v2.34.0) ======================
+     Pedido do Flávio (nov/2026): croqui das quadras (Pivô 3, Pivô 4, Pistas) mais bonito, futurista e dinâmico no
+     celular — no computador já estava bom, então tudo abaixo vale SÓ em tela estreita. Só visual: nenhuma regra de
+     seleção/cadastro foi mexida. As cores de cultura/modalidade (inline) continuam as mesmas, ganham brilho. */
+  @keyframes cqPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,138,61,.0),0 0 10px rgba(255,138,61,.55)}50%{box-shadow:0 0 0 3px rgba(255,138,61,.18),0 0 18px rgba(255,138,61,.95)}}
+  @keyframes cqScan{0%{background-position:0 -120px,0 0,0 0,0 0}100%{background-position:0 520px,0 0,0 0,0 0}}
+  @media (max-width:760px){
+    #mapaCadFullscreenArea,#mapaFullscreenArea{
+      --text:#f6eee6;--muted:#a99886;--border:rgba(255,255,255,.13);--card:rgba(255,255,255,.06);--orange-light:rgba(255,138,61,.16);--orange-dark:#ffa869;--bg:#0e0b08;
+      color:var(--text);position:relative;border-radius:22px;padding:14px 12px 16px;margin:6px -6px 8px;border:1px solid rgba(255,255,255,.09);
+      background:radial-gradient(900px 380px at 100% -8%,rgba(255,106,0,.26),transparent 62%),radial-gradient(700px 420px at -12% 28%,rgba(34,211,238,.16),transparent 62%),linear-gradient(180deg,#14100c,#0b0806);
+      box-shadow:0 14px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.07);
+    }
+    #mapaCadFullscreenArea.fullscreen-mapa,#mapaFullscreenArea.fullscreen-mapa{margin:0;border-radius:0;background:linear-gradient(180deg,#14100c,#0b0806);}
+    #mapaCadFullscreenArea h2,#mapaFullscreenArea h2{color:#ffb27a;letter-spacing:.2px;}
+    #mapaCadFullscreenArea .muted,#mapaFullscreenArea .muted{color:var(--muted);}
+    #mapaCadFullscreenArea .btn-ghost,#mapaFullscreenArea .btn-ghost{background:rgba(255,255,255,.07);color:var(--text);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px);}
+    #mapaCadFullscreenArea .btn-primary,#mapaFullscreenArea .btn-primary{box-shadow:0 6px 18px rgba(234,88,12,.45);}
+    #mapaCadFullscreenArea input,#mapaCadFullscreenArea select,#mapaFullscreenArea input,#mapaFullscreenArea select{background:rgba(255,255,255,.07);color:var(--text);border-color:rgba(255,255,255,.16);}
+    #mapaCadFullscreenArea input::placeholder,#mapaFullscreenArea input::placeholder{color:#8f7f6f;}
+    #mapaCadFullscreenArea .searchbar,#mapaFullscreenArea .searchbar{border-radius:14px;padding:13px 14px;}
+    /* abas: uma fileira deslizante, alvos grandes, ativa com brilho */
+    #mapaCadFullscreenArea .pivo-tabs,#mapaFullscreenArea .pivo-tabs,#mapaCadFullscreenArea .subtabs,#mapaFullscreenArea .subtabs{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:4px 2px 10px;margin:0 -2px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    #mapaCadFullscreenArea .pivo-tabs::-webkit-scrollbar,#mapaFullscreenArea .pivo-tabs::-webkit-scrollbar,#mapaCadFullscreenArea .subtabs::-webkit-scrollbar,#mapaFullscreenArea .subtabs::-webkit-scrollbar{display:none;}
+    #mapaCadFullscreenArea .subtab-btn,#mapaFullscreenArea .subtab-btn{flex:0 0 auto;scroll-snap-align:start;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;font-size:13.5px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#d8cbbb;backdrop-filter:blur(6px);transition:transform .15s,box-shadow .2s,background .2s;}
+    #mapaCadFullscreenArea .subtab-btn:active,#mapaFullscreenArea .subtab-btn:active{transform:scale(.95);}
+    #mapaCadFullscreenArea .subtab-btn.active,#mapaFullscreenArea .subtab-btn.active{color:#fff;border-color:transparent;background:linear-gradient(135deg,#ff8a3d,#ea580c);box-shadow:0 0 0 1px rgba(255,160,90,.5),0 6px 20px rgba(255,106,0,.55);}
+    #mapaCadFullscreenArea .pivo-tabs .subtab-btn.active,#mapaFullscreenArea .pivo-tabs .subtab-btn.active{background:linear-gradient(135deg,#22d3ee,#6366f1);box-shadow:0 0 0 1px rgba(120,200,255,.5),0 6px 22px rgba(56,130,255,.55);}
+    #mapaCadFullscreenArea .pivo-tab-badge,#mapaFullscreenArea .pivo-tab-badge{background:#fff;color:#0b0806;box-shadow:0 0 10px rgba(255,255,255,.5);}
+    /* painéis de apoio */
+    #mapaCadFullscreenArea .tc-stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text);border-radius:14px;backdrop-filter:blur(6px);}
+    #mapaCadFullscreenArea .tc-stat b{font-size:20px;text-shadow:0 0 14px rgba(255,255,255,.25);}
+    #mapaCadFullscreenArea .tc-stat span{color:#bfae9b;}
+    #mapaCadFullscreenArea .tc-stat.on{border-color:#ff8a3d;box-shadow:0 0 0 2px rgba(255,138,61,.3),0 0 18px rgba(255,138,61,.35);}
+    #mapaCadFullscreenArea .sel-summary,#mapaFullscreenArea .sel-summary{background:rgba(255,138,61,.12);border:1px solid rgba(255,138,61,.35);color:#ffd2b0;border-radius:14px;}
+    #mapaFullscreenArea .sel-rapida,#mapaFullscreenArea .filtro-cultmod{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:16px;}
+    #mapaFullscreenArea .sr-titulo,#mapaFullscreenArea .filtro-cultmod-titulo,#mapaFullscreenArea .fcm-grupo-titulo{color:#f0e2d2;}
+    #mapaFullscreenArea .sr-chip,#mapaFullscreenArea .fcm-chip,#mapaFullscreenArea .ss-chip{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);color:#f0e2d2;min-height:38px;}
+    #mapaFullscreenArea .sr-chip.parcial{background:rgba(255,138,61,.18);border-color:#ff8a3d;color:#ffcfa6;}
+    #mapaFullscreenArea .sr-chip.todos,#mapaFullscreenArea .fcm-chip.on{background:linear-gradient(135deg,#ff8a3d,#ea580c);border-color:transparent;color:#fff;box-shadow:0 0 16px rgba(255,106,0,.5);}
+    #mapaFullscreenArea .sr-nota,#mapaFullscreenArea .psc-dica{color:#a99886;}
+    #mapaFullscreenArea .ss-limpar{background:transparent;color:#ffb27a;border-color:#ffb27a;}
+    /* palco do mapa: grade técnica + brilho */
+    #mapaCadFullscreenArea .pivo-grid-outer,#mapaFullscreenArea .pivo-grid-outer{
+      border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:10px;
+      background:radial-gradient(520px 320px at 50% 38%,rgba(255,138,61,.13),transparent 65%),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px) 0 0/26px 26px,linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px) 0 0/26px 26px,#0d0a07;
+      box-shadow:inset 0 0 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,138,61,.08);
+    }
+    #mapaCadFullscreenArea .pivo-svg-wrap,#mapaFullscreenArea .pivo-svg-wrap{background:radial-gradient(520px 320px at 50% 38%,rgba(255,138,61,.13),transparent 65%),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px) 0 0/26px 26px,linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px) 0 0/26px 26px,#0d0a07;border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:inset 0 0 40px rgba(0,0,0,.55);}
+    #mapaCadFullscreenArea .pivo-grid-viewport,#mapaFullscreenArea .pivo-grid-viewport{border-radius:14px;}
+    #mapaCadFullscreenArea .pivo-svg-aviso,#mapaFullscreenArea .pivo-svg-aviso{background:rgba(255,138,61,.12);border:1px solid rgba(255,138,61,.35);color:#ffd2b0;border-radius:12px;}
+    #mapaCadFullscreenArea .pivo-quad-label-tag,#mapaFullscreenArea .pivo-quad-label-tag{color:#ffb27a;text-shadow:0 0 10px rgba(255,138,61,.6);}
+    #mapaCadFullscreenArea .pivo-svg-quad-labels .pivo-quad-label-tag,#mapaFullscreenArea .pivo-svg-quad-labels .pivo-quad-label-tag{background:rgba(255,138,61,.14);border-color:rgba(255,138,61,.4);}
+    #mapaCadFullscreenArea .pivo-hub-badge,#mapaFullscreenArea .pivo-hub-badge{background:radial-gradient(circle,#2b1206,#0b0806);color:#ffb27a;border:1px solid rgba(255,138,61,.5);box-shadow:0 0 22px rgba(255,138,61,.6);}
+    /* quadras do Pivô 3 (barras): vidro escuro + brilho; a cor da cultura vem inline e continua */
+    #mapaCadFullscreenArea .pivo-cell.quadra,#mapaFullscreenArea .pivo-cell.quadra{background:rgba(255,255,255,.075);color:#cdbfae;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);text-shadow:0 1px 2px rgba(0,0,0,.55);transition:transform .12s,box-shadow .18s,filter .18s;}
+    #mapaCadFullscreenArea .pivo-cell.quadra[style*="background"],#mapaFullscreenArea .pivo-cell.quadra[style*="background"],
+    #mapaCadFullscreenArea .pivo-cell.quadra.cultura-soja,#mapaFullscreenArea .pivo-cell.quadra.cultura-soja,#mapaCadFullscreenArea .pivo-cell.quadra.cultura-milho,#mapaFullscreenArea .pivo-cell.quadra.cultura-milho{color:#fff;filter:saturate(1.2) brightness(1.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),inset 0 -8px 12px rgba(0,0,0,.18),0 0 10px rgba(255,255,255,.08);}
+    #mapaCadFullscreenArea .pivo-cell.quadra.tem-cultura,#mapaFullscreenArea .pivo-cell.quadra.tem-cultura{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),inset 0 -8px 12px rgba(0,0,0,.18),0 0 10px rgba(255,255,255,.08);}
+    #mapaCadFullscreenArea .pivo-cell.quadra:active,#mapaFullscreenArea .pivo-cell.quadra:active{transform:scale(.96);filter:brightness(1.3);}
+    #mapaCadFullscreenArea .pivo-cell.quadra.sel,#mapaFullscreenArea .pivo-cell.quadra.sel{outline:2px solid #22d3ee;outline-offset:-2px;box-shadow:0 0 16px rgba(34,211,238,.85);}
+    #mapaCadFullscreenArea .pivo-cell.quadra.multisel,#mapaFullscreenArea .pivo-cell.quadra.multisel{outline:2px solid #fff;outline-offset:-2px;animation:cqPulse 1.8s ease-in-out infinite;}
+    #mapaCadFullscreenArea .pivo-cell.quadra.match,#mapaFullscreenArea .pivo-cell.quadra.match{box-shadow:0 0 0 2px #ff5a45,0 0 16px rgba(255,90,69,.8);}
+    #mapaCadFullscreenArea .pivo-cell.quadra.reservada,#mapaFullscreenArea .pivo-cell.quadra.reservada{color:#d6c4ff;outline:2px dashed #a78bfa;}
+    #mapaCadFullscreenArea .pivo-cell.quadra.excluida,#mapaFullscreenArea .pivo-cell.quadra.excluida{background:rgba(255,255,255,.04)!important;filter:none;}
+    /* quadras do Pivô 4 e das Pistas (SVG) */
+    #mapaCadFullscreenArea .pivo-svg-quadra,#mapaFullscreenArea .pivo-svg-quadra{fill:rgba(255,255,255,.09);stroke:rgba(255,255,255,.34);stroke-width:1.2;transition:fill-opacity .15s,filter .2s;}
+    #mapaCadFullscreenArea .pivo-svg-quadra:not([fill="#e6ddd0"]),#mapaFullscreenArea .pivo-svg-quadra:not([fill="#e6ddd0"]){filter:saturate(1.2) brightness(1.06) drop-shadow(0 0 3px rgba(255,255,255,.18));}
+    #mapaCadFullscreenArea .pivo-svg-quadra.sel,#mapaFullscreenArea .pivo-svg-quadra.sel{stroke:#22d3ee;stroke-width:2.6;filter:drop-shadow(0 0 5px #22d3ee);}
+    #mapaCadFullscreenArea .pivo-svg-quadra.multisel,#mapaFullscreenArea .pivo-svg-quadra.multisel{stroke:#fff;stroke-width:3;filter:drop-shadow(0 0 7px #ff8a3d);animation:cqSvgGlow 1.8s ease-in-out infinite;}
+    #mapaCadFullscreenArea .pivo-svg-quadra.match,#mapaFullscreenArea .pivo-svg-quadra.match{stroke:#ff5a45;filter:drop-shadow(0 0 6px #ff5a45);}
+    #mapaCadFullscreenArea .pivo-svg-label,#mapaFullscreenArea .pivo-svg-label{fill:#f6eee6;stroke:rgba(8,5,3,.85);}
+    #mapaCadFullscreenArea .pivo-svg-label.on-color,#mapaFullscreenArea .pivo-svg-label.on-color{fill:#fff;stroke:rgba(8,5,3,.8);}
+    #mapaCadFullscreenArea .pivo-svg-label.on-reserva,#mapaFullscreenArea .pivo-svg-label.on-reserva{fill:#e5d9ff;stroke:rgba(20,8,50,.9);}
+    #mapaCadFullscreenArea .pivo-svg-label.bordadura,#mapaFullscreenArea .pivo-svg-label.bordadura{fill:#ffd9a8;stroke:rgba(8,5,3,.85);}
+    #mapaCadFullscreenArea .pivo-svg-label.excluida,#mapaFullscreenArea .pivo-svg-label.excluida{fill:#8f8577;stroke:rgba(8,5,3,.85);}
+    #mapaCadFullscreenArea .pivo-svg-bordadura,#mapaFullscreenArea .pivo-svg-bordadura{fill:#d9a066;fill-opacity:.35;stroke:#ffb27a;}
+    #mapaCadFullscreenArea .pivo-svg-quadra-excluida,#mapaFullscreenArea .pivo-svg-quadra-excluida{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.2);}
+    #mapaCadFullscreenArea .pivo-svg-rua,#mapaFullscreenArea .pivo-svg-rua{fill:#5b5348;stroke:#6f6558;}
+    #mapaCadFullscreenArea .pivo-svg-legend,#mapaFullscreenArea .pivo-svg-legend{color:#bfae9b;gap:10px 14px;}
+    #mapaCadFullscreenArea .pivo-svg-legend .swatch.quadra,#mapaFullscreenArea .pivo-svg-legend .swatch.quadra{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4);}
+    /* zoom: botões de vidro, redondos, bem grandes pro polegar */
+    #mapaCadFullscreenArea .pivo-svg-zoom,#mapaFullscreenArea .pivo-svg-zoom{right:12px;bottom:46px;gap:10px;z-index:6;}
+    #mapaCadFullscreenArea .pivo-svg-zoom-btn,#mapaFullscreenArea .pivo-svg-zoom-btn{width:48px;height:48px;border-radius:50%;background:rgba(18,13,9,.72);color:#ffd8b8;border:1px solid rgba(255,160,90,.55);font-size:22px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 0 16px rgba(255,106,0,.4),0 6px 14px rgba(0,0,0,.45);}
+    #mapaCadFullscreenArea .pivo-svg-zoom-btn:active,#mapaFullscreenArea .pivo-svg-zoom-btn:active{background:#ea580c;color:#fff;transform:scale(.92);}
+    /* Grade (quadradinhos) */
+    #mapaCadFullscreenArea .quadrante-head .name,#mapaFullscreenArea .quadrante-head .name{color:#ffb27a;text-shadow:0 0 12px rgba(255,138,61,.5);}
+    #mapaCadFullscreenArea .faixa-row .flabel,#mapaFullscreenArea .faixa-row .flabel{color:#a99886;}
+    #mapaCadFullscreenArea .faixa-tiles,#mapaFullscreenArea .faixa-tiles{gap:6px;}
+    #mapaCadFullscreenArea .quadra-tile,#mapaFullscreenArea .quadra-tile{min-width:46px;height:44px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#f0e2d2;box-shadow:inset 0 1px 0 rgba(255,255,255,.1);transition:transform .12s,box-shadow .18s;}
+    #mapaCadFullscreenArea .quadra-tile[style*="background"],#mapaFullscreenArea .quadra-tile[style*="background"]{color:#fff;border-color:rgba(255,255,255,.3);filter:saturate(1.2) brightness(1.05);box-shadow:inset 0 -10px 14px rgba(0,0,0,.18),0 0 12px rgba(255,255,255,.1);}
+    #mapaCadFullscreenArea .quadra-tile:active,#mapaFullscreenArea .quadra-tile:active{transform:scale(.93);}
+    #mapaCadFullscreenArea .quadra-tile.sel,#mapaFullscreenArea .quadra-tile.sel{background:linear-gradient(135deg,#ff8a3d,#ea580c);border-color:#ffd2b0;color:#fff;box-shadow:0 0 18px rgba(255,106,0,.8);}
+    #mapaCadFullscreenArea .quadra-tile.multisel,#mapaFullscreenArea .quadra-tile.multisel{outline:2px solid #fff;outline-offset:-2px;animation:cqPulse 1.8s ease-in-out infinite;}
+    #mapaCadFullscreenArea .quadra-tile.tem-cultura,#mapaFullscreenArea .quadra-tile.tem-cultura{box-shadow:inset 0 -10px 14px rgba(0,0,0,.18),0 0 12px rgba(255,255,255,.1);}
+    #mapaCadFullscreenArea .quadra-tile.reservada,#mapaFullscreenArea .quadra-tile.reservada{outline:2px dashed #a78bfa;color:#d6c4ff;}
+    #mapaCadFullscreenArea .quadra-tile .ha,#mapaFullscreenArea .quadra-tile .ha{opacity:.8;}
+    /* lista */
+    #mapaCadFullscreenArea .talhao-cadastro-row,#mapaFullscreenArea .talhao-cadastro-row{border-bottom-color:rgba(255,255,255,.1);}
+    #mapaCadFullscreenArea .talhao-cadastro-row.multisel,#mapaFullscreenArea .talhao-cadastro-row.multisel{background:rgba(255,138,61,.16);}
+    #mapaCadFullscreenArea .talhao-cadastro-quad-title,#mapaFullscreenArea .talhao-cadastro-quad-title{color:#ffb27a;}
+    /* barra de ações de baixo e janelas (editar plantio etc.) */
+    #talhaoCadBar{background:rgba(16,12,9,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(255,138,61,.45);box-shadow:0 -10px 34px rgba(0,0,0,.5),0 -1px 22px rgba(255,106,0,.25);color:#f6eee6;}
+    #talhaoCadBar .tc-bar-info small{color:#a99886;}
+    #talhaoCadBar .btn-ghost{background:rgba(255,255,255,.08);color:#f6eee6;border:1px solid rgba(255,255,255,.18);}
+    #talhaoCadBar .tc-bar-acts button{min-height:44px;border-radius:12px;}
+    .tc-ov{background:rgba(5,3,1,.66);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+    .tc-sheet{background:linear-gradient(180deg,#1a140f,#0e0b08);color:#f6eee6;border:1px solid rgba(255,255,255,.12);border-bottom:0;box-shadow:0 -12px 40px rgba(0,0,0,.6);--text:#f6eee6;--muted:#a99886;--border:rgba(255,255,255,.14);--card:rgba(255,255,255,.06);--orange-light:rgba(255,138,61,.16);}
+    .tc-sheet input,.tc-sheet select{background:rgba(255,255,255,.07);color:#f6eee6;border-color:rgba(255,255,255,.18);}
+    .tc-sheet .btn-ghost{background:rgba(255,255,255,.08);color:#f6eee6;border:1px solid rgba(255,255,255,.18);}
+    .tc-sheet .talhao-cad-editor-head b,.tc-sheet label{color:#f6eee6;}
+    .tc-sheet .tc-chips span{background:rgba(255,138,61,.18);color:#ffd2b0;}
+  }
+  @keyframes cqSvgGlow{0%,100%{filter:drop-shadow(0 0 4px #ff8a3d)}50%{filter:drop-shadow(0 0 11px #ff8a3d)}}
+  @media (max-width:760px) and (prefers-reduced-motion:reduce){
+    #mapaCadFullscreenArea *,#mapaFullscreenArea *{animation:none!important;}
+  }
 </style>
 </head>
 <body>
@@ -1470,6 +1609,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
            que ainda estão sem ingrediente ativo cadastrado (geralmente os que entraram
            sozinhos pela importação da planilha do ERP — ver importEstoqueERP). -->
       <button type="button" id="btnFiltroSemIa" class="btn-ghost btn-sm" style="margin-top:6px;" onclick="toggleFiltroSemIa()"></button>
+      <button type="button" id="btnCopiaSemIa" class="btn-ghost btn-sm" style="margin-top:6px;display:none;" onclick="copiarListaSemIa()"></button>
       <!-- v2.22.0 — Estoque dinâmico (pedido do Flávio em 05/11/2026): resumo clicável com alertas,
            gráficos que acompanham os filtros, filtros combinados, ordenar/agrupar e visão em
            cartões (celular) ou tabela com saldo por armazém (computador). -->
@@ -1530,7 +1670,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <div class="field" style="min-width:100%;"><label>Nome</label><input id="npNome"></div>
         <div class="field"><label>Classe</label><input id="npClasse" placeholder="HERBICIDA, INSETICIDA..."></div>
         <div class="field"><label>Ingrediente ativo</label><input id="npIa"></div>
-        <div class="field"><label>Dose padrão / ha</label><input id="npDose" type="number" step="0.001"></div>
+        <div class="field"><label>Dose recomendada / ha</label><input id="npDose" type="number" step="0.001"></div>
+        <div class="field"><label>Preço (R$ por L/kg)</label><input id="npPreco" type="number" step="0.01" inputmode="decimal"></div>
         <div class="field"><label>Unidade</label><input id="npUnidade" placeholder="L, kg..."></div>
         <div class="field"><label>Saldo inicial</label><input id="npSaldo" type="number" step="0.001" value="0"></div>
         <div class="field"><label>Estoque mínimo</label><input id="npMin" type="number" step="0.001" value="0"></div>
@@ -1703,6 +1844,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
           <button class="btn-ghost btn-sm" id="btnGerenciarListasAdm" onclick="abrirListasAdm()" style="white-space:nowrap;display:none;" title="Só administrador: adicionar culturas e modalidades de ensaio">⚙️ Culturas e modalidades</button>
+          <button class="btn-ghost btn-sm" id="btnTraitsPend" onclick="abrirTraitsPend()" style="white-space:nowrap;" title="Plantios sem trait (biotecnologia)">🧬 Traits</button>
           <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapaCad" onclick="toggleFullscreenMapaCad()" style="white-space:nowrap;">⛶ Tela cheia</button>
         </div>
       </div>
@@ -2178,6 +2320,19 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   </div>
 </div>
 
+<div class="modal-overlay hidden" id="traitsOverlay">
+  <div class="receipt-card" style="max-width:640px;">
+    <div class="receipt-head"><div class="titles"><h3>🧬 Traits pendentes</h3><span id="traitsSub"></span></div></div>
+    <div class="receipt-body">
+      <div class="muted" style="font-size:12.5px;margin-bottom:8px;">Plantios em campo que ainda não têm trait (biotecnologia). Escolha o trait de cada grupo — ele vale para todas as quadras do grupo (mesmo pivô, cultura, modalidade e nº de ensaio). Os que têm sigla no fim do número (I2X, I5+, SCC, CE) já foram preenchidos sozinhos.</div>
+      <div id="traitsLista"></div>
+    </div>
+    <div class="receipt-actions">
+      <button class="btn-ghost" onclick="traitsCopiarLista()">📋 Copiar lista</button>
+      <button class="btn-primary" onclick="fecharTraitsPend()">Fechar</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay hidden" id="solFichaOverlay">
   <div class="receipt-card" style="max-width:640px;">
     <div id="solFichaCard"></div>
@@ -2336,7 +2491,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.33.1';
+const APP_BUILD_ID = 'v2.36.0';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -2909,6 +3064,8 @@ function onLoginEstacaoChange(id){
   enforcePivo4Ensaios();
   ensureRecomendacoesSeed();
   try{ migrarEstoqueV233(); }catch(e){}
+  try{ if(preencherTraitsPorSigla()) saveData(); }catch(e){}
+  try{ if(preencherIaConhecidos()) saveData(); }catch(e){}
   solCarrinho = []; solForm = {solicitante:'', data:'', obs:''}; solCarregar();
   ensureUsersSeed();
   setPivosParaEstacaoAtiva();
@@ -3606,6 +3763,8 @@ async function syncNow(opts){
     }
     ensureUserPerfis();
     ensurePlantiosAllEnsaios();
+    try{ if(preencherTraitsPorSigla()){ saveData(); fbPushEstoque(); } }catch(e){}
+    try{ if(preencherIaConhecidos()){ saveData(); fbPushEstoque(); } }catch(e){}
     refreshCurrentUserFromData();
     enforceCulturas();
     enforcePivo4Ensaios();
@@ -4325,6 +4484,91 @@ function renderDashboard(opts){
   h += `<div class="dfx-c"><h3>Calendário de aplicações <em>últimas 17 semanas · cada quadradinho é um dia</em></h3><div class="dfx-heat">${dfxCalendario(apps,hoje)}<div class="dfx-stats"><div>Média por aplicação<b>${fmtNum(Math.round(media*10)/10)} ha</b></div><div>Ritmo no período<b>${dfxFmt1(atual.length/(diasPer/7))} / semana</b></div><div>Última aplicação<b>${ult? (dfxDiffDias(hoje,ult)===0?'hoje':'há '+dfxDiffDias(hoje,ult)+' dia'+(dfxDiffDias(hoje,ult)===1?'':'s')) : '–'}</b></div></div></div></div>`;
   h += `</div>`;
 
+  /* ---- Ocupação dos pivôs (ha, quadras, %) e Traits por cultura (v2.34.0) ---- */
+  const areaDe = e=>Number(e.area)||0, fHa = n=>fmtNum(Math.round(n*10)/10);
+  const somaHaL = l=>l.reduce((s,e)=>s+areaDe(e),0);
+  const ordemPv = (typeof PIVOS!=='undefined'? PIVOS : []).map(p=>p.id);
+  const pvIds = []; ens.forEach(e=>{ const k=e.pivo||'CRISTALINA'; if(!pvIds.includes(k)) pvIds.push(k); });
+  pvIds.sort((a,b)=>{ const x=ordemPv.indexOf(a), y=ordemPv.indexOf(b); return (x<0?99:x)-(y<0?99:y); });
+  const CULT_COR = {SOJA:'#34d399', MILHO:'#fbbf24'};
+  h += `<div class="dfx-sec">Ocupação dos pivôs · hectares e quadras</div><div class="dfx-grid">`;
+  pvIds.forEach(pid=>{
+    const q = ens.filter(e=>(e.pivo||'CRISTALINA')===pid);
+    const oc = q.filter(e=>(e.cultura||'').trim() && !e.reservado), rs = q.filter(e=>e.reservado);
+    const haT = somaHaL(q), haO = somaHaL(oc), haR = somaHaL(rs);
+    const nLiv = q.length-oc.length-rs.length, haLiv = Math.max(0, haT-haO-haR);
+    const pct = haT>0? Math.round(haO/haT*100) : null, pctQ = q.length? Math.round(oc.length/q.length*100) : null;
+    const porC = {}; oc.forEach(e=>{ const c=(e.cultura||'').toUpperCase(); const o=porC[c]||(porC[c]={n:0,ha:0}); o.n++; o.ha+=areaDe(e); });
+    const cults = Object.keys(porC).sort((a,b)=>porC[b].ha-porC[a].ha);
+    const seg = (ha,cor,tip)=> ha>0? `<span style="width:${(ha/(haT||1)*100).toFixed(2)}%;background:${cor}" title="${escapeHtml(tip)}"></span>` : '';
+    const lg = (cor,txt,val)=>`<span style="--c:${cor}"><i></i>${txt} <b>${val}</b></span>`;
+    h += `<div class="dfx-c s6"><h3>${escapeHtml(pivoLabel(pid))} <em>${fHa(haT)} ha · ${q.length} quadra${q.length===1?'':'s'}</em></h3>
+      <div class="dfx-pv">${dfxRing(pct,'#a78bfa')}<div class="inf">
+        <div class="big">${fHa(haO)}<small>ha plantados de ${fHa(haT)} ha</small></div>
+        <div class="stk">${cults.map(c=>seg(porC[c].ha, CULT_COR[c]||'#22d3ee', tituloCultura(c)+': '+fHa(porC[c].ha)+' ha')).join('')}${seg(haR,'#64748b','Reservadas: '+fHa(haR)+' ha')}</div>
+        <div class="lg">${cults.map(c=>lg(CULT_COR[c]||'#22d3ee', tituloCultura(c), fHa(porC[c].ha)+' ha · '+porC[c].n)).join('')}${rs.length? lg('#64748b','Reservadas',fHa(haR)+' ha · '+rs.length):''}${lg('rgba(255,255,255,.18)','Livres',fHa(haLiv)+' ha · '+nLiv)}</div>
+        <div class="qd"><b>${oc.length}</b> de ${q.length} quadra${q.length===1?'':'s'} ocupada${q.length===1?'':'s'}${pctQ==null?'':' ('+pctQ+'%)'}</div>
+      </div></div></div>`;
+  });
+  if(!pvIds.length) h += `<div class="dfx-c"><div class="dfx-empty">Nenhuma quadra cadastrada.</div></div>`;
+  h += `</div>`;
+
+  h += `<div class="dfx-sec">Traits por cultura · área plantada</div><div class="dfx-grid">`;
+  const pvCor = {}; pvIds.forEach((pid,i)=>{ pvCor[pid] = DFX_COR[(i+1)%DFX_COR.length]; });
+  const ocT = ocup.filter(e=>!e.reservado);
+  const culTr = [...new Set(Object.keys(TRAITS_POR_CULTURA).concat(ocT.map(e=>(e.cultura||'').toUpperCase()).filter(c=>TRAITS_POR_CULTURA[c])))];
+  let algumTr = false;
+  culTr.forEach(c=>{
+    const q = ocT.filter(e=>(e.cultura||'').toUpperCase()===c);
+    if(!q.length) return;
+    algumTr = true;
+    const mp = {};
+    q.forEach(e=>{ const p=(e.plantios||[])[0]; const t=(p&&p.trait)||''; const o=mp[t]||(mp[t]={n:0,ha:0,pv:{}}); o.n++; o.ha+=areaDe(e); const k=e.pivo||'CRISTALINA'; o.pv[k]=(o.pv[k]||0)+areaDe(e); });
+    const ordem = (TRAITS_POR_CULTURA[c]||[]).filter(t=>mp[t]);
+    Object.keys(mp).forEach(t=>{ if(t && !ordem.includes(t)) ordem.push(t); });
+    const linhas = ordem.map(t=>({t, o:mp[t]}));
+    if(mp['']) linhas.push({t:'', o:mp['']});
+    const mx = Math.max(1e-9, ...linhas.map(x=>x.o.ha));
+    const haC = somaHaL(q);
+    const row = ({t,o})=>{
+      const tip = Object.keys(o.pv).map(k=>pivoLabel(k)+': '+fHa(o.pv[k])+' ha').join(' · ');
+      const segs = pvIds.filter(k=>o.pv[k]).map(k=>`<i style="width:${(o.pv[k]/o.ha*100).toFixed(2)}%;background:${pvCor[k]}"></i>`).join('');
+      const sem = !t;
+      return `<div class="r${sem?' sem':''}" ${sem?'onclick="abrirTraitsPend()" role="button"':''} title="${escapeHtml(tip)}"><span class="lab">${sem?'⚠ Sem trait':escapeHtml(t)}</span><span class="trk"><span style="width:${Math.max(4,Math.round(o.ha/mx*100))}%">${segs}</span></span><span class="val">${fHa(o.ha)}<u>ha · ${o.n} q.</u></span></div>`;
+    };
+    const leg = pvIds.filter(k=>q.some(e=>(e.pivo||'CRISTALINA')===k)).map(k=>`<span style="color:${pvCor[k]}">■</span> ${escapeHtml(pivoLabel(k))}`).join(' &nbsp; ');
+    const semN = mp['']? mp[''].n : 0;
+    h += `<div class="dfx-c s6 dfx-tr"><h3>${c==='SOJA'?'🌱':c==='MILHO'?'🌽':''} Traits · ${escapeHtml(tituloCultura(c))} <em>${fHa(haC)} ha · ${q.length} quadras</em></h3><div class="dfx-hb">${linhas.map(row).join('')}</div>
+      <div class="dfx-note">${leg}${semN? ` &nbsp;·&nbsp; <a href="#" onclick="abrirTraitsPend();return false;" style="color:#fbbf24">${semN} quadra${semN===1?'':'s'} sem trait → preencher</a>`:''}</div></div>`;
+  });
+  if(!algumTr) h += `<div class="dfx-c"><div class="dfx-empty">Nenhuma quadra plantada com cultura que tenha trait.</div></div>`;
+  h += `</div>`;
+
+  /* ---- Parcelas por tipo de ensaio (v2.36.0) ---- */
+  {
+    const tiposP = {};
+    ocT.forEach(e=>{
+      const p=(e.plantios||[])[0]; if(!p) return;
+      const r = parcelasPadraoDe(p.cultura, p.modalidade); if(!r) return;
+      const k = (p.cultura||'').toUpperCase()+'||'+r.nome;
+      const o = tiposP[k]||(tiposP[k]={cultura:(p.cultura||'').toUpperCase(), nome:r.nome, txt:r.txt, n:0, par:0, pv:{}});
+      o.n++; o.par += r.total; const pk=e.pivo||'CRISTALINA'; o.pv[pk]=(o.pv[pk]||0)+r.total;
+    });
+    const lst = Object.values(tiposP).sort((a,b)=>b.par-a.par);
+    if(lst.length){
+      const totP = lst.reduce((t,x)=>t+x.par,0), totQ = lst.reduce((t,x)=>t+x.n,0);
+      const mxP = Math.max(1, ...lst.map(x=>x.par));
+      const rowP = o=>{
+        const tip = o.txt+' · '+Object.keys(o.pv).map(k=>pivoLabel(k)+': '+fmtInt(o.pv[k])).join(' · ');
+        const segs = pvIds.filter(k=>o.pv[k]).map(k=>`<i style="width:${(o.pv[k]/o.par*100).toFixed(2)}%;background:${pvCor[k]}"></i>`).join('');
+        return `<div class="r" title="${escapeHtml(tip)}"><span class="lab">${escapeHtml(o.nome)}</span><span class="trk"><span style="width:${Math.max(4,Math.round(o.par/mxP*100))}%">${segs}</span></span><span class="val">${fmtInt(o.par)}<u>parcelas · ${o.n} q.</u></span></div>`;
+      };
+      const legP = pvIds.filter(k=>lst.some(x=>x.pv[k])).map(k=>`<span style="color:${pvCor[k]}">■</span> ${escapeHtml(pivoLabel(k))}`).join(' &nbsp; ');
+      h += `<div class="dfx-sec">Parcelas por tipo de ensaio · soja</div><div class="dfx-grid"><div class="dfx-c s6 dfx-tr"><h3>📐 Parcelas em campo <em>${fmtInt(totP)} parcelas · ${totQ} quadras</em></h3><div class="dfx-hb">${lst.map(rowP).join('')}</div>
+        <div class="dfx-note">${legP} &nbsp;·&nbsp; Preliminar e VCU: 240 por quadra · Progênies: 64 blocos × 16 = 1.024</div></div></div>`;
+    }
+  }
+
   /* ---- Talhões ---- */
   h += `<div class="dfx-sec">Talhões / Áreas</div><div class="dfx-mini">`
     + dfxM('talhoes','#ff8a3d',fmtNum(Math.round(haTot*10)/10)+' ha','Área total')
@@ -4583,7 +4827,9 @@ function renderEstoqueKpis(){
   P.forEach(p=>{ const st=situacaoProduto(p); if(Number(p.saldo)>0) n.com++; if(st==='low') n.low++; if(st==='zero'||st==='neg') n.zero++; if(!p.ia) n.semia++; });
   window.__estCont=n;
   const k=(id,cls,num,txt)=>`<button type="button" class="est-kpi ${cls} ${(id&&estoqueSit===id)?'on':''}" onclick="${id? `setEstoqueSit('${id}')`:'limparFiltrosEstoque()'}"><b>${num}</b><span>${txt}</span></button>`;
-  document.getElementById('estKpis').innerHTML=k(null,'neutro',n.tot,'produtos (todos)')+k('com','ok',n.com,'com saldo')+k('baixo','warn',n.low,'abaixo do mínimo')+k('zero','bad',n.zero,'zerados / negativos')+(n.semia? k('semia','warn',n.semia,'sem ing. ativo'):'');
+  const _v = valorEmEstoque();
+  const kVal = _v.com? `<div class="est-kpi neutro" style="cursor:default" title="Soma saldo × preço dos produtos que têm preço cadastrado${_v.sem? ' ('+_v.sem+' com saldo ainda sem preço)':''}"><b style="font-size:15px">${moedaBR(_v.total)}</b><span>valor em estoque${_v.sem? ' · '+_v.sem+' s/ preço':''}</span></div>` : '';
+  document.getElementById('estKpis').innerHTML=kVal+k(null,'neutro',n.tot,'produtos (todos)')+k('com','ok',n.com,'com saldo')+k('baixo','warn',n.low,'abaixo do mínimo')+k('zero','bad',n.zero,'zerados / negativos')+(n.semia? k('semia','warn',n.semia,'sem ing. ativo'):'');
 }
 function renderEstoqueChips(){
   const n=window.__estCont||{};
@@ -4643,7 +4889,7 @@ function tabelaEstoqueHtml(grupos){
     }
     gr.itens.forEach(p=>{
       const st=situacaoProduto(p);
-      linhas+=`<tr class="${st==='low'?'low':''} ${st==='neg'?'neg':''}"><td><b>${produtoSemEstoque(p)?'🔒 ':''}${escapeHtml(p.nome)}</b>${(p.ia||p.codigo)?`<div class="muted" style="font-size:11px">${escapeHtml(p.ia||'')}${p.ia&&p.codigo?' · ':''}${p.codigo?'cód. '+escapeHtml(p.codigo):''}</div>`:''}</td><td>${escapeHtml(classeCanon(p.classe))}</td><td>${escapeHtml(p.unidadeEstoque||'')}</td>${arms.map(a=>{const v=saldoNoArmazem(p,a.cod);return v===null?`<td class="n dim">–</td>`:`<td class="n" ${v<0?'style="color:#c92a2a;font-weight:800"':''}>${fmtNum(v)}</td>`;}).join('')}<td class="n"><b>${fmtNum(p.saldo)}</b></td><td class="n">${Number(p.estoqueMinimo)>0?fmtNum(p.estoqueMinimo):'–'}</td><td><span class="est-st ${st}">${ST_TXT[st]}</span></td><td style="white-space:nowrap"><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="editSaldo(this.dataset.n)">Ajustar</button> <button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="abrirProdutoEditor(this.dataset.n)">✎</button></td></tr>`;
+      linhas+=`<tr class="${st==='low'?'low':''} ${st==='neg'?'neg':''}"><td><b>${produtoSemEstoque(p)?'🔒 ':''}${escapeHtml(p.nome)}</b>${(p.ia||p.codigo)?`<div class="muted" style="font-size:11px">${escapeHtml(p.ia||'')}${p.ia&&p.codigo?' · ':''}${p.codigo?'cód. '+escapeHtml(p.codigo):''}</div>`:''}${estPrecoLinhaHtml(p)}</td><td>${escapeHtml(classeCanon(p.classe))}</td><td>${escapeHtml(p.unidadeEstoque||'')}</td>${arms.map(a=>{const v=saldoNoArmazem(p,a.cod);return v===null?`<td class="n dim">–</td>`:`<td class="n" ${v<0?'style="color:#c92a2a;font-weight:800"':''}>${fmtNum(v)}</td>`;}).join('')}<td class="n"><b>${fmtNum(p.saldo)}</b></td><td class="n">${Number(p.estoqueMinimo)>0?fmtNum(p.estoqueMinimo):'–'}</td><td><span class="est-st ${st}">${ST_TXT[st]}</span></td><td style="white-space:nowrap"><button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="editSaldo(this.dataset.n)">Ajustar</button> <button class="btn-ghost btn-sm" data-n="${escapeHtml(p.nome)}" onclick="abrirProdutoEditor(this.dataset.n)">✎</button></td></tr>`;
     });
   });
   return `<div class="est-tabwrap"><table class="est-tab"><thead>${head}</thead><tbody>${linhas}</tbody></table></div>`;
@@ -4655,6 +4901,7 @@ function renderEstoque(){
   renderEstoqueKpis();
   renderEstoqueChips();
   const btnFiltro=document.getElementById('btnFiltroSemIa'); if(btnFiltro) btnFiltro.style.display='none';
+  try{ atualizaBotaoCopiaSemIa(); }catch(e){}
   document.getElementById('estOrdem').value=estoqueOrdem;
   document.getElementById('estAgrupar').value=estoqueAgrupar;
   const visao=visaoEstoqueEfetiva();
@@ -4738,8 +4985,15 @@ function renderProdutoEditor(){
       <div class="field"><label>Código do produto (ERP / Proteus)</label><input type="text" id="peCodigo" value="${escapeHtml(p.codigo||'')}" placeholder="Ex: 4101000076"></div>
       <div class="field"><label>Embalagem</label><input type="text" id="peEmb" value="${escapeHtml(p.embalagem||'')}" placeholder="Ex: Galão 20 L, Saco 25 kg"></div>
     </div>
+    <div class="row">
+      <div class="field"><label>Preço (R$ por ${escapeHtml(p.unidadeEstoque||'L/kg')})</label><input type="text" inputmode="decimal" id="pePreco" value="${p.preco>0? String(p.preco).replace('.',','):''}" placeholder="Ex: 45,90" oninput="peAtualizaCusto()"></div>
+      <div class="field"><label>Dose recomendada / ha</label><input type="text" inputmode="decimal" id="peDose" value="${p.dose!==null&&p.dose!==undefined&&p.dose!==''? String(p.dose).replace('.',','):''}" placeholder="Ex: 0,75" oninput="peAtualizaCusto()"></div>
+      <div class="field"><label>Unidade da dose</label><input type="text" id="peUnDose" value="${escapeHtml(p.unidadeDose||p.unidadeEstoque||'')}" placeholder="L, kg, mL, g" oninput="peAtualizaCusto()"></div>
+    </div>
+    <div id="peCusto" class="muted" style="margin-top:6px;font-weight:700;"></div>
     <button type="button" class="btn-primary btn-sm" style="margin-top:8px;" onclick="salvarProdutoEditor()">💾 Salvar</button>
   </div>`;
+  try{ peAtualizaCusto(); }catch(e){}
 }
 function salvarProdutoEditor(){
   requireAdmin(()=>{
@@ -4751,6 +5005,9 @@ function salvarProdutoEditor(){
     p.finalidade = document.getElementById('peFinalidade').value.trim();
     p.codigo = document.getElementById('peCodigo').value.trim();
     p.embalagem = document.getElementById('peEmb').value.trim();
+    const _pr = parseBrNumber(document.getElementById('pePreco').value); p.preco = (_pr>0)? _pr : null;
+    const _ds = parseBrNumber(document.getElementById('peDose').value); p.dose = (_ds>0)? _ds : null;
+    p.unidadeDose = document.getElementById('peUnDose').value.trim();
     saveData();
     fbPushEstoque();
     renderEstoque();
@@ -4853,6 +5110,8 @@ function aplicarLinhasERP(rows, armOverride, zerarAusentes, ctx){
         const unidade = pega('UNIDADEMEDIDA','UNIMEDIDA').toString().trim();
         const classeGuess = pega('GRUPOPRODUTO','DESCRICAOGRUPOPRODUTO').toString().trim();
         const codigoERP = pega('CODIGO').toString().trim();
+        const precoPlan = parseBrNumber(pega('PRECOLITRO','PRECOKG','PRECOLITROKG','PRECOUNITARIO','VALORUNITARIO','VLRUNITARIO','VALORUNIT','PRECO','CUSTOUNITARIO','CUSTO'));
+        const dosePlan = parseBrNumber(pega('DOSERECOMENDADA','DOSEPADRAO','DOSEHA','DOSE'));
         if(armCod) armsPlanilha.add(armCod);
         const alvo = normNomeProduto(descricao);
         /* v2.22.1 — aliases: nome alternativo vindo do ERP (ex.: ERP manda "STENDIMAX 2", o produto é "XTENDIMAX 2") */
@@ -4862,6 +5121,8 @@ function aplicarLinhasERP(rows, armOverride, zerarAusentes, ctx){
           vistos.add(prod);
           if(unidade) prod.unidadeEstoque = unidade;
           if(codigoERP && prod.codigo!==codigoERP){ prod.codigo = codigoERP; codigosNovos++; }
+          if(precoPlan>0 && prod.preco!==precoPlan){ prod.preco = precoPlan; ctx.precos = (ctx.precos||0)+1; }
+          if(dosePlan>0 && prod.dose!==dosePlan){ prod.dose = dosePlan; ctx.doses = (ctx.doses||0)+1; }
           atualizados++;
         } else {
           const novo = {
@@ -4872,7 +5133,8 @@ function aplicarLinhasERP(rows, armOverride, zerarAusentes, ctx){
             finalidade: '',
             grupoQuimico: '',
             ia: '',
-            dose: null,
+            dose: dosePlan>0? dosePlan : null,
+            preco: precoPlan>0? precoPlan : null,
             unidadeDose: unidade,
             obs: 'Cadastrado automaticamente pela importação da planilha do ERP — confira classe/ingrediente ativo.',
             saldo: qtd!==null? qtd : 0,
@@ -4968,6 +5230,10 @@ async function importEstoqueERP(){
         const z = zerarForaDasPlanilhas(ctx.vistos);
         msgs.push(z.length? `🧹 ${z.length} produto(s) não estão em nenhuma planilha e ficaram SEM ESTOQUE (travados para solicitação):\n- `+z.join('\n- ') : '🧹 Nenhum outro produto tinha saldo para zerar.');
       }
+      try{ if(ctx.precos||ctx.doses) msgs.push(`💲 Planilha com preço/dose: ${ctx.precos||0} preço(s) e ${ctx.doses||0} dose(s) atualizados.`); }catch(e){}
+      try{ const nIa = preencherIaConhecidos(); if(nIa) msgs.push(`🧪 Ingrediente ativo preenchido automaticamente em ${nIa} produto(s) novo(s) — confira com a bula.`); }catch(e){ console.warn('ia:', e); }
+      try{ const sem = produtosSemIa().length; if(sem) msgs.push(`ℹ️ ${sem} produto(s) ainda sem ingrediente ativo — use o botão "Copiar lista" na aba Estoque.`); }catch(e){}
+      try{ saveData(); fbPushEstoque(); }catch(e){}
       resultEl.textContent = msgs.join('\n\n');
       toast('Estoque atualizado a partir da planilha');
     }catch(e){
@@ -4978,6 +5244,244 @@ async function importEstoqueERP(){
   });
 }
 
+
+/* ====================== PARCELAS POR TIPO DE ENSAIO (v2.36.0) ======================
+   Pedido do Flávio (nov/2026): na soja o tipo de ensaio (modalidade) já define quantas parcelas a quadra tem —
+   Preliminar = 240 parcelas por quadra · VCU = 240 · Progênies = 64 blocos × 16 parcelas por bloco (= 1.024).
+   "Por enquanto só isso": os outros tipos (Purificação, Faixa, DHE...) não têm padrão e ficam sem parcelas.
+   Para mudar um número no futuro, basta editar a tabela abaixo. Vale para quem for plantio atual (plantios[0]) da quadra. */
+const PARCELAS_PADRAO = {
+  'SOJA': [
+    {chave:'PRELIM', nome:'Preliminar', parcelas:240},
+    {chave:'VCU',    nome:'VCU',        parcelas:240},
+    {chave:'PROGEN', nome:'Progênies',  blocos:64, porBloco:16}
+  ]
+};
+function fmtInt(n){ return (Math.round(Number(n)||0)).toLocaleString('pt-BR'); }
+function parcelasPadraoDe(cultura, modalidade){
+  const lista = PARCELAS_PADRAO[(cultura||'').toString().toUpperCase()];
+  if(!lista || !modalidade) return null;
+  const m = normNomeProduto(modalidade);
+  const r = lista.find(x=> m.indexOf(x.chave)===0);
+  if(!r) return null;
+  const total = r.blocos ? r.blocos*r.porBloco : r.parcelas;
+  return {total, nome:r.nome, blocos:r.blocos||null, porBloco:r.porBloco||null,
+          txt: r.blocos ? `${fmtInt(r.blocos)} blocos × ${fmtInt(r.porBloco)} parcelas = ${fmtInt(total)} parcelas por quadra` : `${fmtInt(total)} parcelas por quadra`};
+}
+function parcelasPlantio(p){ const r = p? parcelasPadraoDe(p.cultura, p.modalidade) : null; return r? r.total : null; }
+function parcelasQuadra(e){ const p = e && (e.plantios||[])[0]; return p? parcelasPlantio(p) : null; }
+function atualizaBulkParcelas(){
+  const el = document.getElementById('bulkCadParcelas'); if(!el) return;
+  const c = (document.getElementById('bulkCadCultura')||{}).value || '', m = (document.getElementById('bulkCadModalidade')||{}).value || '';
+  const r = parcelasPadraoDe(c, m);
+  if(!r){ el.style.display='none'; el.innerHTML=''; return; }
+  const n = Object.keys(selectedTalhaoCad||{}).length;
+  el.style.display='block';
+  el.innerHTML = `📐 <b>${escapeHtml(r.nome)} de ${escapeHtml(tituloCultura(c).toLowerCase())}:</b> ${escapeHtml(r.txt)}${n>1? `<br>${n} quadras = <b>${fmtInt(r.total*n)} parcelas</b>` : ''}`;
+}
+
+/* ====================== TRAITS (biotecnologias) DO PLANTIO (v2.34.0) ======================
+   Pedido do Flávio (nov/2026): todo plantio passa a ter o Trait (a biotecnologia do ensaio). Quando o número do ensaio já
+   termina com a sigla (I2X, I5+, SCC, CE), o app preenche sozinho; o resto aparece em "Traits pendentes" pra ele completar. */
+const TRAITS_POR_CULTURA = {
+  'SOJA': ['Conkesta Enlist (CE)','DBN','Intacta 5+ (I5+)','Intacta 2 Xtend (I2X)','IPRO','Convencional (SCC)','RR','Traits diversos'],
+  'MILHO': ['Pro2','Pro3','Pro4','Viptera 3','PowerCore','Convencional','Traits diversos']
+};
+const TRAIT_SIGLAS = [['I2X','Intacta 2 Xtend (I2X)'],['I5+','Intacta 5+ (I5+)'],['SCC','Convencional (SCC)'],['CE','Conkesta Enlist (CE)']];
+function traitDaSigla(numero, cultura){
+  if((cultura||'').toUpperCase()!=='SOJA') return '';
+  const n = (numero||'').toString().trim().toUpperCase();
+  for(const [s,t] of TRAIT_SIGLAS){ if(n.length>s.length && n.endsWith(s)) return t; }
+  return '';
+}
+function traitOptionsHtml(cultura, selected, vazioTxt){
+  const lista = TRAITS_POR_CULTURA[(cultura||'').toUpperCase()];
+  if(!lista) return '<option value="">—</option>';
+  const l = (selected && !lista.includes(selected))? lista.concat([selected]) : lista;
+  return [`<option value="">${vazioTxt||'— selecionar —'}</option>`].concat(l.map(t=>`<option value="${escapeHtml(t)}" ${t===selected?'selected':''}>${escapeHtml(t)}</option>`)).join('');
+}
+function traitValidoPara(cultura, trait){
+  const lista = TRAITS_POR_CULTURA[(cultura||'').toUpperCase()];
+  return !!lista && lista.includes(trait);
+}
+function preencherTraitsPorSigla(){
+  let n = 0;
+  (DATA.ensaios||[]).forEach(e=>{
+    ensurePlantiosArray(e);
+    [e.plantios||[], Array.isArray(e.historico)? e.historico : []].forEach(l=>l.forEach(p=>{
+      if(!p || p.trait) return;
+      const t = traitDaSigla(p.numeroEnsaio, p.cultura);
+      if(t){ p.trait = t; p.traitAuto = true; n++; }
+    }));
+  });
+  return n;
+}
+/* ---- v2.35.0 — PREÇO e DOSE RECOMENDADA dos produtos ----
+   Pedido do Flávio (nov/2026): começar a cadastrar preço, dose recomendada e preço do litro. O preço (p.preco) é em R$ por
+   unidade de estoque do produto (R$/L ou R$/kg) e vem da planilha de estoque quando ela tiver a coluna de preço. A dose
+   recomendada continua no campo p.dose (+ p.unidadeDose). Custo por hectare = preço × dose, já convertendo mL→L e g→kg. */
+function moedaBR(n){
+  if(n===null||n===undefined||isNaN(n)) return '–';
+  return 'R$ ' + Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fatorUnidade(unid, base){
+  const u = (unid||'').toString().trim().toUpperCase().replace(/\./g,''), b = (base||'').toString().trim().toUpperCase().replace(/\./g,'');
+  if(!u || !b || u===b) return 1;
+  const peso = x=> x==='KG'?1000 : x==='G'?1 : x==='T'?1000000 : null;
+  const vol = x=> x==='L'||x==='LT'||x==='LTS'?1000 : x==='ML'?1 : null;
+  if(peso(u)!==null && peso(b)!==null) return peso(u)/peso(b);
+  if(vol(u)!==null && vol(b)!==null) return vol(u)/vol(b);
+  return null;
+}
+function precoDoProduto(p){ const v = Number(p && p.preco); return (v>0)? v : null; }
+function custoHaProduto(p, doseHa, unidDose){
+  const pr = precoDoProduto(p); const d = Number(doseHa!==undefined? doseHa : (p&&p.dose));
+  if(!pr || !(d>0)) return null;
+  const f = fatorUnidade(unidDose || (p&&p.unidadeDose) || (p&&p.unidadeEstoque), (p&&p.unidadeEstoque) || (p&&p.unidadeDose));
+  if(f===null) return null;
+  return pr * d * f;
+}
+function valorEmEstoque(){
+  let total=0, com=0, sem=0;
+  (DATA.products||[]).forEach(p=>{
+    const pr = precoDoProduto(p), s = Number(p.saldo)||0;
+    if(pr){ com++; if(s>0) total += pr*s; } else if(s>0) sem++;
+  });
+  return {total, com, sem};
+}
+function custoAplicProduto(ap){
+  const cad = DATA.products.find(x=>x.nome===ap.nome); const pr = precoDoProduto(cad); if(!pr) return null;
+  const f = fatorUnidade(ap.unidade||cad.unidadeEstoque, cad.unidadeEstoque); if(f===null) return null;
+  const q = Number(ap.qtd); if(!(q>0)) return null;
+  return {total: pr*q*f, ha: custoHaProduto(cad, ap.doseHa, ap.unidade)};
+}
+function estPrecoLinhaHtml(p){
+  const pr = precoDoProduto(p); const d = Number(p.dose)>0? Number(p.dose) : null;
+  if(!pr && !d) return '';
+  const un = p.unidadeEstoque||'';
+  const c = custoHaProduto(p);
+  return `<div class="muted" style="font-size:11px">${pr? moedaBR(pr)+(un? '/'+escapeHtml(un):'') : 'sem preço'}${d? ' · dose '+fmtNum(d)+' '+escapeHtml(p.unidadeDose||un)+'/ha':''}${c!==null? ' · <b>'+moedaBR(c)+'/ha</b>':''}</div>`;
+}
+function peAtualizaCusto(){
+  const el = document.getElementById('peCusto'); if(!el) return;
+  const pr = parseBrNumber(document.getElementById('pePreco').value), d = parseBrNumber(document.getElementById('peDose').value);
+  const un = document.getElementById('peUnDose').value.trim();
+  const p = DATA.products.find(x=>x.nome===produtoEditingNome) || {};
+  const c = custoHaProduto({preco:pr, unidadeEstoque:p.unidadeEstoque, unidadeDose:un||p.unidadeDose}, d, un||p.unidadeDose);
+  el.textContent = c!==null ? `Custo por hectare: ${moedaBR(c)}` : 'Custo por hectare: preencha o preço e a dose';
+}
+
+/* ---- v2.34.1 — ingrediente ativo dos produtos ----
+   Pedido do Flávio (nov/2026): "precisamos preencher o ingrediente ativo de todos os produtos".
+   O app preenche sozinho SÓ os produtos que estão com o campo vazio e que eu conheço com segurança (nunca sobrescreve o que
+   já foi digitado). Os demais continuam no filtro "Sem ing. ativo" e podem ser copiados em lista pelo botão ao lado. */
+const IA_CONHECIDOS = [
+  /* [prefixo do nome normalizado (sem espaço/acento), ingrediente ativo, grupo químico, classe] */
+  ['CALLISTO',            'MESOTRIONA (480 G/L)',                          'TRICETONA',                    'HERBICIDA'],
+  ['ROUNDUPTRANSORB',     'GLIFOSATO (SAL DE POTÁSSIO)',                   'GLICINA SUBSTITUÍDA',          'HERBICIDA'],
+  ['CLORPIRIFOS',         'CLORPIRIFÓS',                                   'ORGANOFOSFORADO',              'INSETICIDA'],
+  ['WILPHOS',             'CLORPIRIFÓS (480 G/L)',                         'ORGANOFOSFORADO',              'INSETICIDA'],
+  ['NITRATODEMAGNESIO',   'NITRATO DE MAGNÉSIO (Mg(NO₃)₂)',                'FERTILIZANTE MAGNESIANO/NITROGENADO', ''],
+  ['46-00-00UREIA',       'UREIA (46% N)',                                 'FERTILIZANTE NITROGENADO',     ''],
+  ['UREIAPROTEGIDA',      'UREIA (46% N) — protegida',                     'FERTILIZANTE NITROGENADO',     ''],
+  ['03-35-06',            'NPK 03-35-06 (N, P2O5, K2O)',                   'FERTILIZANTE NPK',             ''],
+  ['KCLGRANULADO',        'CLORETO DE POTÁSSIO (KCl)',                     'FERTILIZANTE POTÁSSICO',       '']
+];
+function iaConhecidoDoProduto(p){
+  const n = normNomeProduto(p && p.nome);
+  if(!n) return null;
+  /* 03-35-06 não pode pegar "03-35-06SUPER" (outro produto, que já tem IA) — só vale quando o campo está vazio, então basta o prefixo */
+  return IA_CONHECIDOS.find(r=> n.indexOf(r[0])===0) || null;
+}
+function preencherIaConhecidos(){
+  let n = 0;
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  (DATA.products||[]).forEach(p=>{
+    if(!p || (p.ia && String(p.ia).trim())) return;
+    const r = iaConhecidoDoProduto(p); if(!r) return;
+    p.ia = r[1];
+    if(!p.grupoQuimico) p.grupoQuimico = r[2];
+    if(!p.classe && r[3]) p.classe = r[3];
+    p.iaAuto = true;
+    p.obs = ((p.obs||'') + (p.obs? ' ' : '') + `Ingrediente ativo preenchido automaticamente pelo app em ${hoje} — conferir com a bula/rótulo.`).trim();
+    n++;
+  });
+  return n;
+}
+function produtosSemIa(){
+  return (DATA.products||[]).filter(p=> !(p.ia && String(p.ia).trim()));
+}
+function copiarListaSemIa(){
+  const L = produtosSemIa();
+  if(!L.length){ toast('Todos os produtos já têm ingrediente ativo ✅'); return; }
+  const t = `Produtos sem ingrediente ativo (${L.length}) — ${estacaoAtiva().nome}\n` +
+    L.slice().sort((a,b)=>String(a.nome).localeCompare(String(b.nome),'pt-BR')).map(p=> `• ${p.nome}${p.codigo? ' ('+p.codigo+')':''}${p.classe? ' — '+p.classe:''}${p.embalagem? ' — '+p.embalagem:''}`).join('\n');
+  const fb = ()=>{ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast('Lista copiada — cole no WhatsApp'); }catch(e){ toast('Não consegui copiar'); } ta.remove(); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>toast('Lista copiada — cole no WhatsApp')).catch(fb); else fb();
+}
+function atualizaBotaoCopiaSemIa(){
+  const b = document.getElementById('btnCopiaSemIa'); if(!b) return;
+  const n = produtosSemIa().length;
+  b.style.display = n? '' : 'none';
+  b.textContent = `📋 Copiar lista dos ${n} sem ingrediente ativo`;
+}
+
+/* ---- tela "Traits pendentes" ---- */
+let __traitsGrupos = [];
+function traitsPendentes(){
+  const m = new Map();
+  (DATA.ensaios||[]).filter(e=>e.ativo!==false && !e.reservado).forEach(e=>{
+    ensaiosEmCampo(e).forEach(p=>{
+      if(!p || !p.cultura || p.trait || !TRAITS_POR_CULTURA[(p.cultura||'').toUpperCase()]) return;
+      const k = [(e.pivo||'CRISTALINA'), (p.cultura||'').toUpperCase(), p.modalidade||'', p.numeroEnsaio||''].join('||');
+      if(!m.has(k)) m.set(k, {pivo:(e.pivo||'CRISTALINA'), cultura:(p.cultura||'').toUpperCase(), modalidade:p.modalidade||'', numero:p.numeroEnsaio||'', itens:[]});
+      m.get(k).itens.push({e,p});
+    });
+  });
+  const cmp = (a,b)=>String(a).localeCompare(String(b), undefined, {numeric:true});
+  return Array.from(m.values()).sort((a,b)=> cmp(nomePivoPorId(a.pivo),nomePivoPorId(b.pivo)) || cmp(a.cultura,b.cultura) || cmp(a.modalidade,b.modalidade) || cmp(a.numero,b.numero));
+}
+function traitsAtualizaBotao(){
+  const b = document.getElementById('btnTraitsPend'); if(!b) return;
+  const n = traitsPendentes().reduce((s,g)=>s+g.itens.length,0);
+  b.innerHTML = '🧬 Traits' + (n? ` <span class="trait-badge">${n} pendente${n===1?'':'s'}</span>` : ' ✓');
+}
+function abrirTraitsPend(){
+  document.getElementById('traitsOverlay').classList.remove('hidden');
+  traitsRender();
+}
+function fecharTraitsPend(){ document.getElementById('traitsOverlay').classList.add('hidden'); traitsAtualizaBotao(); }
+function traitsRender(){
+  __traitsGrupos = traitsPendentes();
+  const el = document.getElementById('traitsLista');
+  const total = __traitsGrupos.reduce((s,g)=>s+g.itens.length,0);
+  document.getElementById('traitsSub').textContent = total? `${total} plantio(s) em ${__traitsGrupos.length} grupo(s) sem trait` : 'Tudo certo — nenhum plantio sem trait';
+  if(!__traitsGrupos.length){ el.innerHTML = '<div class="empty" style="display:block;">✅ Todos os plantios em campo já têm trait.</div>'; return; }
+  el.innerHTML = __traitsGrupos.map((g,i)=>{
+    const quadras = g.itens.map(x=>x.e.talhao||'').filter(Boolean);
+    const lista = quadras.slice(0,12).join(', ') + (quadras.length>12? ` +${quadras.length-12}` : '');
+    return `<div class="trait-g"><div class="trait-gh"><b>${escapeHtml(nomePivoPorId(g.pivo))}</b> · ${escapeHtml(tituloCultura(g.cultura))}${g.modalidade? ' · '+escapeHtml(g.modalidade):''}${g.numero? ' · nº <b>'+escapeHtml(g.numero)+'</b>' : ' · <span style="color:#b42318">sem nº de ensaio</span>'}</div>
+      <div class="muted" style="font-size:12px;">${g.itens.length} quadra(s): ${escapeHtml(lista)}</div>
+      <select onchange="traitsAplicarGrupo(${i}, this.value)">${traitOptionsHtml(g.cultura,'','— escolher o trait —')}</select></div>`;
+  }).join('');
+}
+function traitsAplicarGrupo(i, valor){
+  const g = __traitsGrupos[i]; if(!g || !valor) return;
+  g.itens.forEach(({p})=>{ p.trait = valor; delete p.traitAuto; });
+  saveData(); fbPushEstoque();
+  refreshTalhaoUI(); try{ refreshTalhaoCadUI(); }catch(e){}
+  toast(`Trait "${valor}" aplicado em ${g.itens.length} quadra(s)`);
+  traitsRender();
+}
+function traitsCopiarLista(){
+  const gs = traitsPendentes();
+  if(!gs.length){ toast('Nada pendente'); return; }
+  const L = ['Plantios sem trait — '+estacaoAtiva().nome];
+  gs.forEach(g=>L.push(`${nomePivoPorId(g.pivo)} | ${tituloCultura(g.cultura)} | ${g.modalidade||'sem modalidade'} | nº ${g.numero||'(sem nº)'} | ${g.itens.length} quadra(s): ${g.itens.map(x=>x.e.talhao).filter(Boolean).join(', ')}`));
+  const t = L.join('\n');
+  const fb = ()=>{ const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast('Lista copiada'); }catch(e){ toast('Não consegui copiar'); } ta.remove(); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>toast('Lista copiada')).catch(fb); else fb();
+}
 
 /* ====================== SOLICITAÇÃO AO ARMAZÉM + CÓDIGO/EMBALAGEM (v2.33.0) ======================
    Pedido do Flávio (nov/2026): quem precisar de produto (ele, o Silvano...) procura o produto aqui, vê em qual
@@ -5363,7 +5867,7 @@ function dupMesclar(keepNome, outrosNomes, modo){
   const fonte = todos.slice().sort((x,y)=>dupNArm(y)-dupNArm(x))[0];
   const saldosAntes = todos.map(p=>p.nome+': '+fmtNum(p.saldo)).join('; ');
   /* descrição: o que estiver vazio no que fica é preenchido com o do outro */
-  ['classe','finalidade','grupoQuimico','ia','dose','unidadeDose','vencimento','codigo','embalagem'].forEach(c=>{
+  ['classe','finalidade','grupoQuimico','ia','dose','unidadeDose','vencimento','codigo','embalagem','preco'].forEach(c=>{
     if(keep[c]===undefined || keep[c]===null || keep[c]==='') { const o = outros.find(p=>p[c]!==undefined && p[c]!==null && p[c]!==''); if(o) keep[c]=o[c]; }
   });
   keep.estoqueMinimo = Math.max(...todos.map(p=>Number(p.estoqueMinimo)||0));
@@ -5453,6 +5957,7 @@ function addProduct(){
       grupoQuimico: '',
       ia: document.getElementById('npIa').value.trim(),
       dose: parseFloat(document.getElementById('npDose').value)||null,
+      preco: parseFloat(document.getElementById('npPreco').value)||null,
       unidadeDose: document.getElementById('npUnidade').value.trim(),
       obs: '',
       saldo: parseFloat(document.getElementById('npSaldo').value)||0,
@@ -5464,7 +5969,7 @@ function addProduct(){
     fbPushEstoque();
     renderEstoque();
     refreshProductDatalist();
-    ['npNome','npClasse','npIa','npDose','npUnidade','npMin'].forEach(id=>document.getElementById(id).value='');
+    ['npNome','npClasse','npIa','npDose','npPreco','npUnidade','npMin'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('npSaldo').value='0';
     toast('Produto adicionado ao catálogo');
   });
@@ -5970,7 +6475,7 @@ function nEnsaiosExtras(e){ return Math.max(0, ensaiosEmCampo(e).length-1); }
 function maisEnsaiosTag(e){ const n = nEnsaiosExtras(e); return n? ` +${n}` : ''; }
 function ensaioEmCampoLabel(p){
   const nome = [p.cultura, p.modalidade].filter(Boolean).join(' · ');
-  return `${p.numeroEnsaio? p.numeroEnsaio : 'sem nº'}${nome? ' ('+nome+')' : ''}`;
+  return `${p.numeroEnsaio? p.numeroEnsaio : 'sem nº'}${nome? ' ('+nome+')' : ''}${p.trait? ' · '+p.trait : ''}`;
 }
 function ensaiosEmCampoTxt(e){
   const l = ensaiosEmCampo(e);
@@ -6042,6 +6547,9 @@ function updateTalhaoPlantioField(ensaioId, plantioId, campo, valor){
   }
   p[campo] = valor;
   if(campo==='cultura' && !MODALIDADES_POR_CULTURA[valor]) p.modalidade = '';
+  if(campo==='cultura' && p.trait && !traitValidoPara(valor, p.trait)){ p.trait = ''; delete p.traitAuto; }
+  if(campo==='trait') delete p.traitAuto;
+  if((campo==='numeroEnsaio' || campo==='cultura') && !p.trait){ const _t = traitDaSigla(p.numeroEnsaio, p.cultura); if(_t){ p.trait = _t; p.traitAuto = true; } }
   syncEnsaioTopFields(e);
   saveData();
   fbPushEstoque();
@@ -6054,7 +6562,7 @@ function addEnsaioEmCampo(ensaioId){
   const e = (DATA.ensaios||[]).find(x=>x.id===ensaioId);
   if(!e) return;
   ensurePlantiosArray(e);
-  const novo = {id: genPlantioId(), cultura:'', modalidade:'', dataPlantio:'', numeroEnsaio:'', emCampo:true};
+  const novo = {id: genPlantioId(), cultura:'', modalidade:'', trait:'', dataPlantio:'', numeroEnsaio:'', emCampo:true};
   if(e.plantios.length===0){ delete novo.emCampo; e.plantios.push(novo); }
   else e.plantios.splice(1,0,novo);
   syncEnsaioTopFields(e);
@@ -6068,7 +6576,7 @@ function addTalhaoPlantio(ensaioId){
   const e = (DATA.ensaios||[]).find(x=>x.id===ensaioId);
   if(!e) return;
   ensurePlantiosArray(e);
-  e.plantios.unshift({id: genPlantioId(), cultura:'', modalidade:'', dataPlantio:'', numeroEnsaio:''});
+  e.plantios.unshift({id: genPlantioId(), cultura:'', modalidade:'', trait:'', dataPlantio:'', numeroEnsaio:''});
   syncEnsaioTopFields(e);
   saveData();
   fbPushEstoque();
@@ -6124,6 +6632,7 @@ function activosTalhoesCad(){
 }
 
 function refreshTalhaoCadUI(){
+  try{ traitsAtualizaBotao(); }catch(e){}
   if(talhaoCadView==='pivo') renderPivoCad();
   else if(talhaoCadView==='mapa') renderMapaCad();
   else if(talhaoCadView==='sat') renderSat('cad');
@@ -6312,6 +6821,8 @@ function tcEditLoteCulturaChange(v){
   const m = document.getElementById('tcElModalidade'); if(!m) return;
   m.disabled = !MODALIDADES_POR_CULTURA[v];
   m.innerHTML = modalidadeOptionsHtml(v, '').replace(/<option value="">[^<]*<\/option>/, '<option value="">— manter —</option>');
+  const t = document.getElementById('tcElTrait');
+  if(t){ t.disabled = !TRAITS_POR_CULTURA[(v||'').toUpperCase()]; t.innerHTML = traitOptionsHtml(v, '', '— manter —'); }
 }
 function renderTalhaoCadEditLote(){
   const box = document.getElementById('talhaoCadEditLote');
@@ -6338,6 +6849,9 @@ function renderTalhaoCadEditLote(){
       <div class="field"><label>Modalidade</label><select id="tcElModalidade" ${MODALIDADES_POR_CULTURA[cult]?'':'disabled'}>${optMod}</select></div>
     </div>
     <div class="row">
+      <div class="field"><label>Trait (biotecnologia)</label><select id="tcElTrait" ${TRAITS_POR_CULTURA[(cult||'').toUpperCase()]?'':'disabled'}>${traitOptionsHtml(cult, comum('trait'), '— manter —')}</select></div>
+    </div>
+    <div class="row">
       <div class="field"><label>Data de plantio</label><input type="date" id="tcElData" value="${escapeHtml(dt)}"></div>
       <div class="field"><label>Número do ensaio</label><input type="text" id="tcElEnsaio" value="${escapeHtml(num)}" placeholder="${num?'':'(varia entre as quadras)'}"></div>
     </div>
@@ -6355,6 +6869,7 @@ function tcAplicarEditLote(){
   const modalidade = document.getElementById('tcElModalidade').value;
   const dataPlantio = document.getElementById('tcElData').value;
   const numeroEnsaio = document.getElementById('tcElEnsaio').value.trim();
+  const traitEl = (document.getElementById('tcElTrait')||{}).value || '';
   const snap = tcSnapshot(alvos.map(e=>e.id));
   alvos.forEach(e=>{
     ensurePlantiosArray(e);
@@ -6367,6 +6882,9 @@ function tcAplicarEditLote(){
     if(modalidade) p.modalidade = modalidade;
     if(dataPlantio) p.dataPlantio = dataPlantio;
     if(numeroEnsaio) p.numeroEnsaio = numeroEnsaio;
+    if(p.trait && !traitValidoPara(p.cultura, p.trait)){ p.trait = ''; delete p.traitAuto; }
+    if(traitEl){ p.trait = traitEl; delete p.traitAuto; }
+    else if(!p.trait){ const _t = traitDaSigla(p.numeroEnsaio, p.cultura); if(_t){ p.trait = _t; p.traitAuto = true; } }
     syncEnsaioTopFields(e);
   });
   saveData();
@@ -6511,6 +7029,9 @@ function onBulkCadCulturaChange(valor){
   const disabled = !MODALIDADES_POR_CULTURA[valor];
   modSel.disabled = disabled;
   modSel.innerHTML = modalidadeOptionsHtml(valor, '');
+  const trSel = document.getElementById('bulkCadTrait');
+  if(trSel){ trSel.disabled = !TRAITS_POR_CULTURA[(valor||'').toUpperCase()]; trSel.innerHTML = traitOptionsHtml(valor, ''); }
+  try{ atualizaBulkParcelas(); }catch(e){}
 }
 
 function aplicarBulkTalhaoCad(){
@@ -6520,6 +7041,7 @@ function aplicarBulkTalhaoCad(){
   const modalidade = document.getElementById('bulkCadModalidade').value;
   const dataPlantio = document.getElementById('bulkCadData').value;
   const numeroEnsaio = document.getElementById('bulkCadEnsaio').value;
+  const traitSel = (document.getElementById('bulkCadTrait')||{}).value || '';
   const sitEl = document.getElementById('bulkCadSituacao');
   const reservar = !!sitEl && sitEl.value==='reservada';
   const juntoEl = document.getElementById('bulkCadJunto');
@@ -6527,6 +7049,8 @@ function aplicarBulkTalhaoCad(){
   const motivoEl = document.getElementById('bulkCadMotivo');
   const motivo = motivoEl ? motivoEl.value.trim() : '';
   if(!cultura && !reservar){ toast('Escolha uma cultura pra aplicar aos talhões selecionados'); return; }
+  const traitFinal = traitSel || traitDaSigla(numeroEnsaio, cultura);
+  if(cultura && !traitFinal && TRAITS_POR_CULTURA[(cultura||'').toUpperCase()]){ toast('Escolha o Trait (biotecnologia) do plantio'); const t=document.getElementById('bulkCadTrait'); if(t) t.focus(); return; }
   const snapAntes = tcSnapshot(ids);
   ids.forEach(id=>{
     const e = ensaioById(id);
@@ -6537,9 +7061,11 @@ function aplicarBulkTalhaoCad(){
         id: genPlantioId(),
         cultura,
         modalidade: MODALIDADES_POR_CULTURA[cultura] ? modalidade : '',
+        trait: traitFinal,
         dataPlantio,
         numeroEnsaio
       };
+      if(!traitSel && traitFinal) novoPlantio.traitAuto = true;
       if(junto && e.plantios.length && e.plantios[0].cultura){ novoPlantio.emCampo = true; e.plantios.splice(1,0,novoPlantio); }
       else e.plantios.unshift(novoPlantio);
       syncEnsaioTopFields(e);
@@ -6598,7 +7124,7 @@ function renderTalhaoCadBulkPanel(){
   box.style.display = 'flex';
   box.onclick = ev=>{ if(ev.target===box) tcFecharForm(); };
   const __prevBulk = {};
-  ['bulkCadCultura','bulkCadModalidade','bulkCadSituacao','bulkCadMotivo','bulkCadData','bulkCadEnsaio','bulkReservaMotivo'].forEach(fid=>{
+  ['bulkCadCultura','bulkCadModalidade','bulkCadTrait','bulkCadSituacao','bulkCadMotivo','bulkCadData','bulkCadEnsaio','bulkReservaMotivo'].forEach(fid=>{
     const el = document.getElementById(fid); if(el) __prevBulk[fid] = el.value;
   });
   { const el = document.getElementById('bulkCadJunto'); if(el) __prevBulk.bulkCadJunto = el.checked; }
@@ -6612,7 +7138,12 @@ function renderTalhaoCadBulkPanel(){
     <div class="tc-chips">${chips}</div>
     <div class="row">
       <div class="field"><label>Cultura</label><select id="bulkCadCultura" onchange="onBulkCadCulturaChange(this.value)">${culturaOptionsHtml('')}</select></div>
-      <div class="field"><label>Modalidade</label><select id="bulkCadModalidade" disabled>${modalidadeOptionsHtml('', '')}</select></div>
+      <div class="field"><label>Modalidade</label><select id="bulkCadModalidade" disabled onchange="atualizaBulkParcelas()">${modalidadeOptionsHtml('', '')}</select></div>
+    </div>
+    <div id="bulkCadParcelas" class="parc-box" style="display:none;"></div>
+    <div class="row">
+      <div class="field"><label>Trait (biotecnologia) *</label><select id="bulkCadTrait" disabled>${traitOptionsHtml('', '')}</select></div>
+      <div class="field" style="align-self:flex-end;"><span class="muted" style="font-size:11.5px;">Se o nº do ensaio terminar em I2X, I5+, SCC ou CE, o trait é preenchido sozinho.</span></div>
     </div>
     <div class="row">
       <div class="field"><label>Data de plantio</label><input type="date" id="bulkCadData" oninput="marcarDigitandoTalhaoCad()"></div>
@@ -6645,6 +7176,7 @@ function restaurarFormBulkTalhaoCad(prev){
     set('bulkCadCultura', prev.bulkCadCultura);
     onBulkCadCulturaChange(prev.bulkCadCultura);
     set('bulkCadModalidade', prev.bulkCadModalidade);
+    set('bulkCadTrait', prev.bulkCadTrait);
   }
   if(prev.bulkCadSituacao){
     set('bulkCadSituacao', prev.bulkCadSituacao);
@@ -6795,6 +7327,10 @@ function renderTalhaoCadEditor(){
       <div class="row">
         <div class="field"><label>Cultura</label><select onchange="updateTalhaoPlantioField('${e.id}','${p.id}','cultura', this.value)">${tcCulturaOptions(p.cultura)}</select></div>
         <div class="field"><label>Modalidade</label><select ${disabledModalidade?'disabled':''} onchange="updateTalhaoPlantioField('${e.id}','${p.id}','modalidade', this.value)">${modalidadeOptionsHtml(p.cultura, p.modalidade)}</select></div>
+      </div>
+      ${(()=>{ const _r = parcelasPadraoDe(p.cultura, p.modalidade); return _r? `<div class="parc-box">📐 ${escapeHtml(_r.txt)}</div>` : ''; })()}
+      <div class="row">
+        <div class="field"><label>Trait (biotecnologia)${p.traitAuto?' <span class="muted" style="font-weight:600;">· preenchido pela sigla</span>':''}</label><select ${TRAITS_POR_CULTURA[(p.cultura||'').toUpperCase()]?'':'disabled'} onchange="updateTalhaoPlantioField('${e.id}','${p.id}','trait', this.value)">${traitOptionsHtml(p.cultura, p.trait)}</select></div>
       </div>
       <div class="row">
         <div class="field"><label>Data de plantio</label><input type="date" value="${escapeHtml(p.dataPlantio||'')}" onchange="updateTalhaoPlantioField('${e.id}','${p.id}','dataPlantio', this.value)" oninput="marcarDigitandoTalhaoCad()"></div>
@@ -6984,7 +7520,7 @@ function renderQuadBlockCad(letra, quadInfo, q){
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
     { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
-    if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
+    if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`; { const _tr = plantioAtualCad && plantioAtualCad.trait; if(_tr) titleTxt += ' — Trait: '+_tr; } { const _pc = parcelasPlantio(plantioAtualCad); if(_pc) titleTxt += ' — '+fmtInt(_pc)+' parcelas'; }
     if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
     if(ens && ens.ativo===false) titleTxt += ' — excluída (toque pra reativar)';
     const infoTxt = (cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
@@ -7075,7 +7611,7 @@ function renderMapaCad(){
         if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
         { const _r = reservaTxt(e); if(_r) titleTxt += ` — ${_r}`; }
         { const _m = ensaiosEmCampoTxt(e); if(_m) titleTxt += ` — ${_m}`; }
-        if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
+        if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`; { const _tr = plantioAtualMapa && plantioAtualMapa.trait; if(_tr) titleTxt += ' — Trait: '+_tr; } { const _pc = parcelasPlantio(plantioAtualMapa); if(_pc) titleTxt += ' — '+fmtInt(_pc)+' parcelas'; }
         if(dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
         const numHtml = numeroEnsaioAtual ? `${escapeHtml(numLabel)}<span class="tile-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : escapeHtml(numLabel);
         return `<button type="button" class="quadra-tile ${isEditing?'sel':''} ${isSelected?'multisel':''} ${temCultura}${ensaioReservado(e)?' reservada':''}${talhaoCadForaDoFiltro(e)?' dim':''}" data-id="${e.id}" onclick="onTalhaoCadastroTileClick('${e.id}')" title="${escapeHtml(titleTxt)}">${ensaioReservado(e)?'🔒 ':''}${isSelected?'☑ ':''}${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
@@ -7545,7 +8081,7 @@ function renderMapa(){
         if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
         { const _r = reservaTxt(e); if(_r) titleTxt += ` — ${_r}`; }
         { const _m = ensaiosEmCampoTxt(e); if(_m) titleTxt += ` — ${_m}`; }
-        if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
+        if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`; { const _tr = plantioAtualApl && plantioAtualApl.trait; if(_tr) titleTxt += ' — Trait: '+_tr; } { const _pc = parcelasPlantio(plantioAtualApl); if(_pc) titleTxt += ' — '+fmtInt(_pc)+' parcelas'; }
         const numHtml = numeroEnsaioAtual ? `${escapeHtml(numLabel)}<span class="tile-ensaio">${escapeHtml(numeroEnsaioAtual)}</span>` : escapeHtml(numLabel);
         return `<button type="button" class="quadra-tile ${sel} ${temCultura}${ensaioReservado(e)?' reservada':''}" data-id="${e.id}" onclick="toggleTalhaoTile('${e.id}')" title="${escapeHtml(titleTxt)}">${ensaioReservado(e)?'🔒 ':''}${numHtml}${e.area? `<span class="ha">${escapeHtml(String(e.area))}ha</span>`:''}</button>`;
       }).join('');
@@ -7878,7 +8414,8 @@ function updateSelSummary(){
     return `${escapeHtml(x.talhao||'')} <span class="sel-summary-cultura">(${escapeHtml(info)})</span>`;
   };
   const pids = [...new Set(items.map(x=>x.pivo||'CRISTALINA'))];
-  const cab = `<div class="ss-head"><div><b>${items.length}</b> quadra(s) · <b>${fmtNum(total)} ha</b>${pids.length>1?` · ⚠ aplicação em ${pids.length} pivôs`:''}</div><button type="button" class="ss-limpar" onclick="clearAllTalhoes()">🧹 Limpar seleção</button></div>`;
+  const _parc = items.reduce((t,x)=>{ const r = parcelasPadraoDe(x.cultura, x.modalidade); return t + (r? r.total : 0); }, 0);
+  const cab = `<div class="ss-head"><div><b>${items.length}</b> quadra(s) · <b>${fmtNum(total)} ha</b>${_parc? ` · <b>${fmtInt(_parc)} parcelas</b>` : ''}${pids.length>1?` · ⚠ aplicação em ${pids.length} pivôs`:''}</div><button type="button" class="ss-limpar" onclick="clearAllTalhoes()">🧹 Limpar seleção</button></div>`;
   const chips = pids.map(pid=>{
     const g = items.filter(x=>(x.pivo||'CRISTALINA')===pid);
     const ha = g.reduce((s,x)=>s+(x.area||0),0);
@@ -8049,7 +8586,7 @@ function areaCellState(code, id, q, modoCad){
   if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
   { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
   { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
-  if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
+  if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`; { const _tr = plantioAtual && plantioAtual.trait; if(_tr) titleTxt += ' — Trait: '+_tr; } { const _pc = parcelasPlantio(plantioAtual); if(_pc) titleTxt += ' — '+fmtInt(_pc)+' parcelas'; }
   if(modoCad && dataPlantioAtual) titleTxt += ` — Plantado em ${formatDateBR(dataPlantioAtual)}`;
   if(ens && ens.ativo===false) titleTxt += modoCad ? ' — excluída (toque pra reativar)' : ' — excluída';
   const infoTxt = (cultura ? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
@@ -8180,7 +8717,7 @@ function renderQuadBlock(letra, quadInfo, q){
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
     { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
-    if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`;
+    if(numeroEnsaioAtual) titleTxt += ` — Ensaio nº ${numeroEnsaioAtual}`; { const _tr = plantioAtualApl && plantioAtualApl.trait; if(_tr) titleTxt += ' — Trait: '+_tr; } { const _pc = parcelasPlantio(plantioAtualApl); if(_pc) titleTxt += ' — '+fmtInt(_pc)+' parcelas'; }
     if(ens && ens.ativo===false) titleTxt += ' — excluída';
     const infoTxt = (cultura? `${modalidade? escapeHtml(modalidade)+' ':''}${escapeHtml(tituloCultura(cultura))}` : '') + (nEnsaiosExtras(ens)? ` <b class="cell-mais">+${nEnsaiosExtras(ens)}</b>` : '');
     const codeMain = (ensaioReservado(ens)? '🔒 ':'') + (isSel? '✓ ':'') + escapeHtml(cell.q);
@@ -8429,7 +8966,7 @@ function renderPivoSvg(wrapId, q, modoCad){
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
     { const _r = reservaTxt(ens); if(_r) titleTxt += ` — ${_r}`; }
     { const _m = ensaiosEmCampoTxt(ens); if(_m) titleTxt += ` — ${_m}`; }
-    if(numeroEnsaioAtualSvg) titleTxt += ` — Ensaio nº ${numeroEnsaioAtualSvg}`;
+    if(numeroEnsaioAtualSvg) titleTxt += ` — Ensaio nº ${numeroEnsaioAtualSvg}`; { const _tr = plantioAtualSvg && plantioAtualSvg.trait; if(_tr) titleTxt += ' — Trait: '+_tr; } { const _pc = parcelasPlantio(plantioAtualSvg); if(_pc) titleTxt += ' — '+fmtInt(_pc)+' parcelas'; }
     const style = corModalidade? ` style="fill:${corModalidade}"` : '';
     const path = `<path d="${pivoSvgPointsToPath(geom.pts,true)}" class="${cls}"${style} data-id="${id}" onclick="${clickFn}"><title>${escapeHtml(titleTxt)}</title></path>`;
     let label = '';
@@ -9300,7 +9837,7 @@ function buildReceiptBodyHTML(app){
       ? `${fmtNum(pt.porTanqueCheio)} ${escapeHtml(p.unidade||'')} × ${pt.tanquesCheios} + ${fmtNum(pt.porUltimoTanque)} ${escapeHtml(p.unidade||'')} na última`
       : `${fmtNum(pt.porUltimoTanque)} ${escapeHtml(p.unidade||'')} (1 tanque)`) : null;
     return `<div class="receipt-prod">
-      <div><div class="rp-nome">${escapeHtml(p.nome)}</div><div class="rp-detail">Dose: ${escapeHtml(doseTxt)}${porTanqueTxt? `<br>Por tanque: ${porTanqueTxt}` : ''}</div></div>
+      <div><div class="rp-nome">${escapeHtml(p.nome)}</div><div class="rp-detail">Dose: ${escapeHtml(doseTxt)}${porTanqueTxt? `<br>Por tanque: ${porTanqueTxt}` : ''}${(()=>{ const c=custoAplicProduto(p); return c? `<br>Custo estimado: ${moedaBR(c.total)}${c.ha!==null? ' ('+moedaBR(c.ha)+'/ha)':''}` : ''; })()}</div></div>
       <div class="rp-val"><b>${fmtNum(p.qtd)} ${escapeHtml(p.unidade||'')}</b></div>
     </div>`;
   }).join('') || '<div class="empty">Nenhum produto</div>';
@@ -10066,7 +10603,7 @@ function xlsxBuildBytes(sheetName, rows){
    listar). */
 function exportPlantiosPlanilha(){
   const linhas = [];
-  const cab = ['Estação','Pivô/Área','Talhão','Área (ha)','Cultura','Modalidade','Data de plantio','Número do ensaio','Ativo','Ciclo encerrado em'];
+  const cab = ['Estação','Pivô/Área','Talhão','Área (ha)','Cultura','Modalidade','Data de plantio','Número do ensaio','Ativo','Ciclo encerrado em','Trait','Parcelas'];
   linhas.push(cab);
   ESTACOES.forEach(est=>{
     let dados = null;
@@ -10094,12 +10631,14 @@ function exportPlantiosPlanilha(){
           formatDateBR(p.dataPlantio||''),
           p.numeroEnsaio||'',
           e.ativo!==false ? 'Sim' : 'Não',
-          ''
+          '',
+          p.trait||'',
+          parcelasPlantio(p)||''
         ]);
       });
       (Array.isArray(e.historico)? e.historico : []).forEach(p=>{
         if(!p.cultura && !p.dataPlantio && !p.numeroEnsaio) return;
-        linhas.push([est.nome, nomePivo(e.pivo||'CRISTALINA'), e.talhao||'', e.area!=null ? String(e.area).replace('.',',') : '', p.cultura||'', p.modalidade||'', formatDateBR(p.dataPlantio||''), p.numeroEnsaio||'', e.ativo!==false ? 'Sim' : 'Não', formatDateBR(p.encerradoEm||'')]);
+        linhas.push([est.nome, nomePivo(e.pivo||'CRISTALINA'), e.talhao||'', e.area!=null ? String(e.area).replace('.',',') : '', p.cultura||'', p.modalidade||'', formatDateBR(p.dataPlantio||''), p.numeroEnsaio||'', e.ativo!==false ? 'Sim' : 'Não', formatDateBR(p.encerradoEm||''), p.trait||'', parcelasPlantio(p)||'']);
       });
     });
   });
@@ -11048,6 +11587,8 @@ function init(){
   enforcePivo4Ensaios();
   ensureRecomendacoesSeed();
   try{ if(migrarEstoqueV233()) saveData(); }catch(e){ console.warn('migração estoque:', e); }
+  try{ if(preencherTraitsPorSigla()) saveData(); }catch(e){ console.warn('traits:', e); }
+  try{ if(preencherIaConhecidos()) saveData(); }catch(e){ console.warn('ia:', e); }
   solCarregar();
   ensureUsersSeed();
   restoreSessionIfValid();
