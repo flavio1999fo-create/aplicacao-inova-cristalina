@@ -1554,6 +1554,14 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     .tc-sheet{background:linear-gradient(180deg,#1a140f,#0e0b08);color:#f6eee6;border:1px solid rgba(255,255,255,.12);border-bottom:0;box-shadow:0 -12px 40px rgba(0,0,0,.6);--text:#f6eee6;--muted:#a99886;--border:rgba(255,255,255,.14);--card:rgba(255,255,255,.06);--orange-light:rgba(255,138,61,.16);}
     .tc-sheet input,.tc-sheet select{background:rgba(255,255,255,.07);color:#f6eee6;border-color:rgba(255,255,255,.18);}
     .tc-sheet .btn-ghost{background:rgba(255,255,255,.08);color:#f6eee6;border:1px solid rgba(255,255,255,.18);}
+    /* v2.38.2 — lista aberta do <select> (Cultura, Modalidade, Trait...) ficava branca com letra creme = ilegível.
+       Fundo escuro + letra clara nas opções; em cartões brancos (recibo, Traits pendentes) volta a ficar claro. */
+    .tc-sheet select,.tc-ov select,#talhaoCadBar select{color-scheme:dark;}
+    .tc-sheet select option,.tc-sheet select optgroup,.tc-ov select option,.tc-ov select optgroup,#talhaoCadBar select option,
+    #mapaCadFullscreenArea select option,#mapaFullscreenArea select option{background-color:#1f1710;color:#f6eee6;}
+    .tc-sheet select option:checked,.tc-ov select option:checked{background-color:#c2570f;color:#fff;}
+    .tc-sheet select option:disabled{color:#8d7c6b;}
+    .receipt-card select option,.receipt-card select optgroup{background-color:#fff;color:#1b2b24;}
     .tc-sheet .talhao-cad-editor-head b,.tc-sheet label{color:#f6eee6;}
     .tc-sheet .tc-chips span{background:rgba(255,138,61,.18);color:#ffd2b0;}
   @keyframes cqSvgGlow{0%,100%{filter:drop-shadow(0 0 4px #ff8a3d)}50%{filter:drop-shadow(0 0 11px #ff8a3d)}}
@@ -2524,7 +2532,24 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.38.1';
+/* v2.38.2 — qualquer <select> com letra clara (tema escuro) ganha lista de opções escura; com letra escura, lista clara.
+   Evita a lista branca com letra creme ilegível. Roda ao tocar/focar no select, em qualquer tela. */
+(function(){
+  function ajusta(sel){
+    try{
+      const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(getComputedStyle(sel).color||''); if(!m) return;
+      const lum = 0.299*(+m[1]) + 0.587*(+m[2]) + 0.114*(+m[3]);
+      const claro = lum > 150;
+      sel.style.colorScheme = claro ? 'dark' : 'light';
+      Array.prototype.forEach.call(sel.querySelectorAll('option,optgroup'), o=>{
+        if(o.disabled && claro){ o.style.color = '#8d7c6b'; } else { o.style.color = claro ? '#f6eee6' : '#1b2b24'; }
+        o.style.backgroundColor = claro ? '#1f1710' : '#ffffff';
+      });
+    }catch(e){}
+  }
+  ['mousedown','focusin','touchstart'].forEach(ev=> document.addEventListener(ev, e=>{ const t = e.target; if(t && t.tagName==='SELECT') ajusta(t); }, true));
+})();
+const APP_BUILD_ID = 'v2.38.2';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
