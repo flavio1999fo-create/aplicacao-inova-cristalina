@@ -1436,10 +1436,9 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
      seleção/cadastro foi mexida. As cores de cultura/modalidade (inline) continuam as mesmas, ganham brilho. */
   @keyframes cqPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,138,61,.0),0 0 10px rgba(255,138,61,.55)}50%{box-shadow:0 0 0 3px rgba(255,138,61,.18),0 0 18px rgba(255,138,61,.95)}}
   @keyframes cqScan{0%{background-position:0 -120px,0 0,0 0,0 0}100%{background-position:0 520px,0 0,0 0,0 0}}
-  @media (max-width:760px){
-    #mapaCadFullscreenArea,#mapaFullscreenArea{
+  #mapaCadFullscreenArea,#mapaFullscreenArea{
       --text:#f6eee6;--muted:#a99886;--border:rgba(255,255,255,.13);--card:rgba(255,255,255,.06);--orange-light:rgba(255,138,61,.16);--orange-dark:#ffa869;--bg:#0e0b08;
-      color:var(--text);position:relative;border-radius:22px;padding:14px 12px 16px;margin:6px -6px 8px;border:1px solid rgba(255,255,255,.09);
+      color:var(--text);position:relative;border-radius:22px;padding:16px;border:1px solid rgba(255,255,255,.09);
       background:radial-gradient(900px 380px at 100% -8%,rgba(255,106,0,.26),transparent 62%),radial-gradient(700px 420px at -12% 28%,rgba(34,211,238,.16),transparent 62%),linear-gradient(180deg,#14100c,#0b0806);
       box-shadow:0 14px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.07);
     }
@@ -1450,11 +1449,9 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     #mapaCadFullscreenArea .btn-primary,#mapaFullscreenArea .btn-primary{box-shadow:0 6px 18px rgba(234,88,12,.45);}
     #mapaCadFullscreenArea input,#mapaCadFullscreenArea select,#mapaFullscreenArea input,#mapaFullscreenArea select{background:rgba(255,255,255,.07);color:var(--text);border-color:rgba(255,255,255,.16);}
     #mapaCadFullscreenArea input::placeholder,#mapaFullscreenArea input::placeholder{color:#8f7f6f;}
-    #mapaCadFullscreenArea .searchbar,#mapaFullscreenArea .searchbar{border-radius:14px;padding:13px 14px;}
+    #mapaCadFullscreenArea .searchbar,#mapaFullscreenArea .searchbar{border-radius:14px;}
     /* abas: uma fileira deslizante, alvos grandes, ativa com brilho */
-    #mapaCadFullscreenArea .pivo-tabs,#mapaFullscreenArea .pivo-tabs,#mapaCadFullscreenArea .subtabs,#mapaFullscreenArea .subtabs{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:4px 2px 10px;margin:0 -2px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-    #mapaCadFullscreenArea .pivo-tabs::-webkit-scrollbar,#mapaFullscreenArea .pivo-tabs::-webkit-scrollbar,#mapaCadFullscreenArea .subtabs::-webkit-scrollbar,#mapaFullscreenArea .subtabs::-webkit-scrollbar{display:none;}
-    #mapaCadFullscreenArea .subtab-btn,#mapaFullscreenArea .subtab-btn{flex:0 0 auto;scroll-snap-align:start;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;font-size:13.5px;
+    #mapaCadFullscreenArea .subtab-btn,#mapaFullscreenArea .subtab-btn{border-radius:999px;
       background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#d8cbbb;backdrop-filter:blur(6px);transition:transform .15s,box-shadow .2s,background .2s;}
     #mapaCadFullscreenArea .subtab-btn:active,#mapaFullscreenArea .subtab-btn:active{transform:scale(.95);}
     #mapaCadFullscreenArea .subtab-btn.active,#mapaFullscreenArea .subtab-btn.active{color:#fff;border-color:transparent;background:linear-gradient(135deg,#ff8a3d,#ea580c);box-shadow:0 0 0 1px rgba(255,160,90,.5),0 6px 20px rgba(255,106,0,.55);}
@@ -1462,20 +1459,20 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     #mapaCadFullscreenArea .pivo-tab-badge,#mapaFullscreenArea .pivo-tab-badge{background:#fff;color:#0b0806;box-shadow:0 0 10px rgba(255,255,255,.5);}
     /* painéis de apoio */
     #mapaCadFullscreenArea .tc-stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text);border-radius:14px;backdrop-filter:blur(6px);}
-    #mapaCadFullscreenArea .tc-stat b{font-size:20px;text-shadow:0 0 14px rgba(255,255,255,.25);}
+    #mapaCadFullscreenArea .tc-stat b{text-shadow:0 0 14px rgba(255,255,255,.25);}
     #mapaCadFullscreenArea .tc-stat span{color:#bfae9b;}
     #mapaCadFullscreenArea .tc-stat.on{border-color:#ff8a3d;box-shadow:0 0 0 2px rgba(255,138,61,.3),0 0 18px rgba(255,138,61,.35);}
     #mapaCadFullscreenArea .sel-summary,#mapaFullscreenArea .sel-summary{background:rgba(255,138,61,.12);border:1px solid rgba(255,138,61,.35);color:#ffd2b0;border-radius:14px;}
     #mapaFullscreenArea .sel-rapida,#mapaFullscreenArea .filtro-cultmod{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:16px;}
     #mapaFullscreenArea .sr-titulo,#mapaFullscreenArea .filtro-cultmod-titulo,#mapaFullscreenArea .fcm-grupo-titulo{color:#f0e2d2;}
-    #mapaFullscreenArea .sr-chip,#mapaFullscreenArea .fcm-chip,#mapaFullscreenArea .ss-chip{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);color:#f0e2d2;min-height:38px;}
+    #mapaFullscreenArea .sr-chip,#mapaFullscreenArea .fcm-chip,#mapaFullscreenArea .ss-chip{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);color:#f0e2d2;}
     #mapaFullscreenArea .sr-chip.parcial{background:rgba(255,138,61,.18);border-color:#ff8a3d;color:#ffcfa6;}
     #mapaFullscreenArea .sr-chip.todos,#mapaFullscreenArea .fcm-chip.on{background:linear-gradient(135deg,#ff8a3d,#ea580c);border-color:transparent;color:#fff;box-shadow:0 0 16px rgba(255,106,0,.5);}
     #mapaFullscreenArea .sr-nota,#mapaFullscreenArea .psc-dica{color:#a99886;}
     #mapaFullscreenArea .ss-limpar{background:transparent;color:#ffb27a;border-color:#ffb27a;}
     /* palco do mapa: grade técnica + brilho */
     #mapaCadFullscreenArea .pivo-grid-outer,#mapaFullscreenArea .pivo-grid-outer{
-      border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:10px;
+      border:1px solid rgba(255,255,255,.12);border-radius:18px;
       background:radial-gradient(520px 320px at 50% 38%,rgba(255,138,61,.13),transparent 65%),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px) 0 0/26px 26px,linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px) 0 0/26px 26px,#0d0a07;
       box-shadow:inset 0 0 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,138,61,.08);
     }
@@ -1486,7 +1483,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     #mapaCadFullscreenArea .pivo-svg-quad-labels .pivo-quad-label-tag,#mapaFullscreenArea .pivo-svg-quad-labels .pivo-quad-label-tag{background:rgba(255,138,61,.14);border-color:rgba(255,138,61,.4);}
     #mapaCadFullscreenArea .pivo-hub-badge,#mapaFullscreenArea .pivo-hub-badge{background:radial-gradient(circle,#2b1206,#0b0806);color:#ffb27a;border:1px solid rgba(255,138,61,.5);box-shadow:0 0 22px rgba(255,138,61,.6);}
     /* quadras do Pivô 3 (barras): vidro escuro + brilho; a cor da cultura vem inline e continua */
-    #mapaCadFullscreenArea .pivo-cell.quadra,#mapaFullscreenArea .pivo-cell.quadra{background:rgba(255,255,255,.075);color:#cdbfae;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);text-shadow:0 1px 2px rgba(0,0,0,.55);transition:transform .12s,box-shadow .18s,filter .18s;}
+    #mapaCadFullscreenArea .pivo-cell.quadra,#mapaFullscreenArea .pivo-cell.quadra{background:rgba(255,255,255,.075);color:#cdbfae;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);text-shadow:0 1px 2px rgba(0,0,0,.55);transition:transform .12s,box-shadow .18s,filter .18s;}
     #mapaCadFullscreenArea .pivo-cell.quadra[style*="background"],#mapaFullscreenArea .pivo-cell.quadra[style*="background"],
     #mapaCadFullscreenArea .pivo-cell.quadra.cultura-soja,#mapaFullscreenArea .pivo-cell.quadra.cultura-soja,#mapaCadFullscreenArea .pivo-cell.quadra.cultura-milho,#mapaFullscreenArea .pivo-cell.quadra.cultura-milho{color:#fff;filter:saturate(1.2) brightness(1.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),inset 0 -8px 12px rgba(0,0,0,.18),0 0 10px rgba(255,255,255,.08);}
     #mapaCadFullscreenArea .pivo-cell.quadra.tem-cultura,#mapaFullscreenArea .pivo-cell.quadra.tem-cultura{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),inset 0 -8px 12px rgba(0,0,0,.18),0 0 10px rgba(255,255,255,.08);}
@@ -1510,17 +1507,15 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     #mapaCadFullscreenArea .pivo-svg-bordadura,#mapaFullscreenArea .pivo-svg-bordadura{fill:#d9a066;fill-opacity:.35;stroke:#ffb27a;}
     #mapaCadFullscreenArea .pivo-svg-quadra-excluida,#mapaFullscreenArea .pivo-svg-quadra-excluida{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.2);}
     #mapaCadFullscreenArea .pivo-svg-rua,#mapaFullscreenArea .pivo-svg-rua{fill:#5b5348;stroke:#6f6558;}
-    #mapaCadFullscreenArea .pivo-svg-legend,#mapaFullscreenArea .pivo-svg-legend{color:#bfae9b;gap:10px 14px;}
+    #mapaCadFullscreenArea .pivo-svg-legend,#mapaFullscreenArea .pivo-svg-legend{color:#bfae9b;}
     #mapaCadFullscreenArea .pivo-svg-legend .swatch.quadra,#mapaFullscreenArea .pivo-svg-legend .swatch.quadra{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4);}
     /* zoom: botões de vidro, redondos, bem grandes pro polegar */
-    #mapaCadFullscreenArea .pivo-svg-zoom,#mapaFullscreenArea .pivo-svg-zoom{right:12px;bottom:46px;gap:10px;z-index:6;}
-    #mapaCadFullscreenArea .pivo-svg-zoom-btn,#mapaFullscreenArea .pivo-svg-zoom-btn{width:48px;height:48px;border-radius:50%;background:rgba(18,13,9,.72);color:#ffd8b8;border:1px solid rgba(255,160,90,.55);font-size:22px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 0 16px rgba(255,106,0,.4),0 6px 14px rgba(0,0,0,.45);}
+    #mapaCadFullscreenArea .pivo-svg-zoom-btn,#mapaFullscreenArea .pivo-svg-zoom-btn{border-radius:50%;background:rgba(18,13,9,.72);color:#ffd8b8;border:1px solid rgba(255,160,90,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 0 16px rgba(255,106,0,.4),0 6px 14px rgba(0,0,0,.45);}
     #mapaCadFullscreenArea .pivo-svg-zoom-btn:active,#mapaFullscreenArea .pivo-svg-zoom-btn:active{background:#ea580c;color:#fff;transform:scale(.92);}
     /* Grade (quadradinhos) */
     #mapaCadFullscreenArea .quadrante-head .name,#mapaFullscreenArea .quadrante-head .name{color:#ffb27a;text-shadow:0 0 12px rgba(255,138,61,.5);}
     #mapaCadFullscreenArea .faixa-row .flabel,#mapaFullscreenArea .faixa-row .flabel{color:#a99886;}
-    #mapaCadFullscreenArea .faixa-tiles,#mapaFullscreenArea .faixa-tiles{gap:6px;}
-    #mapaCadFullscreenArea .quadra-tile,#mapaFullscreenArea .quadra-tile{min-width:46px;height:44px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#f0e2d2;box-shadow:inset 0 1px 0 rgba(255,255,255,.1);transition:transform .12s,box-shadow .18s;}
+    #mapaCadFullscreenArea .quadra-tile,#mapaFullscreenArea .quadra-tile{border-radius:9px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#f0e2d2;box-shadow:inset 0 1px 0 rgba(255,255,255,.1);transition:transform .12s,box-shadow .18s;}
     #mapaCadFullscreenArea .quadra-tile[style*="background"],#mapaFullscreenArea .quadra-tile[style*="background"]{color:#fff;border-color:rgba(255,255,255,.3);filter:saturate(1.2) brightness(1.05);box-shadow:inset 0 -10px 14px rgba(0,0,0,.18),0 0 12px rgba(255,255,255,.1);}
     #mapaCadFullscreenArea .quadra-tile:active,#mapaFullscreenArea .quadra-tile:active{transform:scale(.93);}
     #mapaCadFullscreenArea .quadra-tile.sel,#mapaFullscreenArea .quadra-tile.sel{background:linear-gradient(135deg,#ff8a3d,#ea580c);border-color:#ffd2b0;color:#fff;box-shadow:0 0 18px rgba(255,106,0,.8);}
@@ -1536,17 +1531,33 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     #talhaoCadBar{background:rgba(16,12,9,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(255,138,61,.45);box-shadow:0 -10px 34px rgba(0,0,0,.5),0 -1px 22px rgba(255,106,0,.25);color:#f6eee6;}
     #talhaoCadBar .tc-bar-info small{color:#a99886;}
     #talhaoCadBar .btn-ghost{background:rgba(255,255,255,.08);color:#f6eee6;border:1px solid rgba(255,255,255,.18);}
-    #talhaoCadBar .tc-bar-acts button{min-height:44px;border-radius:12px;}
     .tc-ov{background:rgba(5,3,1,.66);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
     .tc-sheet{background:linear-gradient(180deg,#1a140f,#0e0b08);color:#f6eee6;border:1px solid rgba(255,255,255,.12);border-bottom:0;box-shadow:0 -12px 40px rgba(0,0,0,.6);--text:#f6eee6;--muted:#a99886;--border:rgba(255,255,255,.14);--card:rgba(255,255,255,.06);--orange-light:rgba(255,138,61,.16);}
     .tc-sheet input,.tc-sheet select{background:rgba(255,255,255,.07);color:#f6eee6;border-color:rgba(255,255,255,.18);}
     .tc-sheet .btn-ghost{background:rgba(255,255,255,.08);color:#f6eee6;border:1px solid rgba(255,255,255,.18);}
     .tc-sheet .talhao-cad-editor-head b,.tc-sheet label{color:#f6eee6;}
     .tc-sheet .tc-chips span{background:rgba(255,138,61,.18);color:#ffd2b0;}
-  }
   @keyframes cqSvgGlow{0%,100%{filter:drop-shadow(0 0 4px #ff8a3d)}50%{filter:drop-shadow(0 0 11px #ff8a3d)}}
-  @media (max-width:760px) and (prefers-reduced-motion:reduce){
+  @media (prefers-reduced-motion:reduce){
     #mapaCadFullscreenArea *,#mapaFullscreenArea *{animation:none!important;}
+  }
+  /* só no toque/celular: alvos maiores e abas deslizantes pra facilitar mexer nos mapas (no PC fica o tamanho de sempre) */
+  @media (max-width:760px), (hover:none) and (pointer:coarse){
+    #mapaCadFullscreenArea,#mapaFullscreenArea{padding:14px 12px 16px;margin:6px -6px 8px;}
+    #mapaCadFullscreenArea.fullscreen-mapa,#mapaFullscreenArea.fullscreen-mapa{margin:0;}
+    #mapaCadFullscreenArea .searchbar,#mapaFullscreenArea .searchbar{padding:13px 14px;}
+    #mapaCadFullscreenArea .pivo-tabs,#mapaFullscreenArea .pivo-tabs,#mapaCadFullscreenArea .subtabs,#mapaFullscreenArea .subtabs{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:4px 2px 10px;margin:0 -2px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    #mapaCadFullscreenArea .pivo-tabs::-webkit-scrollbar,#mapaFullscreenArea .pivo-tabs::-webkit-scrollbar,#mapaCadFullscreenArea .subtabs::-webkit-scrollbar,#mapaFullscreenArea .subtabs::-webkit-scrollbar{display:none;}
+    #talhaoCadBar .tc-bar-acts button{min-height:44px;border-radius:12px;}
+    #mapaCadFullscreenArea .subtab-btn,#mapaFullscreenArea .subtab-btn{flex:0 0 auto;scroll-snap-align:start;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;font-size:13.5px;}
+    #mapaCadFullscreenArea .tc-stat b{font-size:20px;}
+    #mapaFullscreenArea .sr-chip,#mapaFullscreenArea .fcm-chip,#mapaFullscreenArea .ss-chip{min-height:38px;}
+    #mapaCadFullscreenArea .pivo-grid-outer,#mapaFullscreenArea .pivo-grid-outer{padding:10px;}
+    #mapaCadFullscreenArea .pivo-svg-legend,#mapaFullscreenArea .pivo-svg-legend{gap:10px 14px;}
+    #mapaCadFullscreenArea .pivo-svg-zoom,#mapaFullscreenArea .pivo-svg-zoom{right:12px;bottom:46px;gap:10px;z-index:6;}
+    #mapaCadFullscreenArea .pivo-svg-zoom-btn,#mapaFullscreenArea .pivo-svg-zoom-btn{width:48px;height:48px;font-size:22px;}
+    #mapaCadFullscreenArea .faixa-tiles,#mapaFullscreenArea .faixa-tiles{gap:6px;}
+    #mapaCadFullscreenArea .quadra-tile,#mapaFullscreenArea .quadra-tile{min-width:46px;height:44px;border-radius:12px;}
   }
 </style>
 </head>
@@ -2491,7 +2502,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
    número "vX.Y"/"v2.0" que aparece no cabeçalho pro Flávio, é só um marcador pra esta página
    conseguir se comparar com o que está publicado no GitHub Pages agora. Muda em TODA entrega,
    mesmo quando o número visível continua "v2.0". */
-const APP_BUILD_ID = 'v2.36.1';
+const APP_BUILD_ID = 'v2.36.4';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -5284,26 +5295,42 @@ function atualizaBulkParcelas(){
    Pedido do Flávio (nov/2026): todo plantio passa a ter o Trait (a biotecnologia do ensaio). Quando o número do ensaio já
    termina com a sigla (I2X, I5+, SCC, CE), o app preenche sozinho; o resto aparece em "Traits pendentes" pra ele completar. */
 const TRAITS_POR_CULTURA = {
-  'SOJA': ['Conkesta Enlist (CE)','DBN','Intacta 5+ (I5+)','Intacta 2 Xtend (I2X)','IPRO','Convencional (SCC)','RR','Traits diversos'],
+  'SOJA': ['Conkesta Enlist (CE)','Enlist (E)','DBN','Intacta 5+ (I5+)','Intacta 2 Xtend (I2X)','IPRO','Convencional (SCC)','RR','Traits diversos'],
   'MILHO': ['Pro2','Pro3','Pro4','Viptera 3','PowerCore','Convencional','Traits diversos']
 };
 const TRAIT_SIGLAS = [['I2X','Intacta 2 Xtend (I2X)'],['I5+','Intacta 5+ (I5+)'],['SCC','Convencional (SCC)'],['CE','Conkesta Enlist (CE)']];
 /* v2.36.1 — além da sigla colada no fim do número (WS134CE), também vale a sigla como "palavra" no meio/fim do nome
    (ex.: "163XA_27 I2X Q1", "164_27_I2X Q1", "174_27 CE Q3"; milho: "613_27 PRO3", "3004_27 VIP3"). */
 const TRAIT_TOKENS = {
-  'SOJA':  {'I2X':'Intacta 2 Xtend (I2X)','I5+':'Intacta 5+ (I5+)','SCC':'Convencional (SCC)','CE':'Conkesta Enlist (CE)'},
+  'SOJA':  {'I2X':'Intacta 2 Xtend (I2X)','I5+':'Intacta 5+ (I5+)','SCC':'Convencional (SCC)','CE':'Conkesta Enlist (CE)','E':'Enlist (E)'},
   'MILHO': {'PRO2':'Pro2','PRO3':'Pro3','PRO4':'Pro4','VIP3':'Viptera 3'}
 };
-function traitDaSigla(numero, cultura){
+/* v2.36.2 — regras do Flávio (nov/2026) para a SOJA, usadas quando não há sigla no nome:
+   Preliminar 401 a 430 = Intacta 2 Xtend (I2X) · Preliminar 450 em diante = Conkesta Enlist (CE) ·
+   VCU e Faixa (inclui 2ª época) = Traits diversos. Sigla "E" no nome = Enlist (diferente de CE = Conkesta Enlist). */
+function traitPorRegra(numero, cultura, modalidade){
+  if((cultura||'').toUpperCase()!=='SOJA') return '';
+  const m = normNomeProduto(modalidade||'');
+  if(m.indexOf('VCU')===0 || m.indexOf('FAIXA')===0) return 'Traits diversos';
+  if(m.indexOf('PRELIM')===0){
+    const mm = (numero||'').toString().match(/^\s*(\d+)/); const n = mm? parseInt(mm[1],10) : NaN;
+    if(n>=401 && n<=430) return 'Intacta 2 Xtend (I2X)';
+    if(n>=450 && n<=499) return 'Conkesta Enlist (CE)';
+  }
+  return '';
+}
+function traitDaSigla(numero, cultura, modalidade){
   const c = (cultura||'').toUpperCase();
   const n = (numero||'').toString().trim().toUpperCase();
-  if(!n) return '';
-  if(c==='SOJA'){
+  if(c==='SOJA' && n){
     for(const [s,t] of TRAIT_SIGLAS){ if(n.length>s.length && n.endsWith(s)) return t; }
   }
-  const mapa = TRAIT_TOKENS[c]; if(!mapa) return '';
-  const achados = [...new Set(n.split(/[^A-Z0-9+]+/).filter(t=>mapa[t]).map(t=>mapa[t]))];
-  return achados.length===1 ? achados[0] : '';
+  const mapa = TRAIT_TOKENS[c];
+  if(mapa && n){
+    const achados = [...new Set(n.split(/[^A-Z0-9+]+/).filter(t=>mapa[t]).map(t=>mapa[t]))];
+    if(achados.length===1) return achados[0];
+  }
+  return traitPorRegra(numero, cultura, modalidade);
 }
 function traitOptionsHtml(cultura, selected, vazioTxt){
   const lista = TRAITS_POR_CULTURA[(cultura||'').toUpperCase()];
@@ -5321,7 +5348,7 @@ function preencherTraitsPorSigla(){
     ensurePlantiosArray(e);
     [e.plantios||[], Array.isArray(e.historico)? e.historico : []].forEach(l=>l.forEach(p=>{
       if(!p || p.trait) return;
-      const t = traitDaSigla(p.numeroEnsaio, p.cultura);
+      const t = traitDaSigla(p.numeroEnsaio, p.cultura, p.modalidade);
       if(t){ p.trait = t; p.traitAuto = true; n++; }
     }));
   });
@@ -6560,7 +6587,7 @@ function updateTalhaoPlantioField(ensaioId, plantioId, campo, valor){
   if(campo==='cultura' && !MODALIDADES_POR_CULTURA[valor]) p.modalidade = '';
   if(campo==='cultura' && p.trait && !traitValidoPara(valor, p.trait)){ p.trait = ''; delete p.traitAuto; }
   if(campo==='trait') delete p.traitAuto;
-  if((campo==='numeroEnsaio' || campo==='cultura') && !p.trait){ const _t = traitDaSigla(p.numeroEnsaio, p.cultura); if(_t){ p.trait = _t; p.traitAuto = true; } }
+  if((campo==='numeroEnsaio' || campo==='cultura' || campo==='modalidade') && !p.trait){ const _t = traitDaSigla(p.numeroEnsaio, p.cultura, p.modalidade); if(_t){ p.trait = _t; p.traitAuto = true; } }
   syncEnsaioTopFields(e);
   saveData();
   fbPushEstoque();
@@ -6895,7 +6922,7 @@ function tcAplicarEditLote(){
     if(numeroEnsaio) p.numeroEnsaio = numeroEnsaio;
     if(p.trait && !traitValidoPara(p.cultura, p.trait)){ p.trait = ''; delete p.traitAuto; }
     if(traitEl){ p.trait = traitEl; delete p.traitAuto; }
-    else if(!p.trait){ const _t = traitDaSigla(p.numeroEnsaio, p.cultura); if(_t){ p.trait = _t; p.traitAuto = true; } }
+    else if(!p.trait){ const _t = traitDaSigla(p.numeroEnsaio, p.cultura, p.modalidade); if(_t){ p.trait = _t; p.traitAuto = true; } }
     syncEnsaioTopFields(e);
   });
   saveData();
@@ -7060,7 +7087,7 @@ function aplicarBulkTalhaoCad(){
   const motivoEl = document.getElementById('bulkCadMotivo');
   const motivo = motivoEl ? motivoEl.value.trim() : '';
   if(!cultura && !reservar){ toast('Escolha uma cultura pra aplicar aos talhões selecionados'); return; }
-  const traitFinal = traitSel || traitDaSigla(numeroEnsaio, cultura);
+  const traitFinal = traitSel || traitDaSigla(numeroEnsaio, cultura, modalidade);
   if(cultura && !traitFinal && TRAITS_POR_CULTURA[(cultura||'').toUpperCase()]){ toast('Escolha o Trait (biotecnologia) do plantio'); const t=document.getElementById('bulkCadTrait'); if(t) t.focus(); return; }
   const snapAntes = tcSnapshot(ids);
   ids.forEach(id=>{
@@ -7154,7 +7181,7 @@ function renderTalhaoCadBulkPanel(){
     <div id="bulkCadParcelas" class="parc-box" style="display:none;"></div>
     <div class="row">
       <div class="field"><label>Trait (biotecnologia) *</label><select id="bulkCadTrait" disabled>${traitOptionsHtml('', '')}</select></div>
-      <div class="field" style="align-self:flex-end;"><span class="muted" style="font-size:11.5px;">Se o nº do ensaio terminar em I2X, I5+, SCC ou CE, o trait é preenchido sozinho.</span></div>
+      <div class="field" style="align-self:flex-end;"><span class="muted" style="font-size:11.5px;">Preenchido sozinho pela sigla do nº (I2X, I5+, SCC, CE, E) e pelo tipo: Preliminar 401–430 = I2X, 450+ = Conkesta Enlist, VCU/Faixa = Traits diversos.</span></div>
     </div>
     <div class="row">
       <div class="field"><label>Data de plantio</label><input type="date" id="bulkCadData" oninput="marcarDigitandoTalhaoCad()"></div>
