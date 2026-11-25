@@ -1016,6 +1016,9 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .trait-g{border:1.5px solid var(--border);border-radius:12px;padding:9px 11px;margin-bottom:8px;background:var(--card);}
   .trait-gh{font-size:13.5px;margin-bottom:2px;}
   .trait-g select{margin-top:6px;}
+  .wa-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+  .wa-grid button{min-width:0;}
+  .wa-grid #waBtnPC{grid-column:1 / -1;}
   .trait-g{position:relative;}
   .trait-g.sel{border-color:var(--accent,#2a7a4b);box-shadow:0 0 0 2px rgba(42,122,75,.18);}
   .trait-top{display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
@@ -2331,7 +2334,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     <div class="receipt-actions">
       <button class="btn-primary" onclick="downloadReceiptImage()">🖼️ Baixar imagem</button>
       <button class="btn-ghost" onclick="printReceiptPdf()">🖨️ Baixar PDF</button>
-      <button class="btn-ghost" onclick="abrirMsgWhats(currentReceiptApp)">📲 Mensagem p/ aplicador</button>
+      <button class="btn-ghost" onclick="abrirMsgWhats(currentReceiptApp)">📲 Enviar ao aplicador</button>
       <button class="btn-ghost" onclick="closeReceipt()">Fechar</button>
     </div>
   </div>
@@ -2340,20 +2343,28 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 <!-- v2.28.1 — mensagem pro aplicador SEMPRE disponível (o WhatsApp abre com um toque do próprio usuário,
      então o navegador não bloqueia como bloqueava a abertura automática) -->
 <div class="modal-overlay hidden" id="msgWhatsOverlay">
-  <div class="receipt-card" style="max-width:460px;">
+  <div class="receipt-card" style="max-width:480px;">
     <div class="receipt-head">
       <div class="titles">
-        <h3>📲 Mensagem para o aplicador</h3>
-        <span id="msgWhatsSub">Revise se quiser e toque em Enviar no WhatsApp</span>
+        <h3>📲 Enviar ficha ao aplicador</h3>
+        <span id="msgWhatsSub">Escolha como mandar — a foto da ficha e a mensagem</span>
       </div>
     </div>
     <div class="receipt-body">
-      <textarea id="msgWhatsTexto" rows="9" style="width:100%;font:inherit;font-size:14px;line-height:1.45;padding:10px;border:1.5px solid var(--border,#e4d8c8);border-radius:10px;resize:vertical;"></textarea>
+      <textarea id="msgWhatsTexto" rows="7" style="width:100%;font:inherit;font-size:14px;line-height:1.45;padding:10px;border:1.5px solid var(--border,#e4d8c8);border-radius:10px;resize:vertical;"></textarea>
       <div class="muted" id="msgWhatsAviso" style="font-size:12px;margin-top:6px;"></div>
+      <div id="msgWhatsFotoSt" style="font-size:12.5px;margin-top:6px;font-weight:700;"></div>
+      <div class="wa-grid">
+        <button class="btn-primary" id="waBtnPC" onclick="enviarWhatsPC()">💬 Abrir no WhatsApp do PC</button>
+        <button class="btn-ghost" onclick="enviarWhatsWeb()">🌐 WhatsApp Web</button>
+        <button class="btn-ghost" id="waBtnShare" onclick="compartilharFotoMsgWhats()" style="display:none;">📤 Compartilhar foto + mensagem (celular)</button>
+        <button class="btn-ghost" onclick="copiarFotoMsgWhats()">🖼️ Copiar foto da ficha</button>
+        <button class="btn-ghost" onclick="baixarFotoMsgWhats()">⬇️ Baixar foto</button>
+        <button class="btn-ghost" onclick="copiarMsgWhats()">📋 Copiar mensagem</button>
+      </div>
+      <div class="muted" style="font-size:12px;margin-top:8px;line-height:1.45;">No PC: o WhatsApp abre já com o contato e o texto, e a foto da ficha fica copiada — é só clicar na conversa e apertar <b>Ctrl+V</b> para colar a foto. Se o WhatsApp do PC não abrir, use o <b>WhatsApp Web</b>.</div>
     </div>
     <div class="receipt-actions">
-      <button class="btn-primary" onclick="enviarMsgWhats()">💬 Enviar no WhatsApp</button>
-      <button class="btn-ghost" onclick="copiarMsgWhats()">📋 Copiar mensagem</button>
       <button class="btn-ghost" onclick="fecharMsgWhats()">Fechar</button>
     </div>
   </div>
@@ -2549,7 +2560,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
   }
   ['mousedown','focusin','touchstart'].forEach(ev=> document.addEventListener(ev, e=>{ const t = e.target; if(t && t.tagName==='SELECT') ajusta(t); }, true));
 })();
-const APP_BUILD_ID = 'v2.38.2';
+const APP_BUILD_ID = 'v2.38.3';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -9688,53 +9699,100 @@ function montarMensagemAplicador(app){
    da ficha). Motivo: o navegador bloqueia window.open feito depois de esperar a foto da ficha, e aí a mensagem
    "não saía" (relato do Flávio em 17/11/2026). Aqui o WhatsApp abre num toque do próprio usuário, que nunca é bloqueado. */
 let msgWhatsAtual = null;
+let msgWhatsFoto = null;   // {promise, blob, nome}
+/* v2.38.3 — Flávio (25/11/2026): no PC o botão "compartilhar" não abria o WhatsApp. Motivos: (1) a telinha de compartilhar do
+   Windows nem sempre lista o WhatsApp do PC; (2) o app esperava a foto ficar pronta e só depois chamava o compartilhamento/abria
+   o link — nessa espera o navegador já tinha "esquecido" que foi o usuário que clicou e bloqueava (por isso "às vezes" funcionava).
+   Agora: a janelinha SEMPRE abre, a foto da ficha é preparada em segundo plano enquanto o usuário revisa, e cada botão faz uma
+   coisa só, direto no clique: abrir o WhatsApp do PC (whatsapp://), WhatsApp Web, copiar a foto (Ctrl+V na conversa), baixar a
+   foto, ou — no celular — compartilhar foto + texto pela telinha do aparelho. */
+function msgWhatsPrepararFoto(app){
+  msgWhatsFoto = null;
+  const st = document.getElementById('msgWhatsFotoSt');
+  if(!app || typeof html2canvas==='undefined' || typeof expRenderFichas!=='function'){ if(st){ st.textContent = '⚠️ Foto indisponível (sem internet?) — o texto continua funcionando.'; st.style.color = '#b42318'; } return; }
+  if(st){ st.textContent = '⏳ Preparando a foto da ficha…'; st.style.color = '#8a6d00'; }
+  const nome = `ficha_aplicacao_${app.serie}.png`;
+  const promise = (async ()=>{
+    let blob = null;
+    await expRenderFichas([app], async (a, canvas)=>{ blob = await new Promise(res=>canvas.toBlob(res,'image/png')); });
+    if(!blob) throw new Error('sem imagem');
+    return blob;
+  })();
+  const registro = { promise, blob:null, nome };
+  msgWhatsFoto = registro;
+  promise.then(b=>{ registro.blob = b; if(msgWhatsFoto===registro && st){ st.textContent = '✅ Foto da ficha pronta.'; st.style.color = '#157f3b'; } })
+         .catch(e=>{ console.warn('Foto da ficha:', e); if(msgWhatsFoto===registro && st){ st.textContent = '⚠️ Não consegui gerar a foto — use a mensagem de texto.'; st.style.color = '#b42318'; } });
+}
 function abrirMsgWhats(app){
   if(!app){ toast('Nenhuma ficha aberta'); return; }
   const m = montarMensagemAplicador(app);
-  msgWhatsAtual = m;
+  msgWhatsAtual = Object.assign({app}, m);
   document.getElementById('msgWhatsTexto').value = m.mensagem;
   document.getElementById('msgWhatsAviso').textContent =
     m.semOperador ? 'Esta aplicação foi registrada sem operador — no WhatsApp você escolhe pra quem mandar.'
     : (m.semTelefone ? `${app.operador} está sem WhatsApp cadastrado (aba Usuários) — no WhatsApp você escolhe o contato.` : `Vai para ${app.operador} (WhatsApp cadastrado).`);
+  let podeCompartilhar = false;
+  try{ podeCompartilhar = !!(navigator.share && navigator.canShare && navigator.canShare({files:[new File([new Blob(['x'])],'a.png',{type:'image/png'})]}) && (navigator.maxTouchPoints>0)); }catch(e){}
+  const bs = document.getElementById('waBtnShare'); if(bs) bs.style.display = podeCompartilhar? '' : 'none';
   document.getElementById('msgWhatsOverlay').classList.remove('hidden');
+  msgWhatsPrepararFoto(app);
 }
 function fecharMsgWhats(){ document.getElementById('msgWhatsOverlay').classList.add('hidden'); }
-function enviarMsgWhats(){
-  const txt = document.getElementById('msgWhatsTexto').value;
-  const tel = msgWhatsAtual && msgWhatsAtual.telefone;
-  window.open(`https://wa.me/${tel||''}?text=${encodeURIComponent(txt)}`, '_blank');
+function msgWhatsTextoAtual(){ return document.getElementById('msgWhatsTexto').value; }
+function msgWhatsTel(){ return (msgWhatsAtual && msgWhatsAtual.telefone) || ''; }
+/* copia a foto pro Ctrl+V; devolve true/false. Chamado direto no clique (usa promessa da foto — o Chrome aceita). */
+function msgWhatsCopiarFotoInterno(){
+  try{
+    if(!msgWhatsFoto || !navigator.clipboard || !window.ClipboardItem) return Promise.resolve(false);
+    const item = new ClipboardItem({'image/png': msgWhatsFoto.promise});
+    return navigator.clipboard.write([item]).then(()=>true).catch(e=>{ console.warn('Copiar foto:', e); return false; });
+  }catch(e){ return Promise.resolve(false); }
+}
+async function copiarFotoMsgWhats(){
+  const ok = await msgWhatsCopiarFotoInterno();
+  toast(ok? 'Foto copiada ✅ — na conversa do WhatsApp aperte Ctrl+V' : 'Não consegui copiar a foto — use "Baixar foto" e anexe no WhatsApp');
+  return ok;
+}
+function enviarWhatsPC(){
+  const txt = msgWhatsTextoAtual(), tel = msgWhatsTel();
+  msgWhatsCopiarFotoInterno().then(ok=>{ if(ok) toast('Foto copiada ✅ — na conversa aperte Ctrl+V pra colar'); });
+  const url = `whatsapp://send?${tel? 'phone='+tel+'&' : ''}text=${encodeURIComponent(txt)}`;
+  const a = document.createElement('a'); a.href = url; a.style.display='none'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>{ toast('Se o WhatsApp do PC não abriu, toque em "WhatsApp Web"'); }, 2500);
+}
+function enviarWhatsWeb(){
+  const txt = msgWhatsTextoAtual(), tel = msgWhatsTel();
+  msgWhatsCopiarFotoInterno().then(ok=>{ if(ok) toast('Foto copiada ✅ — na conversa aperte Ctrl+V pra colar'); });
+  window.open(`https://web.whatsapp.com/send?${tel? 'phone='+tel+'&' : ''}text=${encodeURIComponent(txt)}`, '_blank');
+}
+function enviarMsgWhats(){ enviarWhatsWeb(); }   /* compatibilidade com versões antigas do botão */
+async function baixarFotoMsgWhats(){
+  try{
+    if(!msgWhatsFoto) { toast('Foto indisponível'); return; }
+    const blob = await msgWhatsFoto.promise;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = msgWhatsFoto.nome; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 8000);
+    toast('Foto baixada — anexe no WhatsApp');
+  }catch(e){ toast('Não consegui gerar a foto'); }
+}
+async function compartilharFotoMsgWhats(){
+  try{
+    if(!msgWhatsFoto || !msgWhatsFoto.blob){ toast('A foto ainda está sendo preparada — tente de novo em 2 segundos'); return; }
+    const file = new File([msgWhatsFoto.blob], msgWhatsFoto.nome, {type:'image/png'});
+    await navigator.share({files:[file], text: msgWhatsTextoAtual(), title:'Ficha de aplicação'});
+  }catch(e){ if(e && e.name==='AbortError') return; toast('Não consegui abrir o compartilhamento — use os outros botões'); }
 }
 async function copiarMsgWhats(){
   const ta = document.getElementById('msgWhatsTexto');
   try{ await navigator.clipboard.writeText(ta.value); toast('Mensagem copiada ✅'); }
   catch(e){ ta.select(); try{ document.execCommand('copy'); toast('Mensagem copiada ✅'); }catch(_){ toast('Selecione o texto e copie manualmente'); } }
 }
+/* Depois de registrar a aplicação a janelinha de envio abre sozinha (não depende mais de compartilhamento automático,
+   que o navegador bloqueava). O envio em si é com um clique do usuário em um dos botões. */
 async function notificarOperadorWhatsApp(app){
-  try{
-    const m = montarMensagemAplicador(app);
-    if(m.semOperador){ abrirMsgWhats(app); return; }
-
-    const arquivoFoto = await gerarFotoFichaParaCompartilhar(app);
-    if(arquivoFoto){
-      try{
-        await navigator.share({files:[arquivoFoto], text: m.mensagem, title:'Ficha de aplicação'});
-        return;
-      }catch(e){
-        if(e && e.name==='AbortError') return; // o Flávio cancelou a telinha de compartilhar
-        console.warn('Falha ao compartilhar foto+legenda, caindo pro link de texto do WhatsApp:', e);
-      }
-    }
-
-    if(m.telefone){
-      const w = window.open(`https://wa.me/${m.telefone}?text=${encodeURIComponent(m.mensagem)}`, '_blank');
-      if(!w) abrirMsgWhats(app);   // pop-up bloqueado: mostra a mensagem com botão de enviar
-    }else{
-      abrirMsgWhats(app);
-    }
-  }catch(err){
-    console.warn('Erro ao montar/enviar a mensagem do aplicador:', err);
-    try{ abrirMsgWhats(app); }catch(_){}
-  }
+  try{ abrirMsgWhats(app); }
+  catch(err){ console.warn('Erro ao abrir a janela de envio ao aplicador:', err); }
 }
 function registerApplication(){
   const dataAplicacao = document.getElementById('fData').value;
@@ -9813,7 +9871,8 @@ function registerApplication(){
      (escondem/mostram os botões ".receipt-actions" antes de tirar o "print") — rodando ao
      mesmo tempo, um atrapalharia a foto do outro. */
   notificarOperadorWhatsApp(app).catch(()=>{}).finally(()=>{
-    setTimeout(()=>autoGerarFichaPdf(app), 80);
+    /* espera a foto da janelinha de envio terminar (mesmo #receiptCard) antes do PDF automático */
+    Promise.resolve(msgWhatsFoto && msgWhatsFoto.promise).catch(()=>{}).then(()=> setTimeout(()=>autoGerarFichaPdf(app), 80));
   });
 }
 
