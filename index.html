@@ -1008,6 +1008,10 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
   .sr-chip{border:1.5px solid #e6dccd;background:#fff;border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:800;color:#5a4636;cursor:pointer;}
   .sr-chip small{font-weight:700;opacity:.7;margin-left:4px;}
   .pivo-svg-circulo{fill:rgba(234,88,12,.05);stroke:#ea580c;stroke-width:3.5;pointer-events:none;filter:drop-shadow(0 0 6px rgba(255,138,61,.55));}
+  .pivo-svg-titulo{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:20px;font-weight:900;fill:#c2570f;text-anchor:middle;pointer-events:none;user-select:none;}
+  .pivo-svg-titulo-sub{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;fill:#8a7d70;text-anchor:middle;pointer-events:none;user-select:none;}
+  #mapaCadFullscreenArea .pivo-svg-titulo,#mapaFullscreenArea .pivo-svg-titulo{fill:#ffb27a;}
+  #mapaCadFullscreenArea .pivo-svg-titulo-sub,#mapaFullscreenArea .pivo-svg-titulo-sub{fill:#c9b9a8;}
   .pivo-svg-rotulo{font-size:70px;font-weight:900;fill:rgba(36,26,18,.14);text-anchor:middle;dominant-baseline:middle;pointer-events:none;}
   .pivo-quadrantes:has(> .pivo-svg-outer){display:block;width:100%;max-width:100%;}
   .pivo-svg-outer{min-width:0;max-width:100%;}
@@ -1784,14 +1788,14 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
         <button class="btn-ghost btn-sm" id="btnToggleFullscreenMapa" onclick="toggleFullscreenMapa()" style="white-space:nowrap;">⛶ Tela cheia</button>
       </div>
 
-      <div class="pivo-escolha-titulo">1 · Escolha o pivô <span class="muted">(o número mostra quantas quadras já estão marcadas nele)</span></div>
+      <div class="pivo-escolha-titulo" id="tituloEscolhaPivo">1 · Escolha o pivô <span class="muted">(o número mostra quantas quadras já estão marcadas nele)</span></div>
       <div class="subtabs pivo-tabs" id="pivoTabsApp">
         <button class="subtab-btn pivo-tab-btn active" data-pivo="CRISTALINA" onclick="switchPivoAtivo('CRISTALINA')">📍 Pivô 3</button>
         <button class="subtab-btn pivo-tab-btn" data-pivo="PIVO4" onclick="switchPivoAtivo('PIVO4')">📍 Pivô 4</button>
       </div>
 
       <div class="subtabs">
-        <button class="subtab-btn active" data-view="pivo" onclick="switchTalhaoView('pivo')">🌀 Pivô</button>
+        <button class="subtab-btn active" data-view="pivo" onclick="switchTalhaoView('pivo')"><span class="lbl-view-pivo">🌀 Pivô</span></button>
         <button class="subtab-btn" data-view="mapa" onclick="switchTalhaoView('mapa')">🔲 Grade</button>
         <button class="subtab-btn" data-view="lista" onclick="switchTalhaoView('lista')">☰ Lista</button>
         <button class="subtab-btn" data-view="sat" onclick="switchTalhaoView('sat')">🛰️ Satélite <span class="sat-beta">teste</span></button>
@@ -1806,7 +1810,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <!-- v2.9.0 — a pedido do Flávio: selecionar/filtrar por cultura E modalidade (ex: tudo de Soja >
            Purificação + Preliminar I), e aí marcar só as quadras que quer aplicar. Vale pro pivô aberto. -->
       <details class="filtro-cultmod" id="filtroCultModBox">
-        <summary class="filtro-cultmod-titulo">🎯 Refinar por cultura e modalidade <span class="muted">· ex.: só Soja Purificação — vale só do pivô aberto</span><span id="filtroAtivoTag" class="fcm-ativo-tag" style="display:none;">filtro ativo</span></summary>
+        <summary class="filtro-cultmod-titulo">🎯 Refinar por cultura e modalidade <span class="muted">· ex.: só Soja Purificação — <span class="t-so-aberto">vale só do pivô aberto</span></span><span id="filtroAtivoTag" class="fcm-ativo-tag" style="display:none;">filtro ativo</span></summary>
         <div class="filtro-cultmod-passo">1 · Cultura <span class="muted" style="font-weight:600;">(pode marcar mais de uma)</span></div>
         <div class="filtro-cultmod-chips" id="filtroCultChips"></div>
         <div id="filtroModWrap" style="display:none;">
@@ -1825,7 +1829,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <div class="map-stage">
       <div id="pivoWrap">
-        <p class="muted" style="margin:0 0 8px;">Arraste pra mover · pinça com 2 dedos, roda do mouse ou os botões +/− pra dar zoom. Toque no número da quadra para selecionar.</p>
+        <p class="muted" style="margin:0 0 8px;">Arraste pra mover · pinça com 2 dedos ou os botões +/− pra dar zoom. Toque no número da quadra para selecionar.</p>
         <div class="pivo-grid-outer"><div class="pivo-quadrantes" id="pivoGridWrap"></div></div>
       </div>
 
@@ -1898,7 +1902,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       </div>
 
       <div class="subtabs">
-        <button class="subtab-btn active" data-viewcad="pivo" onclick="switchTalhaoCadView('pivo')">🌀 Pivô</button>
+        <button class="subtab-btn active" data-viewcad="pivo" onclick="switchTalhaoCadView('pivo')"><span class="lbl-view-pivo">🌀 Pivô</span></button>
         <button class="subtab-btn" data-viewcad="mapa" onclick="switchTalhaoCadView('mapa')">🔲 Grade</button>
         <button class="subtab-btn" data-viewcad="lista" onclick="switchTalhaoCadView('lista')">☰ Lista</button>
         <button class="subtab-btn" data-viewcad="sat" onclick="switchTalhaoCadView('sat')">🛰️ Satélite <span class="sat-beta">teste</span></button>
@@ -1920,7 +1924,7 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
 
       <div class="map-stage">
       <div id="pivoCadWrap">
-        <p class="muted" style="margin:0 0 8px;">Arraste pra mover · pinça com 2 dedos, roda do mouse ou os botões +/− pra dar zoom. Toque no número da quadra pra cadastrar a cultura dela.</p>
+        <p class="muted" style="margin:0 0 8px;">Arraste pra mover · pinça com 2 dedos ou os botões +/− pra dar zoom. Toque no número da quadra pra cadastrar a cultura dela.</p>
         <div class="pivo-grid-outer"><div class="pivo-quadrantes" id="pivoGridWrapCad"></div></div>
       </div>
 
@@ -2560,7 +2564,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
   }
   ['mousedown','focusin','touchstart'].forEach(ev=> document.addEventListener(ev, e=>{ const t = e.target; if(t && t.tagName==='SELECT') ajusta(t); }, true));
 })();
-const APP_BUILD_ID = 'v2.38.3';
+const APP_BUILD_ID = 'v2.39.0';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -3109,7 +3113,23 @@ function openLoginModal(){
 }
 /* Atualiza os textos que mostram o nome da estação ativa — cabeçalho da tela de login,
    título do app depois de logado, e o <title> da aba do navegador. */
+/* v2.39.0 — na Lucas do Rio Verde não existe pivô: são áreas de sequeiro. Textos de seleção/filtros
+   trocam de "pivô" pra "área" conforme a estação ativa. */
+function ehLucasAtiva(){ return estacaoAtivaId==='LUCAS_RIO_VERDE'; }
+function termoU(){
+  return ehLucasAtiva()
+    ? {n:'área de sequeiro', deste:'desta área', neste:'nesta área', este:'esta área', aberto:'da área aberta', outro:'a outra área', dele:'dela', escolha:'a área', art:'a', por:'por área'}
+    : {n:'pivô', deste:'deste pivô', neste:'neste pivô', este:'este pivô', aberto:'do pivô aberto', outro:'o outro pivô', dele:'dele', escolha:'o pivô', art:'o', por:'por pivô'};
+}
+function atualizaTermosUnidade(){
+  const L = ehLucasAtiva();
+  const t = document.getElementById('tituloEscolhaPivo');
+  if(t) t.innerHTML = L ? '1 · Escolha a área de sequeiro <span class="muted">(o número mostra quantas quadras já estão marcadas nela)</span>' : '1 · Escolha o pivô <span class="muted">(o número mostra quantas quadras já estão marcadas nele)</span>';
+  document.querySelectorAll('.lbl-view-pivo').forEach(el=>{ el.textContent = L ? '🌾 Área' : '🌀 Pivô'; });
+  document.querySelectorAll('.t-so-aberto').forEach(el=>{ el.textContent = L ? 'vale só da área aberta' : 'vale só do pivô aberto'; });
+}
 function atualizaTextosEstacao(){
+  try{ atualizaTermosUnidade(); }catch(err){}
   const e = estacaoAtiva();
   const t1 = document.getElementById('loginTitleH1'); if(t1) t1.textContent = 'Aplicativo de Aplicação Inova Genética — '+e.nome.replace(/^Estação /,'');
   const t2 = document.getElementById('loginSubtitleCidade'); if(t2) t2.textContent = `Aplicação Inova Genética - ${e.cidade}`;
@@ -4560,7 +4580,7 @@ function renderDashboard(opts){
   const pvIds = []; ens.forEach(e=>{ const k=e.pivo||'CRISTALINA'; if(!pvIds.includes(k)) pvIds.push(k); });
   pvIds.sort((a,b)=>{ const x=ordemPv.indexOf(a), y=ordemPv.indexOf(b); return (x<0?99:x)-(y<0?99:y); });
   const CULT_COR = {SOJA:'#34d399', MILHO:'#fbbf24'};
-  h += `<div class="dfx-sec">Ocupação dos pivôs · hectares e quadras</div><div class="dfx-grid">`;
+  h += `<div class="dfx-sec">${ehLucasAtiva()? 'Ocupação das áreas de sequeiro' : 'Ocupação dos pivôs'} · hectares e quadras</div><div class="dfx-grid">`;
   pvIds.forEach(pid=>{
     const q = ens.filter(e=>(e.pivo||'CRISTALINA')===pid);
     const oc = q.filter(e=>(e.cultura||'').trim() && !e.reservado), rs = q.filter(e=>e.reservado);
@@ -4650,7 +4670,7 @@ function renderDashboard(opts){
   /* ocupação por pivô (empilhada) */
   const porPivo={}; ens.forEach(e=>{ const k=e.pivo||'CRISTALINA'; const o=porPivo[k]||(porPivo[k]={ocup:0,res:0,liv:0,ha:0}); o.ha+=Number(e.area)||0; if(e.reservado) o.res++; else if((e.cultura||'').trim()) o.ocup++; else o.liv++; });
   const pvList = Object.entries(porPivo).sort((x,y)=>y[1].ha-x[1].ha);
-  h += `<div class="dfx-c s6"><h3>Ocupação por pivô / área <em>nº de quadras</em></h3>`
+  h += `<div class="dfx-c s6"><h3>${ehLucasAtiva()? 'Ocupação por área de sequeiro' : 'Ocupação por pivô / área'} <em>nº de quadras</em></h3>`
     + (pvList.length? `<div class="dfx-hb">`+pvList.map(([pid,o])=>{ const t=o.ocup+o.res+o.liv||1; const seg=(n,c,l)=>n?`<span class="fil" style="width:${(n/t*100).toFixed(1)}%;--c:${c};border-radius:0" title="${l}: ${n}"></span>`:''; return `<div class="r" style="grid-template-columns:minmax(80px,30%) 1fr auto"><span class="lab">${escapeHtml(pivoLabel(pid))}</span><span class="trk">${seg(o.ocup,'#a78bfa','Plantadas')}${seg(o.res,'#fbbf24','Reservadas')}${seg(o.liv,'#34d399','Livres')}</span><span class="val">${o.ocup+o.res}/${t}<u>${fmtNum(Math.round(o.ha*10)/10)} ha</u></span></div>`; }).join('')+`</div><div class="dfx-note"><span style="color:#a78bfa">■</span> plantadas &nbsp; <span style="color:#fbbf24">■</span> reservadas &nbsp; <span style="color:#34d399">■</span> livres</div>` : '<div class="dfx-empty">Nenhuma quadra cadastrada ainda.</div>') + `</div>`;
   /* cultura e modalidade */
   const hac={}; ocup.forEach(e=>{ const c=(e.cultura||'').trim(); hac[c]=(hac[c]||0)+(Number(e.area)||0); });
@@ -7121,7 +7141,7 @@ function toggleTalhaoCadSelMode(){
 function limparCulturaEmMassa(cultura){
   requireAdmin(()=>{
     const alvos = activosTalhoesCad().filter(e=> (e.cultura||'').toUpperCase()===cultura);
-    if(!alvos.length){ toast(`Nenhum talhão ativo deste pivô está cadastrado com cultura ${tituloCultura(cultura)}`); return; }
+    if(!alvos.length){ toast(`Nenhum talhão ativo ${termoU().deste} está cadastrado com cultura ${tituloCultura(cultura)}`); return; }
     if(!confirm(`Limpar a cultura de ${alvos.length} talhão${alvos.length===1?'':'ões'} hoje cadastrado${alvos.length===1?'':'s'} como ${tituloCultura(cultura)}? O talhão continua cadastrado, só fica sem cultura (pronto pra registrar o plantio novo). Não apaga aplicações já registradas.`)) return;
     alvos.forEach(e=>{ e.plantios = []; syncEnsaioTopFields(e); });
     saveData();
@@ -7150,7 +7170,7 @@ function selecionarFaixaTalhaoCad(){
     const n = parseInt(m[1], 10);
     return n>=lo && n<=hi;
   });
-  if(!alvos.length){ toast(`Nenhum talhão deste pivô na faixa ${lo}–${hi}`); return; }
+  if(!alvos.length){ toast(`Nenhum talhão ${termoU().deste} na faixa ${lo}–${hi}`); return; }
   alvos.forEach(e=>{ selectedTalhaoCad[e.id] = {talhao: e.talhao||'', area: e.area||0}; });
   talhaoCadEditingId = null;
   refreshTalhaoCadUI();
@@ -8400,7 +8420,7 @@ function renderFiltroCultMod(){
   const alvo = todos.filter(filtroCultModBate);
   document.getElementById('btnFiltroSelTodos').textContent = `☑ Selecionar todos (${alvo.length})`;
   const resumoEl = document.getElementById('filtroResumoPivos');
-  if(resumoEl){ resumoEl.textContent = alvo.length ? (`Só ${nomePivoPorId(pivoAtivoId)}: ${alvo.length} quadra(s) neste filtro — o outro pivô você escolhe na aba dele.`) : ''; }
+  if(resumoEl){ resumoEl.textContent = alvo.length ? (`Só ${nomePivoPorId(pivoAtivoId)}: ${alvo.length} quadra(s) neste filtro — ${termoU().outro} você escolhe na aba ${termoU().dele}.`) : ''; }
   const nRes = filtroCultModNReservadasDoPivo();
   const notaRes = document.getElementById('filtroReservaNota');
   if(notaRes){ notaRes.style.display = nRes? '' : 'none'; notaRes.textContent = `🔒 ${nRes} quadra${nRes===1?'':'s'} reservada${nRes===1?'':'s'} não entra${nRes===1?'':'m'} no filtro (dá pra tocar nela${nRes===1?'':'s'} na mão).`; }
@@ -8532,9 +8552,9 @@ function renderPivoSelChips(){
     chips += chip('toggleSelecionarPistaAmbas()', '✈️ Pista 1 + Pista 2 (ambas)', selA, alvoA.length);
   }
   const nSelPivo = Object.values(selectedEnsaios).filter(x=>(x.pivo||'CRISTALINA')===pid).length;
-  if(nSelPivo) chips += `<button type="button" class="sr-chip limpar" onclick="limparSelecaoPivo('${pid}')">✕ Limpar só o ${escapeHtml(nome)}</button>`;
+  if(nSelPivo) chips += `<button type="button" class="sr-chip limpar" onclick="limparSelecaoPivo('${pid}')">✕ Limpar só ${termoU().art} ${escapeHtml(nome)}</button>`;
   const nRes = filtroCultModNReservadasDoPivo();
-  box.innerHTML = `<div class="sr-titulo">2 · Seleção rápida — <b>${escapeHtml(nome)}</b> <span class="muted">· vale só para este pivô; toque de novo para desmarcar</span></div>
+  box.innerHTML = `<div class="sr-titulo">2 · Seleção rápida — <b>${escapeHtml(nome)}</b> <span class="muted">· vale só para ${termoU().este}; toque de novo para desmarcar</span></div>
     <div class="sr-chips">${chips}</div>
     <div class="sr-nota">Ou toque nas quadras no mapa, uma a uma.${nRes? ` 🔒 ${nRes} reservada${nRes===1?'':'s'} fica${nRes===1?'':'m'} de fora dos botões.`:''}</div>`;
 }
@@ -8547,7 +8567,7 @@ function updateSelSummary(){
   const items = Object.values(selectedEnsaios);
   const aberto = !!(box.querySelector('details') && box.querySelector('details').open);
   if(!items.length){
-    box.innerHTML = '<span class="ss-vazio">Nenhum talhão selecionado — escolha o pivô, use a seleção rápida ou toque nas quadras do mapa.</span>';
+    box.innerHTML = `<span class="ss-vazio">Nenhum talhão selecionado — escolha ${termoU().escolha}, use a seleção rápida ou toque nas quadras do mapa.</span>`;
     renderPivoSelChips();
     return;
   }
@@ -8619,23 +8639,70 @@ const PIVO3_SVG_DATA = {"quadras":[{"code":"A101","pts":[[16.0,25.0],[36.3,25.0]
    do Rio Verde) — mesmo seletor de abas (.pivo-tab-btn / switchPivoAtivo) pras duas, só muda
    o que tem dentro de cada uma (tipo:'pivo' usa o croqui circular; tipo:'area' usa o mapa em
    leque da Lucas do Rio Verde, mais adiante). */
+/* v2.39.0 — a pedido do Flávio: as áreas de sequeiro da Lucas do Rio Verde passam a usar o MESMO croqui
+   moderno em SVG do Pivô 3/4 e das Pistas (barra colorida com o código, etiqueta amarela com o número do
+   ensaio e a cultura/modalidade dentro da quadra, sem precisar passar o mouse). Ainda não existe
+   levantamento (KML) das áreas da Lucas, então a geometria é esquemática: cada quadra vira uma barra
+   horizontal, agrupada como no croqui antigo (Fundo: T_A a T_G; Sede: Vitrine, Faixas, Isolamento/STW/VCU).
+   Quando o Flávio tiver as áreas desenhadas no Google Earth, é só trocar este gerador pelo contorno real. */
+function lucasSvgBuild(areaId){
+  const quadras = [], bordaduras = [], titulos = [];
+  const BH = 34, PASSO = 40, TOPO = 46;
+  const rect = (x,y,w,h)=>[[x,-y],[x+w,-y],[x+w,-(y+h)],[x,-(y+h)]];
+  const addQ = (code,x,y,w,h)=>quadras.push({code, pts:rect(x,y,w,h), area_m2:0});
+  const addRef = (txt,x,y,w,h)=>bordaduras.push({code:txt, rotulo:txt, titulo:txt, pts:rect(x,y,w,h), area_m2:0});
+  let W = 0, H = 0;
+  if(areaId==='LUCAS_FUNDO'){
+    const BW = 300, CG = 30, RG = 50, COLS = 4;
+    const grupos = [['T_A',11,'T_A-9 a 11 em sentido diferente'],['T_B',21],['T_C',21],['T_D',21],['T_E',18],['T_F',15],['T_G',1,'em sentido diferente']];
+    const altLinha = r=> TOPO + Math.max(0, ...grupos.filter((g,i)=>Math.floor(i/COLS)===r).map(g=>g[1]))*PASSO;
+    const rowTop = [0, altLinha(0)+RG];
+    grupos.forEach((g,gi)=>{
+      const col = gi%COLS, row = Math.floor(gi/COLS), x = col*(BW+CG), y0 = rowTop[row];
+      titulos.push({x:x+BW/2, y:y0+20, txt:g[0], sub:g[2]||''});
+      for(let i=1;i<=g[1];i++) addQ(g[0]+'-'+i, x, y0+TOPO+(i-1)*PASSO, BW, BH);
+    });
+    W = COLS*BW+(COLS-1)*CG; H = rowTop[1]+altLinha(1);
+  }else{
+    const E = SEDE_ESTRUTURA;
+    const X1 = 0, W1 = 300, X2 = 330, W2 = 440, X3 = 800, W3 = 440;
+    titulos.push({x:X1+W1/2, y:20, txt:'Vitrine'}, {x:X2+W2/2, y:20, txt:'Faixas'}, {x:X3+W3/2, y:20, txt:'Isolamento · STW · VCU'});
+    let y = TOPO;
+    E.va.forEach(c=>{ addQ(c,X1,y,W1,BH); y+=PASSO; });
+    E.ws.forEach(par=>{ addQ(par[0],X1,y,148,BH); if(par[1]) addQ(par[1],X1+152,y,148,BH); y+=PASSO; });
+    y += 14;
+    addQ(E.milho,X1,y,W1,BH+16); y += BH+22;
+    addQ(E.cinza,X1,y,W1,BH+16); y += BH+22;
+    const yFim1 = y;
+    y = TOPO;
+    E.faixas.forEach(c=>{ addQ(c,X2,y,W2,BH); y+=PASSO; });
+    addRef('Pousio',X2,y+10,W2,BH); y += PASSO+10;
+    const yFim2 = y;
+    y = TOPO;
+    E.bloco3.forEach(x=>{ if(x.ref) addRef(x.ref,X3,y,W3,BH); else addQ(x.code,X3,y,W3,BH); y+=PASSO; });
+    addRef('Pousio',X3,y+10,W3,BH); y += PASSO+10;
+    W = X3+W3; H = Math.max(yFim1,yFim2,y);
+  }
+  return { viewBox:{minX:-20, minY:-(H+20), w:W+40, h:H+40}, circulo:null, ruas:[], bordaduras, quadras, rotulos:[], titulos, semTags:true };
+}
 const PIVOS_POR_ESTACAO = {
   CRISTALINA: [
-    { id:'CRISTALINA', nome:'Pivô 3', idPrefix:'', tipo:'pivo', grid: PIVO_GRID, contorno: PIVO3_CONTORNO, icone:'📍', svg: PIVO3_SVG_DATA },
+    { id:'CRISTALINA', nome:'Pivô 3', idPrefix:'', tipo:'pivo', tipoAntigo:'pivo', grid: PIVO_GRID, contorno: PIVO3_CONTORNO, icone:'📍', svg: PIVO3_SVG_DATA },
     { id:'PIVO4', nome:'Pivô 4', idPrefix:'p4_', tipo:'pivo_svg', grid: null, contorno: null, icone:'📍', svg: PIVO4_SVG_DATA },
     { id:'PISTA1', nome:'Pista do Avião 1', idPrefix:'pista1_', tipo:'pivo_svg', grid: null, contorno: null, icone:'✈️', svg: PISTA1_SVG_DATA },
     { id:'PISTA2', nome:'Pista do Avião 2', idPrefix:'pista2_', tipo:'pivo_svg', grid: null, contorno: null, icone:'✈️', svg: PISTA2_SVG_DATA }
   ],
   LUCAS_RIO_VERDE: [
-    { id:'LUCAS_SEDE', nome:'Área da Sede', idPrefix:'lsede_', tipo:'area', areaId:'LUCAS_SEDE', icone:'🏠' },
-    { id:'LUCAS_FUNDO', nome:'Área do Fundo', idPrefix:'lfundo_', tipo:'area', areaId:'LUCAS_FUNDO', icone:'🌾' }
+    { id:'LUCAS_SEDE', nome:'Área da Sede', idPrefix:'lsede_', tipo:'pivo_svg', tipoAntigo:'area', areaId:'LUCAS_SEDE', icone:'🏠', sequeiro:true, svg: lucasSvgBuild('LUCAS_SEDE') },
+    { id:'LUCAS_FUNDO', nome:'Área do Fundo', idPrefix:'lfundo_', tipo:'pivo_svg', tipoAntigo:'area', areaId:'LUCAS_FUNDO', icone:'🌾', sequeiro:true, svg: lucasSvgBuild('LUCAS_FUNDO') }
   ]
 };
 /* croqui do Pivô 3: novo (SVG com o círculo) ou antigo (grade) — preferência guardada neste aparelho */
 function p3CroquiNovo(){ try{ return localStorage.getItem('inova_p3_croqui')!=='antigo'; }catch(e){ return true; } }
 function p3AplicaCroqui(){
   const novo = p3CroquiNovo();
-  (PIVOS_POR_ESTACAO.CRISTALINA||[]).forEach(p=>{ if(p.id==='CRISTALINA'){ p.tipo = novo? 'pivo_svg' : 'pivo'; } });
+  /* v2.39.0 — vale pro Pivô 3 e também pras áreas da Lucas (cada uma guarda o seu tipo antigo) */
+  Object.values(PIVOS_POR_ESTACAO).forEach(lista=>lista.forEach(p=>{ if(p.tipoAntigo){ p.tipo = novo? 'pivo_svg' : p.tipoAntigo; } }));
 }
 p3AplicaCroqui();
 function p3AlternaCroqui(){
@@ -8644,11 +8711,11 @@ function p3AlternaCroqui(){
   p3AplicaCroqui();
   try{ refreshTalhaoCadUI(); }catch(e){ console.warn(e); }
   try{ renderMapa(); }catch(e){}
-  toast(novo? 'Croqui antigo do Pivô 3' : 'Croqui novo do Pivô 3 (com o círculo)');
+  toast(novo? 'Croqui antigo' : 'Croqui novo (visual moderno)');
 }
 function p3AtualizaBotaoCroqui(){
   const b = document.getElementById('btnP3Croqui'); if(!b) return;
-  const ehP3 = (typeof pivoAtivoId!=='undefined') && pivoAtivoId==='CRISTALINA';
+  const ehP3 = (typeof pivoAtivo==='function') && !!(pivoAtivo() && pivoAtivo().tipoAntigo);
   b.style.display = ehP3? '' : 'none';
   b.textContent = p3CroquiNovo()? '↩ Croqui antigo' : '✨ Croqui novo';
 }
@@ -8665,6 +8732,7 @@ function renderPivoTabsHtml(){
 }
 function renderPivoTabs(){
   document.querySelectorAll('.pivo-tabs').forEach(el=>{ el.innerHTML = renderPivoTabsHtml(); });
+  try{ atualizaTermosUnidade(); }catch(err){}
   atualizaBadgesPivoTabs();
 }
 /* v2.28.0 — cada aba de pivô (na Aplicação) mostra quantas quadras já estão marcadas nela */
@@ -9137,7 +9205,12 @@ function renderPivoSvg(wrapId, q, modoCad){
     const plantioAtualSvg = (ens && ens.plantios && ens.plantios[0]) || null;
     const numeroEnsaioAtualSvg = (plantioAtualSvg && plantioAtualSvg.numeroEnsaio) || '';
     let titleTxt = `${cell.code} — ${areaHa} ha`;
-    if(!isPistaId(pivoAtivo().id)) titleTxt += ` — ${quadraCompTxt(geom.area_m2/10000, ens)}`;
+    if(pivoAtivo().sequeiro){
+      /* Lucas: geometria esquemática (sem área real) — usa só a área cadastrada, se houver */
+      titleTxt = cell.code + (ens && ens.area ? ` — ${String(ens.area).replace('.',',')} ha` : '');
+      { const _c = quadraCompTxt(ens && ens.area, ens); if(_c) titleTxt += ` — ${_c}`; }
+    }
+    else if(!isPistaId(pivoAtivo().id)) titleTxt += ` — ${quadraCompTxt(geom.area_m2/10000, ens)}`;
     else titleTxt = `${pivoAtivo().nome} — ${cell.code} — ${ens && ens.area ? String(ens.area).replace('.',',') : areaHa} ha`;
     if(ens && ens.comprimentoManual) titleTxt += ` (ajustado manualmente, ${fmtNum(ens.comprimentoManual)}m × 20m)`;
     if(culturaLabel) titleTxt += ` — ${culturaLabel}`;
@@ -9182,6 +9255,39 @@ function renderPivoSvg(wrapId, q, modoCad){
           partes += `<text class="pivo-svg-info${corCls}${dimCls}" x="${(xMax-4).toFixed(1)}" y="${cy}">${escapeHtml(it)}</text>`;
         }
         label = partes;
+      }else if(isPistaId(pivoAtivo().id) && cell.code!=='P1' && (temCor || numeroEnsaioAtualSvg)){
+        /* v2.39.0 — a pedido do Flávio: as quadras da Pista do Avião são retângulos inclinados, e o rótulo
+           completo (código + etiqueta amarela com o nº do ensaio + cultura) só era desenhado em quadra deitada,
+           então o ensaio lançado não aparecia. Agora o mesmo rótulo é escrito ao longo do eixo da quadra:
+           código + nº do ensaio + modalidade/cultura numa linha só (a faixa é fina). */
+        const ang = pose.angleDeg*Math.PI/180, ux = Math.cos(ang), uy = Math.sin(ang);
+        const proj = geom.pts.map(pt=>(pt[0]-pose.cx)*ux + (-pt[1]-pose.cy)*uy);
+        const L = Math.max(...proj)-Math.min(...proj);
+        const x0 = pose.cx - L/2, x1 = pose.cx + L/2;
+        const dimCls = isDim? ' dim':'';
+        const corCls = temCor? (reserv? ' on-reserva':' on-color') : '';
+        const yA = pose.cy;
+        let partes = `<text class="pivo-svg-label${corCls}${dimCls}" style="text-anchor:start" x="${(x0+5).toFixed(1)}" y="${yA.toFixed(1)}">${escapeHtml(codeFull)}</text>`;
+        let xc = x0+5+codeFull.length*9.6+4;
+        if(numeroEnsaioAtualSvg){
+          let num = String(numeroEnsaioAtualSvg);
+          const maxCh = Math.max(3, Math.min(9, Math.floor((x1-4-xc-4)/7.2)));
+          if(num.length>maxCh) num = num.slice(0,maxCh-1)+'…';
+          const wB = num.length*7.2+6;
+          if(xc+wB < x1-4){
+            partes += `<rect class="pivo-svg-badge${dimCls}" x="${xc.toFixed(1)}" y="${(yA-7.5).toFixed(1)}" width="${wB.toFixed(1)}" height="15" rx="3"/><text class="pivo-svg-badge-txt${dimCls}" x="${(xc+wB/2).toFixed(1)}" y="${yA.toFixed(1)}">${escapeHtml(num)}</text>`;
+            xc += wB + 4;
+          }
+        }
+        const espacoP = x1-4-xc;
+        if(infoTxtSvg && espacoP>=44){
+          const maxCh2 = Math.floor(espacoP/6.4);
+          /* não corta no meio ("PRELIMINAR I…" enganaria): ou cabe inteiro, ou mostra só a cultura */
+          const soCult = cultura? tituloCultura(cultura) : '';
+          const it = infoTxtSvg.length<=maxCh2 ? infoTxtSvg : (soCult.length<=maxCh2 ? soCult : '');
+          if(it) partes += `<text class="pivo-svg-info${corCls}${dimCls}" x="${(x1-4).toFixed(1)}" y="${yA.toFixed(1)}">${escapeHtml(it)}</text>`;
+        }
+        label = `<g transform="rotate(${pose.angleDeg.toFixed(1)} ${pose.cx.toFixed(1)} ${pose.cy.toFixed(1)})">${partes}</g>`;
       }else{
         const labelCls = 'pivo-svg-label'+(temCor? (reserv? ' on-reserva':' on-color'):'')+(isDim? ' dim':'');
         label = `<text class="${labelCls}" x="${pose.cx.toFixed(1)}" y="${pose.cy.toFixed(1)}" transform="rotate(${pose.angleDeg.toFixed(1)} ${pose.cx.toFixed(1)} ${pose.cy.toFixed(1)})">${escapeHtml(codeFull)}</text>`;
@@ -9220,6 +9326,7 @@ function renderPivoSvg(wrapId, q, modoCad){
         <g class="g-ruas">${ruaPaths}</g>
         <g class="g-bordaduras">${bordaduraPaths}</g>
         <g class="g-quadras">${quadPaths}</g>
+        ${(svgData.titulos||[]).length? `<g class="g-titulos">${svgData.titulos.map(t=>`<text class="pivo-svg-titulo" x="${t.x}" y="${t.y}">${escapeHtml(t.txt)}</text>${t.sub? `<text class="pivo-svg-titulo-sub" x="${t.x}" y="${t.y+17}">${escapeHtml(t.sub)}</text>` : ''}`).join('')}</g>` : ''}
         ${(svgData.rotulos||[]).length? `<g class="g-rotulos">${svgData.rotulos.map(r=>`<text class="pivo-svg-rotulo" x="${r.x}" y="${-r.y}">${escapeHtml(r.txt)}</text>`).join('')}</g>` : ''}
       </svg>
       <div class="pivo-svg-zoom">
@@ -9229,10 +9336,10 @@ function renderPivoSvg(wrapId, q, modoCad){
       </div>
       <div class="pivo-svg-legend">
         <span class="item"><span class="swatch quadra"></span>${isPistaId(pivoAtivo().id) ? 'Área' : 'Quadra'} (${svgData.quadras.length - quadrasExcluidasCount})</span>
-        ${svgData.bordaduras.length ? `<span class="item"><span class="swatch bordadura"></span>${isPistaId(pivoAtivo().id) ? 'Vitrine de materiais' : 'Bordadura ('+svgData.bordaduras.length+')'}</span>` : ''}
+        ${svgData.bordaduras.length ? `<span class="item"><span class="swatch bordadura"></span>${pivoAtivo().sequeiro ? 'Isolamento / pousio (referência)' : (isPistaId(pivoAtivo().id) ? 'Vitrine de materiais' : 'Bordadura ('+svgData.bordaduras.length+')')}</span>` : ''}
         ${quadrasExcluidasCount? `<span class="item"><span class="swatch excluida"></span>Excluída (${quadrasExcluidasCount})</span>` : ''}
         ${svgData.ruas.length ? '<span class="item"><span class="swatch rua"></span>Rua</span>' : ''}
-        <span class="item pivo-svg-zoom-hint">arraste pra mover · pinça/roda/± pra zoom</span>
+        <span class="item pivo-svg-zoom-hint">arraste pra mover · pinça/± pra zoom</span>
       </div>
     </div>
   </div>`;
@@ -9357,14 +9464,8 @@ function pivoSvgAttachInteractions(svgEl, vb){
   svgEl.addEventListener('click', e=>{
     if(gesture.moved() > 8){ e.stopPropagation(); e.preventDefault(); }
   }, true);
-  svgEl.addEventListener('wheel', e=>{
-    e.preventDefault();
-    const v = pivoSvgViews[svgEl.id];
-    const rect = svgEl.getBoundingClientRect();
-    const mx = v.x + (e.clientX-rect.left)/rect.width*v.w;
-    const my = v.y + (e.clientY-rect.top)/rect.height*v.h;
-    pivoSvgZoomBy(svgEl, e.deltaY<0? 1.15:0.87, mx, my);
-  }, {passive:false});
+  /* v2.38.4 — a pedido do Flávio: sem zoom pela roda do mouse no croqui (a roda volta a só
+     rolar a página). Zoom continua pelos botões +/−/⤢ e pela pinça no celular. */
 }
 
 /* Pan/zoom do croqui do Pivô 3 — pedido do Flávio em 10/09/2026: "coloca o sistema
@@ -9439,11 +9540,7 @@ function gridZoomAttachInteractions(wrapId){
   vp.addEventListener('click', e=>{
     if(gesture.moved() > 8){ e.stopPropagation(); e.preventDefault(); }
   }, true);
-  vp.addEventListener('wheel', e=>{
-    e.preventDefault();
-    const rect = vp.getBoundingClientRect();
-    gridZoomBy(wrapId, e.deltaY<0? 1.15:0.87, e.clientX-rect.left, e.clientY-rect.top);
-  }, {passive:false});
+  /* v2.38.4 — sem zoom pela roda do mouse (ver pivoSvgAttachInteractions). */
 }
 
 function renderPivo(){
@@ -10100,7 +10197,7 @@ function buildReceiptBodyHTML(app){
     ${areaPorCulturaTxt? `<div class="r-row"><span class="r-label">Área por cultura</span><span class="r-val">${escapeHtml(areaPorCulturaTxt)}</span></div>` : ''}
     <div class="r-row"><span class="r-label">Período de reentrada</span><span class="r-val">24 horas</span></div>
     ${caldaRows}
-    ${mapHtml? `<h4>${multi? 'Mapas da aplicação (por pivô)' : 'Mapa da aplicação'}</h4>${mapHtml}<div style="text-align:center;font-size:10px;color:#8a7d70;margin-top:2px;">Contorno escuro = quadra aplicada nesta ficha · cor = cultura cadastrada</div>` : ''}
+    ${mapHtml? `<h4>${multi? 'Mapas da aplicação ('+termoU().por+')' : 'Mapa da aplicação'}</h4>${mapHtml}<div style="text-align:center;font-size:10px;color:#8a7d70;margin-top:2px;">Contorno escuro = quadra aplicada nesta ficha · cor = cultura cadastrada</div>` : ''}
     <h4>Produtos aplicados</h4>
     ${prodHtml}
     ${app.obs? `<h4>Observações</h4><div class="r-row" style="border-bottom:none;"><span class="r-val" style="text-align:left;">${escapeHtml(app.obs)}</span></div>` : ''}
@@ -11133,7 +11230,7 @@ function expCicloMontarTalhoes(){
         const cult = e.cultura ? ' · '+e.cultura : '';
         return `<option value="${escapeHtml(e.id)}">${escapeHtml(e.talhao||e.ensaio)}${escapeHtml(cult)} (${n} aplic.)</option>`;
       }).join('')
-    : '<option value="">Nenhum talhão com plantio ou aplicação neste pivô</option>';
+    : `<option value="">Nenhum talhão com plantio ou aplicação ${termoU().neste}</option>`;
   if(lista.some(e=>e.id===atual)) sel.value = atual;
   expCicloMontarPlantios();
 }
