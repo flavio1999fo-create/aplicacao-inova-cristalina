@@ -2391,9 +2391,8 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
     <div class="receipt-body" id="receiptBody"></div>
     <div class="receipt-foot">Inova Genética — gerado em <span id="rFootDate"></span></div>
     <div class="receipt-actions">
-      <button class="btn-primary" onclick="downloadReceiptImage()">🖼️ Baixar imagem</button>
-      <button class="btn-ghost" onclick="printReceiptPdf()">🖨️ Baixar PDF</button>
-      <button class="btn-ghost" onclick="abrirMsgWhats(currentReceiptApp)">📲 Enviar ao aplicador</button>
+      <button class="btn-primary" onclick="abrirMsgWhats(currentReceiptApp)">💬 Enviar no WhatsApp</button>
+      <button class="btn-ghost" onclick="downloadReceiptImage()">⬇️ Baixar só a foto</button>
       <button class="btn-ghost" onclick="closeReceipt()">Fechar</button>
     </div>
   </div>
@@ -2414,14 +2413,11 @@ var emailjs=function(e){"use strict";class t{constructor(){let e=arguments.lengt
       <div class="muted" id="msgWhatsAviso" style="font-size:12px;margin-top:6px;"></div>
       <div id="msgWhatsFotoSt" style="font-size:12.5px;margin-top:6px;font-weight:700;"></div>
       <div class="wa-grid">
-        <button class="btn-primary" id="waBtnPC" onclick="enviarWhatsPC()">💬 Abrir no WhatsApp do PC</button>
-        <button class="btn-ghost" onclick="enviarWhatsWeb()">🌐 WhatsApp Web</button>
-        <button class="btn-ghost" id="waBtnShare" onclick="compartilharFotoMsgWhats()" style="display:none;">📤 Compartilhar foto + mensagem (celular)</button>
-        <button class="btn-ghost" onclick="copiarFotoMsgWhats()">🖼️ Copiar foto da ficha</button>
-        <button class="btn-ghost" onclick="baixarFotoMsgWhats()">⬇️ Baixar foto</button>
-        <button class="btn-ghost" onclick="copiarMsgWhats()">📋 Copiar mensagem</button>
+        <button class="btn-primary" id="waBtnPC" onclick="enviarWhatsAuto()">💬 Enviar no WhatsApp</button>
+        <button class="btn-ghost" id="waBtnWeb" onclick="enviarWhatsWeb()">🌐 WhatsApp Web</button>
+        <button class="btn-ghost" onclick="baixarFotoMsgWhats()">⬇️ Baixar só a foto</button>
       </div>
-      <div class="muted" style="font-size:12px;margin-top:8px;line-height:1.45;">No PC: o WhatsApp abre já com o contato e o texto, e a foto da ficha fica copiada — é só clicar na conversa e apertar <b>Ctrl+V</b> para colar a foto. Se o WhatsApp do PC não abrir, use o <b>WhatsApp Web</b>.</div>
+      <div class="muted" id="waDica" style="font-size:12px;margin-top:8px;line-height:1.45;">No PC: o WhatsApp abre já com o contato e o texto, e a foto da ficha fica copiada — é só clicar na conversa e apertar <b>Ctrl+V</b>. Se o WhatsApp do PC não abrir, use o <b>WhatsApp Web</b>.</div>
     </div>
     <div class="receipt-actions">
       <button class="btn-ghost" onclick="fecharMsgWhats()">Fechar</button>
@@ -2652,7 +2648,7 @@ const ESTACAO_ATIVA_KEY = 'inova_estacao_ativa_v1';
   }
   ['mousedown','focusin','touchstart'].forEach(ev=> document.addEventListener(ev, e=>{ const t = e.target; if(t && t.tagName==='SELECT') ajusta(t); }, true));
 })();
-const APP_BUILD_ID = 'v2.45.1';
+const APP_BUILD_ID = 'v2.45.2';
 /* v2.21.2 — o Chrome/celular preenchia sozinho o nome do usuário ("flavio") na caixa de busca de talhões,
    o que deixava todas as quadras apagadas (opacidade) e o croqui parecendo travado. Agora as caixas de
    busca nascem vazias, ignoram autofill e são limpas logo após o carregamento. */
@@ -4514,7 +4510,9 @@ function renderStats(){
   document.getElementById('statBaixo').textContent = low;
   document.getElementById('statApps').textContent = DATA.applications.length;
   document.getElementById('statConfirmar').textContent = aplicacoesPendentesConfirmacao().length;
-  renderDashboard();
+  /* v2.45.2 — o dashboard é pesado; só redesenha se a aba dele estiver aberta (ao abrir a aba ele é redesenhado de qualquer jeito) */
+  const _secDash = document.getElementById('tab-dashboard');
+  if(!_secDash || _secDash.classList.contains('active')) renderDashboard();
 }
 
 /* ====================== DASHBOARD ====================== */
@@ -6309,7 +6307,7 @@ function solFecharFicha(){ document.getElementById('solFichaOverlay').classList.
 async function solFichaBlob(){
   if(typeof html2canvas==='undefined') throw new Error('sem html2canvas');
   const card = document.getElementById('solFichaCard');
-  const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
+  const canvas = await fichaCanvas(card, 2);
   return await new Promise(res=>canvas.toBlob(res,'image/png'));
 }
 function solNomeArquivo(){ return 'solicitacao_armazem_'+(solForm.data||solHoje())+'.png'; }
@@ -10194,7 +10192,7 @@ async function gerarFotoFichaParaCompartilhar(app){
   try{
     const actions = card.querySelector('.receipt-actions');
     if(actions) actions.style.display = 'none';
-    const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
+    const canvas = await fichaCanvas(card, 2);
     if(actions) actions.style.display = '';
     const blob = await new Promise(res=>canvas.toBlob(res, 'image/png'));
     if(!blob) return null;
@@ -10262,7 +10260,7 @@ function msgWhatsPrepararFoto(app){
     if(!blob) throw new Error('sem imagem');
     return blob;
   })();
-  const registro = { promise, blob:null, nome };
+  const registro = { promise, blob:null, nome, canvas:null, appId:null };
   msgWhatsFoto = registro;
   promise.then(b=>{ registro.blob = b; if(msgWhatsFoto===registro && st){ st.textContent = '✅ Foto da ficha pronta.'; st.style.color = '#157f3b'; } })
          .catch(e=>{ console.warn('Foto da ficha:', e); if(msgWhatsFoto===registro && st){ st.textContent = '⚠️ Não consegui gerar a foto — use a mensagem de texto.'; st.style.color = '#b42318'; } });
@@ -10277,7 +10275,9 @@ function abrirMsgWhats(app){
     : (m.semTelefone ? `${app.operador} está sem WhatsApp cadastrado (aba Usuários) — no WhatsApp você escolhe o contato.` : `Vai para ${app.operador} (WhatsApp cadastrado).`);
   let podeCompartilhar = false;
   try{ podeCompartilhar = !!(navigator.share && navigator.canShare && navigator.canShare({files:[new File([new Blob(['x'])],'a.png',{type:'image/png'})]}) && (navigator.maxTouchPoints>0)); }catch(e){}
-  const bs = document.getElementById('waBtnShare'); if(bs) bs.style.display = podeCompartilhar? '' : 'none';
+  waModoCelular = podeCompartilhar;
+  const bw = document.getElementById('waBtnWeb'); if(bw) bw.style.display = podeCompartilhar? 'none' : '';
+  const bd = document.getElementById('waDica'); if(bd) bd.innerHTML = podeCompartilhar ? 'Toque em <b>Enviar no WhatsApp</b>, escolha o WhatsApp e o contato — a foto da ficha e a mensagem vão juntas.' : 'No PC: o WhatsApp abre já com o contato e o texto, e a foto da ficha fica copiada — é só clicar na conversa e apertar <b>Ctrl+V</b>. Se o WhatsApp do PC não abrir, use o <b>WhatsApp Web</b>.';
   document.getElementById('msgWhatsOverlay').classList.remove('hidden');
   msgWhatsPrepararFoto(app);
 }
@@ -10297,6 +10297,9 @@ async function copiarFotoMsgWhats(){
   toast(ok? 'Foto copiada ✅ — na conversa do WhatsApp aperte Ctrl+V' : 'Não consegui copiar a foto — use "Baixar foto" e anexe no WhatsApp');
   return ok;
 }
+/* v2.45.2 — um botão só: no celular abre a telinha de compartilhar (foto + texto); no PC abre o WhatsApp com o texto e já deixa a foto copiada (Ctrl+V). */
+let waModoCelular = false;
+function enviarWhatsAuto(){ if(waModoCelular) compartilharFotoMsgWhats(); else enviarWhatsPC(); }
 function enviarWhatsPC(){
   const txt = msgWhatsTextoAtual(), tel = msgWhatsTel();
   msgWhatsCopiarFotoInterno().then(ok=>{ if(ok) toast('Foto copiada ✅ — na conversa aperte Ctrl+V pra colar'); });
@@ -10337,6 +10340,19 @@ async function copiarMsgWhats(){
 async function notificarOperadorWhatsApp(app){
   try{ abrirMsgWhats(app); }
   catch(err){ console.warn('Erro ao abrir a janela de envio ao aplicador:', err); }
+}
+/* v2.45.2 — PESO DA FICHA NO CELULAR (Flávio, 27/11/2026): o html2canvas clona a PÁGINA INTEIRA (milhares de nós:
+   mapas do cadastro, estoque, dashboard...) só pra fotografar o cartão da ficha — e isso travava o app por muitos
+   segundos ao registrar a aplicação (medido: ~26 s -> ~1,6 s com a CPU 4x mais lenta). Aqui a foto ignora tudo que não
+   é o cartão (nem ancestral dele); o <head> (estilos) continua. Mesma imagem, bem mais rápido. */
+function fichaCanvas(card, scale){
+  return html2canvas(card, {backgroundColor:'#ffffff', scale: scale||2, ignoreElements: el=>{
+    if(!el || el===document.body || el===document.documentElement) return false;
+    if(!document.body.contains(el)) return false;          /* <head>: estilos precisam ficar */
+    const tg = el.tagName;
+    if(tg==='STYLE' || tg==='LINK' || tg==='SCRIPT') return false;   /* há <style> dentro do <body> também */
+    return !(el===card || card.contains(el) || el.contains(card));
+  }});
 }
 function registerApplication(){
   const dataAplicacao = document.getElementById('fData').value;
@@ -10405,7 +10421,7 @@ function registerApplication(){
   renderEstoque();
   resetNovaForm();
   renderAguardandoConfirmacao();
-  renderStats();
+  /* (saveData() acima já atualiza os indicadores — não precisa chamar renderStats de novo) */
   toast('Aplicação registrada e estoque atualizado ✅');
   showReceipt(app);
   /* notificarOperadorWhatsApp roda DEPOIS de showReceipt(app) de propósito: ela reaproveita
@@ -10414,10 +10430,10 @@ function registerApplication(){
      só começa depois que ela termina (.finally), porque os dois mexem no mesmo #receiptCard
      (escondem/mostram os botões ".receipt-actions" antes de tirar o "print") — rodando ao
      mesmo tempo, um atrapalharia a foto do outro. */
-  notificarOperadorWhatsApp(app).catch(()=>{}).finally(()=>{
-    /* espera a foto da janelinha de envio terminar (mesmo #receiptCard) antes do PDF automático */
-    Promise.resolve(msgWhatsFoto && msgWhatsFoto.promise).catch(()=>{}).then(()=> setTimeout(()=>autoGerarFichaPdf(app), 80));
-  });
+  /* v2.45.2 — deixa a ficha aparecer na tela ANTES de começar a foto/PDF (que são o trecho pesado) */
+  /* v2.45.2 — a pedido do Flávio (27/11/2026): o PDF automático foi removido; fica só a foto da ficha (janelinha do
+     WhatsApp). Os botões manuais de PDF/imagem continuam existindo na ficha e na aba Exportar. */
+  setTimeout(()=>{ try{ notificarOperadorWhatsApp(app); }catch(e){ console.warn(e); } }, 150);
 }
 
 /* ====================== RECIBO DE APLICAÇÃO (imagem/PDF) ====================== */
@@ -10674,7 +10690,7 @@ function downloadReceiptImage(){
   const card = document.getElementById('receiptCard');
   const actions = card.querySelector('.receipt-actions');
   actions.style.display = 'none';
-  html2canvas(card, {backgroundColor:'#ffffff', scale:2}).then(canvas=>{
+  fichaCanvas(card, 2).then(canvas=>{
     actions.style.display = '';
     const link = document.createElement('a');
     link.download = `ficha_aplicacao_${currentReceiptApp? currentReceiptApp.serie : 'app'}.png`;
@@ -10826,15 +10842,21 @@ async function autoGerarFichaPdf(app){
   const actions = card.querySelector('.receipt-actions');
   try{
     if(typeof html2canvas === 'undefined') throw new Error('html2canvas indisponível');
-    if(actions) actions.style.display = 'none';
-    const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
-    if(actions) actions.style.display = '';
+    /* v2.45.2 — reaproveita a foto que a janelinha do WhatsApp já tirou desta mesma ficha (antes eram duas fotos
+       seguidas do mesmo cartão — a parte mais pesada no celular) */
+    let canvas = null;
+    if(msgWhatsFoto && msgWhatsFoto.canvas && msgWhatsFoto.appId===app.id){ canvas = msgWhatsFoto.canvas; msgWhatsFoto.canvas = null; }
+    if(!canvas){
+      if(actions) actions.style.display = 'none';
+      canvas = await fichaCanvas(card, 2);
+      if(actions) actions.style.display = '';
+    }
     if(!(window.jspdf && window.jspdf.jsPDF)) throw new Error('jsPDF indisponível');
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);   /* JPEG: bem mais leve de gerar/embutir que PNG no celular */
     const mmPerPx = 25.4/(96*2); // canvas foi gerado com scale:2 a partir de um layout ~96dpi
     const wMm = canvas.width*mmPerPx, hMm = canvas.height*mmPerPx;
     const doc = new window.jspdf.jsPDF({unit:'mm', format:[wMm, hMm]});
-    doc.addImage(imgData, 'PNG', 0, 0, wMm, hMm);
+    doc.addImage(imgData, 'JPEG', 0, 0, wMm, hMm, undefined, 'FAST');
     const nomeArquivoFicha = `ficha_aplicacao_${app.serie}.pdf`;
     const salvouNaPasta = await salvarArquivoNaPastaEscolhida(nomeArquivoFicha, doc.output('blob'));
     if(salvouNaPasta){
@@ -10847,7 +10869,7 @@ async function autoGerarFichaPdf(app){
     console.warn('Falha ao gerar PDF automático da ficha, tentando baixar imagem PNG:', e);
     try{
       if(actions) actions.style.display = 'none';
-      const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
+      const canvas = await fichaCanvas(card, 2);
       if(actions) actions.style.display = '';
       const nomeArquivoPng = `ficha_aplicacao_${app.serie}.png`;
       const pngBlob = await new Promise(res=>canvas.toBlob(res, 'image/png'));
@@ -10923,7 +10945,7 @@ async function exportarTodasFichasPdf(){
       document.getElementById('receiptBody').innerHTML = buildReceiptBodyHTML(app);
       const dataGeracao = app.data ? new Date(app.data) : new Date();
       document.getElementById('rFootDate').textContent = dataGeracao.toLocaleDateString('pt-BR')+' '+dataGeracao.toLocaleTimeString('pt-BR');
-      const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
+      const canvas = await fichaCanvas(card, 2);
       const imgData = canvas.toDataURL('image/png');
       const mmPerPx = 25.4/(96*2);
       const wMm = canvas.width*mmPerPx, hMm = canvas.height*mmPerPx;
@@ -11867,7 +11889,7 @@ async function expRenderFichas(apps, aoCanvas, progresso){
       expEl('receiptBody').innerHTML = buildReceiptBodyHTML(app);
       const dg = app.data ? new Date(app.data) : new Date();
       expEl('rFootDate').textContent = dg.toLocaleDateString('pt-BR')+' '+dg.toLocaleTimeString('pt-BR');
-      const canvas = await html2canvas(card, {backgroundColor:'#ffffff', scale:2});
+      const canvas = await fichaCanvas(card, 2);
       await aoCanvas(app, canvas, i);
     }
   }finally{
